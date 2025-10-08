@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/notifiers.dart';
 import 'package:tracklist_app/views/pages/home_page.dart';
 import 'package:tracklist_app/views/pages/search_page.dart';
+import 'package:tracklist_app/views/pages/welcome_page.dart';
 import 'package:tracklist_app/views/widgets/navbar_widget.dart';
 
 const List<MapEntry<String, Widget>> pages = [
@@ -9,7 +10,7 @@ const List<MapEntry<String, Widget>> pages = [
   MapEntry("Search", SearchPage()),
   MapEntry("Chat", SearchPage()),
   MapEntry("Inbox", SearchPage()),
-  MapEntry("Profile", SearchPage()),
+  MapEntry("Profile", WelcomePage()),
 ];
 
 class WidgetTree extends StatelessWidget {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/constants.dart';
-import 'package:tracklist_app/services/spotify_search.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -10,14 +9,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Map<String, dynamic> artist = {};
-
-  void fetchArtist() async {
-    Map<String, dynamic> artist = await getArtistById("1btWGBz4Uu1HozTwb2Lm8A");
-    setState(() {
-      this.artist = artist;
-    });
-  }
+  void fetchArtist() async {}
 
   List<Map<String, dynamic>> reviews = [
     {"id": 1, "name": "@JohnDoe", "rating": 4.5, "date": "2023-01-01", "comment": "Great album! I loved it."},
@@ -49,14 +41,7 @@ class _HomePageState extends State<HomePage> {
                               child: Card(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Image.network(artist["image"], width: 150, height: 150),
-                                    CircleAvatar(radius: 20, backgroundImage: AssetImage(DEFAULT_PROFILE_IMG)),
-                                    Text(review["name"]),
-                                    Text(review["comment"]),
-                                    Text(review["date"]),
-                                    Text(artist["name"]),
-                                  ],
+                                  children: [Text(review["name"]), Text(review["comment"]), Text(review["date"])],
                                 ),
                               ),
                             );
