@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/services/auth_service.dart';
 import 'package:tracklist_app/views/widget_tree.dart';
 import 'package:tracklist_app/views/widgets/auth_text_field.dart';
 
@@ -19,11 +20,11 @@ class _AuthPageState extends State<AuthPage> {
   final double kSectionSpacing = 20.0;
 
   // Default values for debugging purposes
-  TextEditingController controllerDisplayName = TextEditingController();
-  TextEditingController controllerUsername = TextEditingController();
-  TextEditingController controllerEmail = TextEditingController();
-  TextEditingController controllerPw = TextEditingController();
-  TextEditingController controllerRePw = TextEditingController();
+  TextEditingController controllerDisplayName = TextEditingController(text: "Debug User");
+  TextEditingController controllerUsername = TextEditingController(text: "debuguser");
+  TextEditingController controllerEmail = TextEditingController(text: "debug@debug.com");
+  TextEditingController controllerPw = TextEditingController(text: "password");
+  TextEditingController controllerRePw = TextEditingController(text: "password");
 
   void disposeForm() {
     controllerDisplayName.dispose();
@@ -183,22 +184,35 @@ class _AuthPageState extends State<AuthPage> {
   Widget buildSubmitButton() {
     return FilledButton(
       onPressed: () {
-        // TODO: Validate auth form
-
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              // Sends the user to the widget tree
-              return WidgetTree();
-            },
-          ),
-          // Removes all previous pages in the stack
-          (route) => false,
-        );
+        if (!_formKey.currentState!.validate()) return;
+        onLoginPressed();
       },
       style: ElevatedButton.styleFrom(minimumSize: Size(double.infinity, 40.0)),
       child: Text(widget.isRegistration ? "Sign up" : "Log in"),
+    );
+  }
+
+  void onLoginPressed() async {
+    // TODO: Sign up or sign in based on widget.isRegistration
+
+    bool isValid = await authService.value.signIn(email: controllerEmail.text, password: controllerPw.text);
+    if (isValid) {
+      redirectToWelcomePage();
+    } else {
+      print("Login failed");
+    }
+  }
+
+  void redirectToWelcomePage() {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return WidgetTree();
+        },
+      ),
+      // Removes all previous pages in the stack
+      (route) => false,
     );
   }
 }

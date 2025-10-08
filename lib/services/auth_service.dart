@@ -6,7 +6,7 @@ import 'package:tracklist_app/data/constants.dart';
 
 // Holds the instance of the current user and the auth service
 ValueNotifier<AuthService> authService = ValueNotifier(AuthService());
-ValueNotifier<AppUser?> appUser = ValueNotifier<AppUser?>(null);
+ValueNotifier<AuthUser?> authUser = ValueNotifier<AuthUser?>(null);
 
 class AuthService {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
@@ -74,7 +74,7 @@ class AuthService {
     }
   }
 
-  Future<UserCredential> signIn({required String email, required String password}) async {
+  Future<bool> signIn({required String email, required String password}) async {
     try {
       // Try to sign in user
       UserCredential userCredential = await firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
@@ -88,27 +88,23 @@ class AuthService {
         // Store user data in map
         final data = userDoc.data() as Map<String, dynamic>;
 
-        // Create new AppUser object
-        appUser.value = AppUser(
-          uid: uid,
-          email: data["email"],
-          username: data["username"],
-          displayName: data["displayName"],
-        );
+        // Create new AuthUser object
+        authUser.value = AuthUser(email: data["email"], username: data["username"], displayName: data["displayName"]);
+
+        return true;
       } else {
         firebaseAuth.signOut();
-        throw Exception("User does not exist in database!");
+        throw Exception("User does not exist in database");
       }
-      return userCredential;
     } catch (error) {
-      print(error);
-      return Future.error(error);
+      print('Error signing in: $error');
+      return false;
     }
   }
 
   Future<void> signOut() async {
     await firebaseAuth.signOut();
-    appUser.value = null;
+    authUser.value = null;
   }
 
   Future<void> sendPasswordReset({required String email}) async {
@@ -137,6 +133,6 @@ class AuthService {
     await currentUser!.delete();
     await firebaseAuth.signOut();
 
-    appUser.value = null;
+    authUser.value = null;
   }
 }
