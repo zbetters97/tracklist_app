@@ -19,7 +19,7 @@ class WelcomePage extends StatelessWidget {
                   alignment: Alignment.center,
                   children: [
                     Hero(
-                      tag: "tracklist",
+                      tag: "tracklist logo",
                       child: ClipRRect(
                         child: Center(child: Image.asset(LOGO_IMG_LG, height: 300, width: 300, fit: BoxFit.cover)),
                       ),

@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/constants.dart';
 import 'package:tracklist_app/services/firebase_options.dart';
-import 'package:tracklist_app/views/widget_tree.dart';
+import 'package:tracklist_app/views/pages/welcome_page.dart';
 
 void main() async {
   // Initialize Firebase
@@ -28,7 +28,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: PRIMARY_COLOR, brightness: Brightness.dark),
       ),
-      home: WidgetTree(),
+      home: WelcomePage(),
     );
   }
 }

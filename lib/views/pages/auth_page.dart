@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/views/widget_tree.dart';
 import 'package:tracklist_app/views/widgets/auth_text_field.dart';
 
 class AuthPage extends StatefulWidget {
@@ -181,9 +182,23 @@ class _AuthPageState extends State<AuthPage> {
 
   Widget buildSubmitButton() {
     return FilledButton(
-      onPressed: () {},
+      onPressed: () {
+        // TODO: Validate auth form
+
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              // Sends the user to the widget tree
+              return WidgetTree();
+            },
+          ),
+          // Removes all previous pages in the stack
+          (route) => false,
+        );
+      },
       style: ElevatedButton.styleFrom(minimumSize: Size(double.infinity, 40.0)),
-      child: Text("Submit"),
+      child: Text(widget.isRegistration ? "Sign up" : "Log in"),
     );
   }
 }

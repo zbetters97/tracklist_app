@@ -1,0 +1,29 @@
+import 'package:flutter/material.dart';
+import 'package:tracklist_app/data/notifiers.dart';
+import 'package:tracklist_app/views/pages/welcome_page.dart';
+
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  void onLogoutPressed() {
+    selectedPageNotifier.value = 0;
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return WelcomePage();
+        },
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(onTap: onLogoutPressed, title: const Text("Logout"));
+  }
+}
