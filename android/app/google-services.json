@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "933440881042",
+    "project_id": "tracklist-3f090",
+    "storage_bucket": "tracklist-3f090.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:933440881042:android:573ed4c4f813eab2c2414b",
+        "android_client_info": {
+          "package_name": "com.example.tracklist_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "933440881042-hgl3cr86uh50h9bqa393i3dslu4ujmdb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDq6dIwYISQuvnV5PU3v4rdBsqV1MK9h9Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "933440881042-hgl3cr86uh50h9bqa393i3dslu4ujmdb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

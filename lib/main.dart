@@ -1,9 +1,15 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/constants.dart';
+import 'package:tracklist_app/services/firebase_options.dart';
 import 'package:tracklist_app/services/spotify_search.dart';
 import 'package:tracklist_app/views/widget_tree.dart';
 
 void main() async {
+  // Initialize Firebase
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   runApp(const MyApp());
 }
 
