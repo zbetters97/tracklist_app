@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/constants.dart';
 import 'package:tracklist_app/date.dart';
@@ -11,6 +13,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int currentTab = 0;
   bool isLoading = true;
   List<Map<String, dynamic>> reviews = [];
 
@@ -31,40 +34,108 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 10),
-      child: Stack(
+    return Stack(
+      children: [
+        Column(
+          children: [
+            TopBar(),
+            Expanded(
+              child: isLoading
+                  ? Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))
+                  : reviews.isEmpty
+                  ? Center(
+                      child: Text(
+                        "No reviews found!",
+                        style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic, fontSize: 24),
+                      ),
+                    )
+                  : ReviewCardsList(),
+            ),
+          ],
+        ),
+        PostReviewButton(),
+      ],
+    );
+  }
+
+  Widget TopBar() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.only(top: 12),
+      decoration: BoxDecoration(
+        color: BACKGROUND_COLOR,
+        boxShadow: [
+          BoxShadow(color: const Color.fromRGBO(0, 0, 0, 0.3), blurRadius: 3, offset: Offset(0, 6), spreadRadius: 2),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Column(
-            children: [
-              Expanded(
-                child: isLoading
-                    ? Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))
-                    : reviews.isEmpty
-                    ? Center(
-                        child: Text(
-                          "No reviews found!",
-                          style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic, fontSize: 24),
-                        ),
-                      )
-                    : ReviewCardsList(),
-              ),
-            ],
+          GestureDetector(
+            onTap: () => setState(() => currentTab = 0),
+            child: Column(
+              children: [
+                Text(
+                  "Newest",
+                  style: TextStyle(
+                    color: currentTab == 0 ? PRIMARY_COLOR : Colors.grey,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 5),
+                Container(
+                  height: 5,
+                  width: 100,
+                  decoration: BoxDecoration(
+                    color: currentTab == 0 ? PRIMARY_COLOR : Colors.transparent,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ],
+            ),
           ),
-          PostReviewButton(),
+          SizedBox(width: 30),
+          GestureDetector(
+            onTap: () => setState(() => currentTab = 1),
+            child: Column(
+              children: [
+                Text(
+                  "For You",
+                  style: TextStyle(
+                    color: currentTab == 1 ? PRIMARY_COLOR : Colors.grey,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 5),
+                Container(
+                  height: 5,
+                  width: 100,
+                  decoration: BoxDecoration(
+                    color: currentTab == 1 ? PRIMARY_COLOR : Colors.transparent,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget ReviewCardsList() {
-    return ListView.separated(
-      itemCount: reviews.length,
-      itemBuilder: (context, index) {
-        final review = reviews[index];
-        return buildReviewCard(review);
-      },
-      separatorBuilder: (context, index) => Divider(color: Colors.grey),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      child: ListView.separated(
+        itemCount: reviews.length,
+        itemBuilder: (context, index) {
+          final review = reviews[index];
+          return buildReviewCard(review);
+        },
+        separatorBuilder: (context, index) => Divider(color: Colors.grey),
+      ),
     );
   }
 

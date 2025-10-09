@@ -25,14 +25,8 @@ class WidgetTree extends StatelessWidget {
         final currentPage = pages[selectedPage];
 
         return Scaffold(
-          appBar: AppBar(
-            title: Center(
-              child: Text(currentPage.key, style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
-            ),
-            backgroundColor: BACKGROUND_COLOR,
-          ),
-          backgroundColor: SECONDARY_COLOR,
-          body: currentPage.value,
+          backgroundColor: BACKGROUND_COLOR,
+          body: SafeArea(child: currentPage.value),
           bottomNavigationBar: const NavbarWidget(),
         );
       },
