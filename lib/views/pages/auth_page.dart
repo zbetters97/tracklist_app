@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/data/constants.dart';
 import 'package:tracklist_app/services/auth_service.dart';
 import 'package:tracklist_app/views/widget_tree.dart';
 import 'package:tracklist_app/views/widgets/auth_text_field.dart';
@@ -13,11 +14,14 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
+  // Register (true) or Login (false)
+  late bool isRegistration;
+
   final _formKey = GlobalKey<FormState>();
 
   // Spacing constants
   final double kFieldSpacing = 10.0;
-  final double kSectionSpacing = 20.0;
+  final double kSectionSpacing = 25.0;
 
   // Default values for debugging purposes
   TextEditingController controllerDisplayName = TextEditingController(text: "Debug User");
@@ -25,6 +29,18 @@ class _AuthPageState extends State<AuthPage> {
   TextEditingController controllerEmail = TextEditingController(text: "debug@debug.com");
   TextEditingController controllerPw = TextEditingController(text: "password");
   TextEditingController controllerRePw = TextEditingController(text: "password");
+
+  @override
+  void initState() {
+    super.initState();
+    isRegistration = widget.isRegistration;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    disposeForm();
+  }
 
   void disposeForm() {
     controllerDisplayName.dispose();
@@ -49,9 +65,12 @@ class _AuthPageState extends State<AuthPage> {
                 children: [
                   buildHeader(),
                   SizedBox(height: kSectionSpacing),
-                  widget.isRegistration ? buildRegisterFields() : buildLoginFields(),
+                  isRegistration ? buildRegisterFields() : buildLoginFields(),
                   SizedBox(height: kSectionSpacing),
                   buildSubmitButton(),
+                  SizedBox(height: kSectionSpacing),
+                  Text(isRegistration ? "Already have an account with us?" : "Don't have an account with us?"),
+                  buildChangeAuthButton(),
                 ],
               ),
             ),
@@ -62,9 +81,17 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   Widget buildHeader() {
-    return Text(
-      widget.isRegistration ? "Sign up for TrackList" : "Log into TrackList",
-      style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+    return Text.rich(
+      TextSpan(
+        style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+        children: [
+          TextSpan(text: isRegistration ? "Sign up for " : "Log into "),
+          TextSpan(
+            text: "TrackList",
+            style: TextStyle(color: PRIMARY_COLOR),
+          ),
+        ],
+      ),
     );
   }
 
@@ -182,14 +209,54 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   Widget buildSubmitButton() {
-    return FilledButton(
-      onPressed: () {
-        if (!_formKey.currentState!.validate()) return;
-        onLoginPressed();
-      },
-      style: ElevatedButton.styleFrom(minimumSize: Size(double.infinity, 40.0)),
-      child: Text(widget.isRegistration ? "Sign up" : "Log in"),
+    return IntrinsicWidth(
+      child: FilledButton(
+        onPressed: () {
+          if (!_formKey.currentState!.validate()) return;
+          onLoginPressed();
+        },
+        style: ElevatedButton.styleFrom(
+          minimumSize: Size(0.0, 40.0),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          backgroundColor: PRIMARY_COLOR,
+          foregroundColor: Colors.white,
+          textStyle: TextStyle(fontSize: 20),
+        ),
+        child: Text("Submit"),
+      ),
     );
+  }
+
+  Widget buildChangeAuthButton() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextButton(
+        style: TextButton.styleFrom(
+          foregroundColor: Colors.white,
+          backgroundColor: Colors.transparent,
+          side: BorderSide(color: Colors.white),
+          shape: RoundedRectangleBorder(),
+          textStyle: TextStyle(fontSize: 16),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        ),
+        onPressed: () => changeAuthMode(),
+        child: Text(isRegistration ? "Log in" : "Sign up"),
+      ),
+    );
+  }
+
+  void changeAuthMode() {
+    setState(() {
+      isRegistration = !isRegistration;
+    });
+  }
+
+  void clearForm() {
+    controllerDisplayName.clear();
+    controllerUsername.clear();
+    controllerEmail.clear();
+    controllerPw.clear();
+    controllerRePw.clear();
   }
 
   void onLoginPressed() async {

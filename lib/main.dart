@@ -26,6 +26,7 @@ class _MyAppState extends State<MyApp> {
       title: 'TrackList',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        fontFamily: "Inter",
         colorScheme: ColorScheme.fromSeed(seedColor: PRIMARY_COLOR, brightness: Brightness.dark),
       ),
       home: WelcomePage(),
