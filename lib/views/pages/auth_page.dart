@@ -311,7 +311,6 @@ class _AuthPageState extends State<AuthPage> {
     return IntrinsicWidth(
       child: FilledButton(
         onPressed: () {
-          if (!_formKey.currentState!.validate()) return;
           onSubmitPressed();
         },
         style: ElevatedButton.styleFrom(
@@ -360,9 +359,29 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   void onSubmitPressed() async {
-    // TODO: Sign up or sign in based on widget.isRegistration
+    if (!_formKey.currentState!.validate()) return;
+    isRegistration ? submitRegister() : submitLogin();
+  }
 
+  void submitRegister() async {
+    bool isValid = await authService.value.signUp(
+      email: controllerEmail.text,
+      password: controllerPw.text,
+      displayname: controllerDisplayName.text,
+      username: controllerUsername.text,
+    );
+
+    if (isValid) {
+      clearForm();
+      redirectToWelcomePage();
+    } else {
+      print("Registration failed");
+    }
+  }
+
+  void submitLogin() async {
     bool isValid = await authService.value.signIn(email: controllerEmail.text, password: controllerPw.text);
+
     if (isValid) {
       redirectToWelcomePage();
     } else {

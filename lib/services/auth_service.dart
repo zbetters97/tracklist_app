@@ -89,7 +89,12 @@ class AuthService {
         final data = userDoc.data() as Map<String, dynamic>;
 
         // Create new AuthUser object
-        authUser.value = AuthUser(email: data["email"], username: data["username"], displayName: data["displayName"]);
+        authUser.value = AuthUser(
+          email: data["email"],
+          username: data["username"],
+          displayName: data["displayName"],
+          profileUrl: data["profileUrl"],
+        );
 
         return true;
       } else {

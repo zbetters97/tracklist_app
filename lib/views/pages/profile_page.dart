@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/notifiers.dart';
+import 'package:tracklist_app/data/string_extensions.dart';
+import 'package:tracklist_app/services/auth_service.dart';
 import 'package:tracklist_app/views/pages/welcome_page.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -24,6 +26,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(onTap: onLogoutPressed, title: const Text("Logout"));
+    return Column(
+      children: [
+        CircleAvatar(radius: 50.0, backgroundImage: AssetImage(authUser.value!.profileUrl)),
+        Text("Welcome, ${authUser.value!.displayName.capitalizeEachWord()}!"),
+        ListTile(onTap: onLogoutPressed, title: const Text("Logout")),
+      ],
+    );
   }
 }
