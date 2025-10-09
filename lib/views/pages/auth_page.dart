@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/constants.dart';
 import 'package:tracklist_app/services/auth_service.dart';
@@ -30,6 +31,8 @@ class _AuthPageState extends State<AuthPage> {
   TextEditingController controllerPw = TextEditingController(text: "password");
   TextEditingController controllerRePw = TextEditingController(text: "password");
 
+  TextEditingController controllerForgotEmail = TextEditingController(text: "debug@debug.com");
+
   @override
   void initState() {
     super.initState();
@@ -48,6 +51,7 @@ class _AuthPageState extends State<AuthPage> {
     controllerEmail.dispose();
     controllerPw.dispose();
     controllerRePw.dispose();
+    controllerForgotEmail.dispose();
   }
 
   @override
@@ -117,6 +121,8 @@ class _AuthPageState extends State<AuthPage> {
         buildEmailField(),
         SizedBox(height: kFieldSpacing),
         buildPasswordField(),
+        SizedBox(height: kFieldSpacing),
+        buildForgotPasswordButton(),
       ],
     );
   }
@@ -208,12 +214,105 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
+  Widget buildForgotPasswordButton() {
+    return Text.rich(
+      TextSpan(
+        style: TextStyle(color: Colors.white, fontSize: 16),
+        children: [
+          TextSpan(text: "Forgot password? "),
+          TextSpan(
+            text: "Click here",
+            style: TextStyle(color: PRIMARY_COLOR, fontWeight: FontWeight.bold),
+            recognizer: TapGestureRecognizer()..onTap = buildForgotPasswordDialog,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future buildForgotPasswordDialog() {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Reset your password", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            SizedBox(height: 4),
+            Container(height: 1, color: Colors.white),
+          ],
+        ),
+        titlePadding: EdgeInsets.fromLTRB(24, 24, 24, 0),
+        content: SizedBox(
+          width: 400,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("Email", style: const TextStyle(color: Colors.white, fontSize: 16)),
+              SizedBox(height: 5),
+              TextFormField(
+                controller: controllerForgotEmail,
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.green)),
+                ),
+                style: const TextStyle(color: Colors.white),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return ("Please enter an email");
+                  }
+                  if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]+").hasMatch(value)) {
+                    return ("Please anter a valid email");
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16),
+              Center(
+                child: IntrinsicWidth(
+                  child: FilledButton(
+                    onPressed: () {
+                      if (!_formKey.currentState!.validate()) return;
+                      // TODO: implement password reset
+                    },
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size(0.0, 40.0),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      backgroundColor: PRIMARY_COLOR,
+                      foregroundColor: Colors.white,
+                      textStyle: TextStyle(fontSize: 20),
+                    ),
+                    child: Text("Submit"),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              "Close",
+              style: TextStyle(color: PRIMARY_COLOR, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+        shape: LinearBorder(),
+        backgroundColor: TERTIARY_COLOR,
+        contentTextStyle: TextStyle(color: Colors.black),
+      ),
+    );
+  }
+
   Widget buildSubmitButton() {
     return IntrinsicWidth(
       child: FilledButton(
         onPressed: () {
           if (!_formKey.currentState!.validate()) return;
-          onLoginPressed();
+          onSubmitPressed();
         },
         style: ElevatedButton.styleFrom(
           minimumSize: Size(0.0, 40.0),
@@ -257,9 +356,10 @@ class _AuthPageState extends State<AuthPage> {
     controllerEmail.clear();
     controllerPw.clear();
     controllerRePw.clear();
+    controllerForgotEmail.clear();
   }
 
-  void onLoginPressed() async {
+  void onSubmitPressed() async {
     // TODO: Sign up or sign in based on widget.isRegistration
 
     bool isValid = await authService.value.signIn(email: controllerEmail.text, password: controllerPw.text);
