@@ -222,7 +222,7 @@ class _AuthPageState extends State<AuthPage> {
           TextSpan(text: "Forgot password? "),
           TextSpan(
             text: "Click here",
-            style: TextStyle(color: PRIMARY_COLOR, fontWeight: FontWeight.bold),
+            style: TextStyle(color: PRIMARY_COLOR_LIGHT, fontWeight: FontWeight.bold),
             recognizer: TapGestureRecognizer()..onTap = buildForgotPasswordDialog,
           ),
         ],
@@ -296,7 +296,7 @@ class _AuthPageState extends State<AuthPage> {
             onPressed: () => Navigator.pop(context),
             child: Text(
               "Close",
-              style: TextStyle(color: PRIMARY_COLOR, fontWeight: FontWeight.bold),
+              style: TextStyle(color: PRIMARY_COLOR_LIGHT, fontWeight: FontWeight.bold),
             ),
           ),
         ],

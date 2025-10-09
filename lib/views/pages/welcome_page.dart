@@ -26,7 +26,7 @@ class WelcomePage extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 40),
                 FilledButton(
                   onPressed: () {
                     Navigator.push(
@@ -34,9 +34,16 @@ class WelcomePage extends StatelessWidget {
                       MaterialPageRoute(builder: (context) => const AuthPage(isRegistration: true)),
                     );
                   },
-                  style: FilledButton.styleFrom(minimumSize: const Size(double.infinity, 50)),
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 50),
+                    backgroundColor: PRIMARY_COLOR,
+                    foregroundColor: Colors.white,
+                    shape: LinearBorder(),
+                    textStyle: const TextStyle(fontSize: 20),
+                  ),
                   child: Text("Get Started"),
                 ),
+                SizedBox(height: 10),
                 TextButton(
                   onPressed: () {
                     Navigator.push(
@@ -49,7 +56,10 @@ class WelcomePage extends StatelessWidget {
                     );
                   },
                   style: FilledButton.styleFrom(minimumSize: Size(double.infinity, 40.0)),
-                  child: Text("Login"),
+                  child: Text(
+                    "Login",
+                    style: TextStyle(color: PRIMARY_COLOR, fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ],
             ),
