@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tracklist_app/services/spotify_search.dart';
+import 'package:tracklist_app/services/spotify_service.dart';
 import 'package:tracklist_app/views/widgets/media_card_widget.dart';
 
 class SearchPage extends StatefulWidget {

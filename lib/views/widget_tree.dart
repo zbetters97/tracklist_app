@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/data/constants.dart';
 import 'package:tracklist_app/data/notifiers.dart';
 import 'package:tracklist_app/views/pages/home_page.dart';
 import 'package:tracklist_app/views/pages/profile_page.dart';
@@ -22,13 +23,15 @@ class WidgetTree extends StatelessWidget {
       valueListenable: selectedPageNotifier,
       builder: (context, selectedPage, child) {
         final currentPage = pages[selectedPage];
+
         return Scaffold(
           appBar: AppBar(
             title: Center(
               child: Text(currentPage.key, style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
             ),
-            backgroundColor: Colors.black,
+            backgroundColor: BACKGROUND_COLOR,
           ),
+          backgroundColor: SECONDARY_COLOR,
           body: currentPage.value,
           bottomNavigationBar: const NavbarWidget(),
         );

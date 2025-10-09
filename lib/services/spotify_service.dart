@@ -4,7 +4,7 @@ import 'package:tracklist_app/data/constants.dart';
 import 'spotify_auth.dart';
 
 // Create an instance of the SpotifyAuth class using the client ID and client secret constants
-final SpotifyAuth _auth = SpotifyAuth(clientId: CLIENT_ID, clientSecret: CLIENT_SECRET);
+final SpotifyAuth _auth = SpotifyAuth(clientId: BACKUP_CLIENT_ID, clientSecret: BACKUP_CLIENT_SECRET);
 
 /// Search albums by name on Spotify
 /// [album] The name of the album
@@ -159,6 +159,8 @@ Future<Map<String, dynamic>> getArtistById(String artistId) async {
     throw Exception('Unable to get access token');
   }
 
+  print("Artist ID: $artistId");
+
   final response = await http.get(
     Uri.parse('https://api.spotify.com/v1/artists/$artistId'),
     headers: {'Authorization': 'Bearer $token'},
@@ -169,9 +171,70 @@ Future<Map<String, dynamic>> getArtistById(String artistId) async {
     throw Exception('Spotify API error: ${response.statusCode}');
   }
 
-  final data = jsonDecode(response.body);
+  final artist = jsonDecode(response.body);
 
-  return {'name': data['name'], 'id': data['id'], 'image': data['images'].isNotEmpty ? data['images'][0]['url'] : ""};
+  return {
+    'name': artist['name'],
+    'id': artist['id'],
+    'image': artist['images'].isNotEmpty ? artist['images'][0]['url'] : "",
+  };
+}
+
+Future<Map<String, dynamic>> getAlbumById(String albumId) async {
+  final token = await _auth.getAccessToken();
+
+  if (token == null) {
+    throw Exception('Unable to get access token');
+  }
+
+  final response = await http.get(
+    Uri.parse('https://api.spotify.com/v1/albums/$albumId'),
+    headers: {'Authorization': 'Bearer $token'},
+  );
+
+  if (response.statusCode != 200) {
+    print('Error searching album: ${response.body}');
+    throw Exception('Spotify API error: ${response.statusCode}');
+  }
+
+  final album = jsonDecode(response.body);
+
+  return {
+    'name': album['name'],
+    'id': album['id'],
+    'artist': album['artists'][0]['name'],
+    'image': album['images'].isNotEmpty ? album['images'][0]['url'] : "",
+    'release_date': album['release_date'],
+  };
+}
+
+Future<Map<String, dynamic>> getTrackById(String trackId) async {
+  final token = await _auth.getAccessToken();
+
+  if (token == null) {
+    throw Exception('Unable to get access token');
+  }
+
+  final response = await http.get(
+    Uri.parse('https://api.spotify.com/v1/tracks/$trackId'),
+    headers: {'Authorization': 'Bearer $token'},
+  );
+
+  if (response.statusCode != 200) {
+    print('Error searching track: ${response.body}');
+    throw Exception('Spotify API error: ${response.statusCode}');
+  }
+
+  final track = jsonDecode(response.body);
+
+  return {
+    'name': track['name'],
+    'id': track['id'],
+    'artist': track['artists'][0]['name'],
+    'album': track['album']['name'],
+    'image': track['album']['images'].isNotEmpty ? track['album']['images'][0]['url'] : "",
+    'release_date': track['album']['release_date'],
+  };
 }
 
 /// Get albums by artist ID

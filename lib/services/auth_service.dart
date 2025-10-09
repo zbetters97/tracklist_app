@@ -140,4 +140,19 @@ class AuthService {
 
     authUser.value = null;
   }
+
+  Future<String> getUserById({required String userId}) async {
+    try {
+      final userRef = firestore.collection("users").doc(userId);
+      final userDoc = await userRef.get();
+
+      if (!userDoc.exists) return "";
+
+      final user = userDoc.data() as Map<String, dynamic>;
+      return user["username"];
+    } catch (error) {
+      print("Error getting user by id: $error");
+      return "";
+    }
+  }
 }
