@@ -6,7 +6,6 @@ final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 Future<List<Map<String, dynamic>>> getPopularReviews() async {
   try {
-    print("Getting popular reviews...");
     final reviewsRef = firestore.collection("reviews");
     final reviewsSnapshot = await reviewsRef.get();
 

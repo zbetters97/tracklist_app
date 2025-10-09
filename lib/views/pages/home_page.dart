@@ -11,12 +11,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool isLoading = true;
   List<Map<String, dynamic>> reviews = [];
 
   void getReviews() async {
     final List<Map<String, dynamic>> fetchedReviews = await getPopularReviews();
 
     setState(() {
+      isLoading = false;
       reviews = fetchedReviews;
     });
   }
@@ -33,39 +35,36 @@ class _HomePageState extends State<HomePage> {
       padding: EdgeInsets.symmetric(horizontal: 10),
       child: Stack(
         children: [
-          Expanded(
-            child: Column(
-              children: [
-                Expanded(
-                  child: reviews.isEmpty
-                      ? Center(child: Text("No reviews"))
-                      : ListView.separated(
-                          itemCount: reviews.length,
-                          itemBuilder: (context, index) {
-                            final review = reviews[index];
-                            return buildReviewCard(review);
-                          },
-                          separatorBuilder: (context, index) => Divider(color: Colors.grey),
+          Column(
+            children: [
+              Expanded(
+                child: isLoading
+                    ? Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))
+                    : reviews.isEmpty
+                    ? Center(
+                        child: Text(
+                          "No reviews found!",
+                          style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic, fontSize: 24),
                         ),
-                ),
-              ],
-            ),
-          ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: RawMaterialButton(
-                onPressed: () {},
-                fillColor: PRIMARY_COLOR_DARK,
-                shape: CircleBorder(),
-                constraints: BoxConstraints.tightFor(width: 65, height: 65),
-                child: Icon(Icons.add, size: 40),
+                      )
+                    : ReviewCardsList(),
               ),
-            ),
+            ],
           ),
+          PostReviewButton(),
         ],
       ),
+    );
+  }
+
+  Widget ReviewCardsList() {
+    return ListView.separated(
+      itemCount: reviews.length,
+      itemBuilder: (context, index) {
+        final review = reviews[index];
+        return buildReviewCard(review);
+      },
+      separatorBuilder: (context, index) => Divider(color: Colors.grey),
     );
   }
 
@@ -73,51 +72,23 @@ class _HomePageState extends State<HomePage> {
     return Container(
       padding: EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
       width: double.infinity,
-      // Header, Body, Footer
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Image, Details
           IntrinsicHeight(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Image.network(review['image'], width: 125, height: 125, fit: BoxFit.cover, scale: 1 / 1),
+                MediaImage(review['image']),
                 SizedBox(width: 10),
-                Expanded(
-                  // Profile, Date, Name, Rating
+                Flexible(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      // Avatar, Username
-                      Row(
-                        children: [
-                          CircleAvatar(radius: 12.0, backgroundImage: AssetImage(DEFAULT_PROFILE_IMG)),
-                          SizedBox(width: 5),
-                          Text("@${review['username']}", style: TextStyle(color: Colors.grey, fontSize: 16)),
-                        ],
-                      ),
-                      Text(
-                        getTimeSinceShort(review['createdAt'].toDate()),
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      // Icon, Media Name
-                      Row(
-                        children: [
-                          Icon(Icons.music_note, color: Colors.grey, size: 24),
-                          Text(
-                            "${review['name']}",
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
-                          ),
-                        ],
-                      ),
+                      UserInfo(review['username']),
+                      ReviewDate(review['createdAt'].toDate()),
+                      MediaName(review['name']),
                       Stars(),
                     ],
                   ),
@@ -126,28 +97,59 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           SizedBox(height: 10),
-          Text(
-            "${review['content']}",
-            textAlign: TextAlign.left,
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
+          ReviewContent(review['content']),
           SizedBox(height: 10),
-          // Like, Comment
-          Row(
-            children: [
-              Icon(Icons.favorite, size: 30),
-              SizedBox(width: 5),
-              Text("3", style: TextStyle(color: Colors.white, fontSize: 24)),
-              SizedBox(width: 20),
-              Icon(Icons.comment, size: 30),
-              SizedBox(width: 5),
-              Text("1", style: TextStyle(color: Colors.white, fontSize: 24)),
-              SizedBox(width: 20),
-              Icon(Icons.delete, size: 30),
-            ],
-          ),
+          ReviewButtons(),
         ],
       ),
+    );
+  }
+
+  Widget MediaImage(String imageUrl) {
+    return Image.network(imageUrl, width: 125, height: 125, fit: BoxFit.cover);
+  }
+
+  Widget UserInfo(String username) {
+    return Row(
+      children: [
+        CircleAvatar(radius: 12.0, backgroundImage: AssetImage(DEFAULT_PROFILE_IMG)),
+        SizedBox(width: 5),
+        Text("@${username}", style: TextStyle(color: Colors.grey, fontSize: 16)),
+      ],
+    );
+  }
+
+  Widget ReviewDate(DateTime date) {
+    return Text(
+      getTimeSinceShort(date),
+      style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold, fontSize: 16, overflow: TextOverflow.ellipsis),
+    );
+  }
+
+  Widget MediaName(String name) {
+    // Icon, Media Name
+    return Row(
+      children: [
+        Icon(Icons.music_note, color: Colors.grey, size: 24),
+        Flexible(
+          child: Text(
+            name,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget ReviewContent(String content) {
+    return Text(
+      content,
+      textAlign: TextAlign.left,
+      style: TextStyle(color: Colors.white, fontSize: 20),
+      overflow: TextOverflow.ellipsis,
+      maxLines: 4,
     );
   }
 
@@ -160,6 +162,38 @@ class _HomePageState extends State<HomePage> {
         Icon(Icons.star, color: Colors.amber),
         Icon(Icons.star, color: Colors.amber),
       ],
+    );
+  }
+
+  Widget ReviewButtons() {
+    return Row(
+      children: [
+        Icon(Icons.favorite, size: 30),
+        SizedBox(width: 5),
+        Text("3", style: TextStyle(color: Colors.white, fontSize: 24)),
+        SizedBox(width: 20),
+        Icon(Icons.comment, size: 30),
+        SizedBox(width: 5),
+        Text("1", style: TextStyle(color: Colors.white, fontSize: 24)),
+        SizedBox(width: 20),
+        Icon(Icons.delete, size: 30),
+      ],
+    );
+  }
+
+  Widget PostReviewButton() {
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: RawMaterialButton(
+          onPressed: () {},
+          fillColor: PRIMARY_COLOR_DARK,
+          shape: CircleBorder(),
+          constraints: BoxConstraints.tightFor(width: 65, height: 65),
+          child: Icon(Icons.add, size: 40),
+        ),
+      ),
     );
   }
 }

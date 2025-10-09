@@ -159,8 +159,6 @@ Future<Map<String, dynamic>> getArtistById(String artistId) async {
     throw Exception('Unable to get access token');
   }
 
-  print("Artist ID: $artistId");
-
   final response = await http.get(
     Uri.parse('https://api.spotify.com/v1/artists/$artistId'),
     headers: {'Authorization': 'Bearer $token'},
