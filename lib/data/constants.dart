@@ -22,3 +22,4 @@ const String DEFAULT_MEDIA_IMG = 'assets/images/default-image.jpg';
 const String DEFAULT_PROFILE_IMG = 'assets/images/default-profile-image.jpg';
 
 const int EARLIEST_DATE = 1000;
+const int MAX_REVIEWS = 3;

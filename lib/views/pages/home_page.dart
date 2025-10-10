@@ -1,7 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/constants.dart';
-import 'package:tracklist_app/date.dart';
 import 'package:tracklist_app/services/review_service.dart';
+import 'package:tracklist_app/views/widgets/review_card_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,21 +15,40 @@ class _HomePageState extends State<HomePage> {
   int currentTab = 0;
   bool isLoading = true;
 
-  List<Map<String, dynamic>> newReviews = [];
-  List<Map<String, dynamic>> popularReviews = [];
+  bool isLoadingNew = false;
+  bool isLoadingPopular = false;
+
+  DocumentSnapshot? lastNewReviewDoc;
+  DocumentSnapshot? lastPopularReviewDoc;
 
   final ScrollController newReviewsController = ScrollController();
   final ScrollController popularReviewsController = ScrollController();
+
+  List<Map<String, dynamic>> newReviews = [];
+  List<Map<String, dynamic>> popularReviews = [];
 
   @override
   void initState() {
     super.initState();
     getReviews();
+
+    newReviewsController.addListener(() {
+      if (newReviewsController.position.pixels >= newReviewsController.position.maxScrollExtent - 200 &&
+          !isLoadingNew) {
+        loadMoreNewReviews();
+      }
+    });
+
+    popularReviewsController.addListener(() {
+      if (popularReviewsController.position.pixels >= popularReviewsController.position.maxScrollExtent - 200 &&
+          !isLoadingPopular) {
+        loadMorePopularReviews();
+      }
+    });
   }
 
-  void getReviews({bool forceRefresh = false}) async {
-    // Reviews already cached, don't refetch
-    if (!forceRefresh && newReviews.isNotEmpty && popularReviews.isNotEmpty) return;
+  void getReviews() async {
+    if (newReviews.isNotEmpty && popularReviews.isNotEmpty) return;
 
     setState(() => isLoading = true);
 
@@ -37,12 +57,15 @@ class _HomePageState extends State<HomePage> {
     newReviews = fetchedReviews[0];
     popularReviews = fetchedReviews[1];
 
+    lastNewReviewDoc = newReviews.isNotEmpty ? newReviews.last["doc"] as DocumentSnapshot : null;
+    lastPopularReviewDoc = popularReviews.isNotEmpty ? popularReviews.last["doc"] as DocumentSnapshot : null;
+
     setState(() {
       isLoading = false;
     });
   }
 
-  void setReviews(int tabIndex) async {
+  void setReviews(int tabIndex) {
     if (currentTab == tabIndex) return;
 
     setState(() {
@@ -50,9 +73,59 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  Future<void> loadMoreNewReviews() async {
+    if (newReviews.isEmpty || isLoadingNew) return;
+
+    setState(() {
+      isLoadingNew = true;
+    });
+
+    final List<Map<String, dynamic>> moreNewReviews = await getNewReviews(lastDoc: lastNewReviewDoc);
+
+    if (moreNewReviews.isNotEmpty) {
+      setState(() {
+        lastNewReviewDoc = moreNewReviews.last["doc"] as DocumentSnapshot;
+        newReviews.addAll(moreNewReviews);
+      });
+    }
+
+    setState(() {
+      isLoadingNew = false;
+    });
+  }
+
+  Future<void> loadMorePopularReviews() async {
+    if (popularReviews.isEmpty || isLoadingPopular) return;
+
+    setState(() {
+      isLoadingPopular = true;
+    });
+
+    final List<Map<String, dynamic>> morePopularReviews = await getPopularReviews(lastDoc: lastPopularReviewDoc);
+
+    if (morePopularReviews.isNotEmpty) {
+      setState(() {
+        lastPopularReviewDoc = morePopularReviews.last["doc"] as DocumentSnapshot;
+        popularReviews.addAll(morePopularReviews);
+      });
+    }
+
+    setState(() {
+      isLoadingPopular = false;
+    });
+  }
+
   Future<void> refreshReviews() async {
     newReviews.clear();
     popularReviews.clear();
+
+    setState(() {
+      isLoadingNew = false;
+      isLoadingPopular = false;
+
+      lastNewReviewDoc = null;
+      lastPopularReviewDoc = null;
+    });
     getReviews();
   }
 
@@ -77,7 +150,7 @@ class _HomePageState extends State<HomePage> {
                                   style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic, fontSize: 24),
                                 ),
                               )
-                            : buildReviewsList(newReviews),
+                            : buildReviewsList(newReviews, isLoadingNew, newReviewsController),
                         popularReviews.isEmpty
                             ? Center(
                                 child: Text(
@@ -85,13 +158,13 @@ class _HomePageState extends State<HomePage> {
                                   style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic, fontSize: 24),
                                 ),
                               )
-                            : buildReviewsList(popularReviews),
+                            : buildReviewsList(popularReviews, isLoadingPopular, popularReviewsController),
                       ],
                     ),
             ),
           ],
         ),
-        PostReviewButton(),
+        buildPostReviewButton(),
       ],
     );
   }
@@ -177,136 +250,34 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget buildReviewsList(List<Map<String, dynamic>> reviews) {
+  Widget buildReviewsList(List<Map<String, dynamic>> reviews, bool isLoadingMore, ScrollController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: RefreshIndicator.adaptive(
-        onRefresh: () async {
-          getReviews(forceRefresh: true);
-        },
+        onRefresh: () async => refreshReviews(),
         color: PRIMARY_COLOR,
         backgroundColor: SECONDARY_COLOR,
-        strokeWidth: 3.0,
         child: ListView.separated(
-          controller: currentTab == 0 ? newReviewsController : popularReviewsController,
-          itemCount: reviews.length,
-          itemBuilder: (context, index) => buildReviewCard(reviews[index]),
-          separatorBuilder: (context, index) => Divider(color: Colors.grey),
-        ),
-      ),
-    );
-  }
-
-  Widget buildReviewCard(Map<String, dynamic> review) {
-    return Container(
-      padding: EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
-      width: double.infinity,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                MediaImage(review['image'] ?? DEFAULT_MEDIA_IMG),
-                SizedBox(width: 10),
-                Flexible(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      UserInfo(review['username']),
-                      ReviewDate(review['createdAt'].toDate()),
-                      MediaName(review['name']),
-                      Stars(review["rating"]),
-                    ],
-                  ),
+          controller: controller,
+          itemCount: reviews.length + (isLoadingMore ? 1 : 0),
+          itemBuilder: (context, index) {
+            if (index == reviews.length) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK),
                 ),
-              ],
-            ),
-          ),
-          SizedBox(height: 10),
-          ReviewContent(review['content']),
-          SizedBox(height: 10),
-          ReviewButtons(review["likes"].length, review["comments"].length),
-        ],
+              );
+            }
+            return ReviewCardWidget(review: reviews[index]);
+          },
+          separatorBuilder: (context, index) => const Divider(color: Colors.grey),
+        ),
       ),
     );
   }
 
-  Widget MediaImage(String imageUrl) {
-    return Image.network(imageUrl, width: 125, height: 125, fit: BoxFit.cover);
-  }
-
-  Widget UserInfo(String username) {
-    return Row(
-      children: [
-        CircleAvatar(radius: 12.0, backgroundImage: AssetImage(DEFAULT_PROFILE_IMG)),
-        SizedBox(width: 5),
-        Text("@${username}", style: TextStyle(color: Colors.grey, fontSize: 16)),
-      ],
-    );
-  }
-
-  Widget ReviewDate(DateTime date) {
-    return Text(
-      getTimeSinceShort(date),
-      style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold, fontSize: 16, overflow: TextOverflow.ellipsis),
-    );
-  }
-
-  Widget MediaName(String name) {
-    // Icon, Media Name
-    return Row(
-      children: [
-        Icon(Icons.music_note, color: Colors.grey, size: 24),
-        Flexible(
-          child: Text(
-            name,
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget ReviewContent(String content) {
-    return Text(
-      content,
-      textAlign: TextAlign.left,
-      style: TextStyle(color: Colors.white, fontSize: 20),
-      overflow: TextOverflow.ellipsis,
-      maxLines: 4,
-    );
-  }
-
-  Widget Stars(int rating) {
-    return Row(
-      children: List.generate(5, (index) {
-        return Icon(Icons.star, color: index < rating ? Colors.amber : Colors.grey);
-      }),
-    );
-  }
-
-  Widget ReviewButtons(int likes, int comments) {
-    return Row(
-      children: [
-        Icon(Icons.favorite, size: 30),
-        SizedBox(width: 5),
-        Text("$likes", style: TextStyle(color: Colors.white, fontSize: 24)),
-        SizedBox(width: 20),
-        Icon(Icons.comment, size: 30),
-        SizedBox(width: 5),
-        Text("$comments", style: TextStyle(color: Colors.white, fontSize: 24)),
-        SizedBox(width: 20),
-        Icon(Icons.delete, size: 30),
-      ],
-    );
-  }
-
-  Widget PostReviewButton() {
+  Widget buildPostReviewButton() {
     return Align(
       alignment: Alignment.bottomRight,
       child: Padding(
