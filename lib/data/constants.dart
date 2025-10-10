@@ -20,3 +20,5 @@ const String LOGO_IMG_SM = 'assets/images/logo-primary-small.png';
 
 const String DEFAULT_MEDIA_IMG = 'assets/images/default-image.jpg';
 const String DEFAULT_PROFILE_IMG = 'assets/images/default-profile-image.jpg';
+
+const int EARLIEST_DATE = 1000;

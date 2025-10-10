@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/constants.dart';
 import 'package:tracklist_app/date.dart';
@@ -15,20 +13,43 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int currentTab = 0;
   bool isLoading = true;
-  List<Map<String, dynamic>> reviews = [];
 
-  void getReviews() async {
-    final List<Map<String, dynamic>> fetchedReviews = await getPopularReviews();
-
-    setState(() {
-      isLoading = false;
-      reviews = fetchedReviews;
-    });
-  }
+  List<Map<String, dynamic>> newReviews = [];
+  List<Map<String, dynamic>> popularReviews = [];
 
   @override
   void initState() {
     super.initState();
+    getReviews();
+  }
+
+  void getReviews() async {
+    // Reviews already cached, don't refetch
+    if (newReviews.isNotEmpty && popularReviews.isNotEmpty) return;
+
+    setState(() => isLoading = true);
+
+    final List<List<Map<String, dynamic>>> fetchedReviews = await Future.wait([getNewReviews(), getPopularReviews()]);
+
+    newReviews = fetchedReviews[0];
+    popularReviews = fetchedReviews[1];
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  void setReviews(int tabIndex) async {
+    if (currentTab == tabIndex) return;
+
+    setState(() {
+      currentTab = tabIndex;
+    });
+  }
+
+  Future<void> refreshReviews() async {
+    newReviews.clear();
+    popularReviews.clear();
     getReviews();
   }
 
@@ -42,14 +63,27 @@ class _HomePageState extends State<HomePage> {
             Expanded(
               child: isLoading
                   ? Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))
-                  : reviews.isEmpty
-                  ? Center(
-                      child: Text(
-                        "No reviews found!",
-                        style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic, fontSize: 24),
-                      ),
-                    )
-                  : ReviewCardsList(),
+                  : IndexedStack(
+                      index: currentTab,
+                      children: [
+                        newReviews.isEmpty
+                            ? Center(
+                                child: Text(
+                                  "No reviews found!",
+                                  style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic, fontSize: 24),
+                                ),
+                              )
+                            : ReviewCardsList(newReviews),
+                        popularReviews.isEmpty
+                            ? Center(
+                                child: Text(
+                                  "No reviews found!",
+                                  style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic, fontSize: 24),
+                                ),
+                              )
+                            : ReviewCardsList(popularReviews),
+                      ],
+                    ),
             ),
           ],
         ),
@@ -72,7 +106,7 @@ class _HomePageState extends State<HomePage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           GestureDetector(
-            onTap: () => setState(() => currentTab = 0),
+            onTap: () => setReviews(0),
             child: Column(
               children: [
                 Text(
@@ -97,7 +131,7 @@ class _HomePageState extends State<HomePage> {
           ),
           SizedBox(width: 30),
           GestureDetector(
-            onTap: () => setState(() => currentTab = 1),
+            onTap: () => setReviews(1),
             child: Column(
               children: [
                 Text(
@@ -125,7 +159,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget ReviewCardsList() {
+  Widget ReviewCardsList(List<Map<String, dynamic>> reviews) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: ListView.separated(
@@ -150,7 +184,7 @@ class _HomePageState extends State<HomePage> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                MediaImage(review['image']),
+                MediaImage(review['image'] ?? DEFAULT_MEDIA_IMG),
                 SizedBox(width: 10),
                 Flexible(
                   child: Column(
@@ -160,7 +194,7 @@ class _HomePageState extends State<HomePage> {
                       UserInfo(review['username']),
                       ReviewDate(review['createdAt'].toDate()),
                       MediaName(review['name']),
-                      Stars(),
+                      Stars(review["rating"]),
                     ],
                   ),
                 ),
@@ -170,7 +204,7 @@ class _HomePageState extends State<HomePage> {
           SizedBox(height: 10),
           ReviewContent(review['content']),
           SizedBox(height: 10),
-          ReviewButtons(),
+          ReviewButtons(review["likes"].length, review["comments"].length),
         ],
       ),
     );
@@ -224,28 +258,24 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget Stars() {
+  Widget Stars(int rating) {
     return Row(
-      children: [
-        Icon(Icons.star, color: Colors.amber),
-        Icon(Icons.star, color: Colors.amber),
-        Icon(Icons.star, color: Colors.amber),
-        Icon(Icons.star, color: Colors.amber),
-        Icon(Icons.star, color: Colors.amber),
-      ],
+      children: List.generate(5, (index) {
+        return Icon(Icons.star, color: index < rating ? Colors.amber : Colors.grey);
+      }),
     );
   }
 
-  Widget ReviewButtons() {
+  Widget ReviewButtons(int likes, int comments) {
     return Row(
       children: [
         Icon(Icons.favorite, size: 30),
         SizedBox(width: 5),
-        Text("3", style: TextStyle(color: Colors.white, fontSize: 24)),
+        Text("$likes", style: TextStyle(color: Colors.white, fontSize: 24)),
         SizedBox(width: 20),
         Icon(Icons.comment, size: 30),
         SizedBox(width: 5),
-        Text("1", style: TextStyle(color: Colors.white, fontSize: 24)),
+        Text("$comments", style: TextStyle(color: Colors.white, fontSize: 24)),
         SizedBox(width: 20),
         Icon(Icons.delete, size: 30),
       ],

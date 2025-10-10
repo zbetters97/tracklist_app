@@ -178,6 +178,16 @@ Future<Map<String, dynamic>> getArtistById(String artistId) async {
   };
 }
 
+Future<Map<String, dynamic>> getMediaById(String mediaId, String category) async {
+  Map<String, dynamic> media = category == "artist"
+      ? await getArtistById(mediaId)
+      : category == "album"
+      ? await getAlbumById(mediaId)
+      : await getTrackById(mediaId);
+
+  return media;
+}
+
 Future<Map<String, dynamic>> getAlbumById(String albumId) async {
   final token = await _auth.getAccessToken();
 
