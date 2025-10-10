@@ -17,15 +17,18 @@ class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> newReviews = [];
   List<Map<String, dynamic>> popularReviews = [];
 
+  final ScrollController newReviewsController = ScrollController();
+  final ScrollController popularReviewsController = ScrollController();
+
   @override
   void initState() {
     super.initState();
     getReviews();
   }
 
-  void getReviews() async {
+  void getReviews({bool forceRefresh = false}) async {
     // Reviews already cached, don't refetch
-    if (newReviews.isNotEmpty && popularReviews.isNotEmpty) return;
+    if (!forceRefresh && newReviews.isNotEmpty && popularReviews.isNotEmpty) return;
 
     setState(() => isLoading = true);
 
@@ -59,7 +62,8 @@ class _HomePageState extends State<HomePage> {
       children: [
         Column(
           children: [
-            TopBar(),
+            buildHero(),
+            buildTopBar(),
             Expanded(
               child: isLoading
                   ? Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))
@@ -73,7 +77,7 @@ class _HomePageState extends State<HomePage> {
                                   style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic, fontSize: 24),
                                 ),
                               )
-                            : ReviewCardsList(newReviews),
+                            : buildReviewsList(newReviews),
                         popularReviews.isEmpty
                             ? Center(
                                 child: Text(
@@ -81,7 +85,7 @@ class _HomePageState extends State<HomePage> {
                                   style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic, fontSize: 24),
                                 ),
                               )
-                            : ReviewCardsList(popularReviews),
+                            : buildReviewsList(popularReviews),
                       ],
                     ),
             ),
@@ -92,7 +96,21 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget TopBar() {
+  Widget buildHero() {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Hero(
+          tag: "tracklist logo",
+          child: ClipRRect(
+            child: Center(child: Image.asset(LOGO_IMG_LG, height: 50, width: 50, fit: BoxFit.cover)),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildTopBar() {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.only(top: 12),
@@ -159,16 +177,22 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget ReviewCardsList(List<Map<String, dynamic>> reviews) {
+  Widget buildReviewsList(List<Map<String, dynamic>> reviews) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
-      child: ListView.separated(
-        itemCount: reviews.length,
-        itemBuilder: (context, index) {
-          final review = reviews[index];
-          return buildReviewCard(review);
+      child: RefreshIndicator.adaptive(
+        onRefresh: () async {
+          getReviews(forceRefresh: true);
         },
-        separatorBuilder: (context, index) => Divider(color: Colors.grey),
+        color: PRIMARY_COLOR,
+        backgroundColor: SECONDARY_COLOR,
+        strokeWidth: 3.0,
+        child: ListView.separated(
+          controller: currentTab == 0 ? newReviewsController : popularReviewsController,
+          itemCount: reviews.length,
+          itemBuilder: (context, index) => buildReviewCard(reviews[index]),
+          separatorBuilder: (context, index) => Divider(color: Colors.grey),
+        ),
       ),
     );
   }
