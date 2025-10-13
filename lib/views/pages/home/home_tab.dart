@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/views/pages/home/home_page.dart';
 import 'package:tracklist_app/views/pages/review/review_page.dart';
+import 'package:tracklist_app/views/widgets/nav_item_widget.dart';
 
 class HomeTab extends StatelessWidget {
-  HomeTab({super.key});
-
-  // Used to navigate between pages
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  const HomeTab({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Navigator(
-      key: navigatorKey,
+      key: homeNavigatorKey,
       initialRoute: "/", // Default route to Home Page
       onGenerateRoute: (settings) {
         Widget page;
@@ -21,7 +19,7 @@ class HomeTab extends StatelessWidget {
           case "/":
             page = HomePage(
               onOpenReview: (review) {
-                navigatorKey.currentState!.pushNamed("/review", arguments: review);
+                homeNavigatorKey.currentState!.pushNamed("/review", arguments: review);
               },
             );
             break;

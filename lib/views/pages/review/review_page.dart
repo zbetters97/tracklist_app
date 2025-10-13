@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/constants.dart';
+import 'package:tracklist_app/views/pages/profile/user_page.dart';
 import 'package:tracklist_app/views/widgets/my_app_bar.dart';
 import 'package:tracklist_app/views/widgets/review_card_widget.dart';
 
@@ -18,7 +19,12 @@ class _ReviewPageState extends State<ReviewPage> {
     return Scaffold(
       appBar: MyAppBar(title: "Review"),
       backgroundColor: BACKGROUND_COLOR,
-      body: ReviewCardWidget(review: widget.review),
+      body: GestureDetector(
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => UserPage(uid: widget.review["uid"])));
+        },
+        child: ReviewCardWidget(review: widget.review),
+      ),
     );
   }
 }

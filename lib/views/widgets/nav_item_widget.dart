@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/constants.dart';
 import 'package:tracklist_app/data/notifiers.dart';
 
+// Used to navigate between pages
+final GlobalKey<NavigatorState> homeNavigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> profileNavigatorKey = GlobalKey<NavigatorState>();
+
 class NavitemWidget extends StatelessWidget {
   const NavitemWidget({super.key, required this.icon, required this.index, required this.selectedPage});
 
@@ -26,6 +30,14 @@ class NavitemWidget extends StatelessWidget {
         IconButton(
           icon: Icon(icon, color: isCurrentPage ? PRIMARY_COLOR : Colors.white, size: 35),
           onPressed: () {
+            if (index == 0) {
+              homeNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+            }
+
+            if (index == 4) {
+              profileNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+            }
+
             selectedPageNotifier.value = index;
           },
         ),

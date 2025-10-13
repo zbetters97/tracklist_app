@@ -1,25 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/views/pages/profile/profile_page.dart';
 import 'package:tracklist_app/views/pages/review/review_page.dart';
+import 'package:tracklist_app/views/widgets/nav_item_widget.dart';
 
 class ProfileTab extends StatelessWidget {
-  ProfileTab({super.key});
-
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  const ProfileTab({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Navigator(
-      key: navigatorKey,
+      key: profileNavigatorKey,
       initialRoute: "/",
       onGenerateRoute: (settings) {
         Widget page;
-
         switch (settings.name) {
           case "/":
             page = ProfilePage(
               onOpenReview: (review) {
-                navigatorKey.currentState!.pushNamed("/review", arguments: review);
+                profileNavigatorKey.currentState!.pushNamed("/review", arguments: review);
               },
             );
             break;

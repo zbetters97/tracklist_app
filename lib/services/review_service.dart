@@ -24,14 +24,14 @@ Future<List<Map<String, dynamic>>> getNewReviews({DocumentSnapshot? lastDoc, int
         final data = doc.data() as Map<String, dynamic>;
 
         String userId = data["userId"];
-        String username = await authService.value.getUserById(userId: userId);
+        String username = await authService.value.getUsernameById(userId: userId);
 
         String mediaId = data["mediaId"];
         String category = data["category"];
 
         Map<String, dynamic> media = await getMediaById(mediaId, category);
 
-        return {"id": doc.id, ...data, "username": username, ...media, "doc": doc};
+        return {"id": doc.id, ...data, "uid": userId, "username": username, ...media, "doc": doc};
       }),
     );
 
@@ -77,14 +77,14 @@ Future<List<Map<String, dynamic>>> getPopularReviews({DocumentSnapshot? lastDoc,
         final data = doc.data() as Map<String, dynamic>;
 
         String userId = data["userId"];
-        String username = await authService.value.getUserById(userId: userId);
+        String username = await authService.value.getUsernameById(userId: userId);
 
         String mediaId = data["mediaId"];
         String category = data["category"];
 
         Map<String, dynamic> media = await getMediaById(mediaId, category);
 
-        return {"id": doc.id, ...data, "username": username, ...media, "doc": doc};
+        return {"id": doc.id, ...data, "uid": userId, "username": username, ...media, "doc": doc};
       }),
     );
 
