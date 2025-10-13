@@ -5,7 +5,9 @@ import 'package:tracklist_app/services/auth_service.dart';
 import 'package:tracklist_app/views/pages/welcome_page.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  const ProfilePage({super.key, required this.onOpenReview});
+
+  final void Function(Map<String, dynamic> review) onOpenReview;
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/constants.dart';
 import 'package:tracklist_app/date.dart';
+import 'package:tracklist_app/services/auth_service.dart';
 
 class ReviewCardWidget extends StatefulWidget {
   const ReviewCardWidget({super.key, required this.review});
@@ -44,7 +45,7 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
           SizedBox(height: 10),
           buildReviewContent(widget.review['content']),
           SizedBox(height: 10),
-          buildReviewButtons(widget.review["likes"].length, widget.review["comments"].length),
+          buildReviewButtons(widget.review["userId"], widget.review["likes"].length, widget.review["comments"].length),
         ],
       ),
     );
@@ -59,7 +60,7 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
       children: [
         CircleAvatar(radius: 12.0, backgroundImage: AssetImage(DEFAULT_PROFILE_IMG)),
         SizedBox(width: 5),
-        Text("@${username}", style: TextStyle(color: Colors.grey, fontSize: 16)),
+        Text("@$username", style: TextStyle(color: Colors.grey, fontSize: 16)),
       ],
     );
   }
@@ -105,19 +106,41 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
     );
   }
 
-  Widget buildReviewButtons(int likes, int comments) {
+  Widget buildReviewButtons(String userId, int likes, int comments) {
+    bool isPoster = userId == authUser.value!.uid;
+
+    return Row(
+      children: [
+        buildLikeButton(likes),
+        SizedBox(width: 20),
+        buildCommentButton(comments),
+        SizedBox(width: 20),
+        if (isPoster) buildDeleteButton(),
+      ],
+    );
+  }
+
+  Widget buildLikeButton(int likes) {
     return Row(
       children: [
         Icon(Icons.favorite, size: 30),
         SizedBox(width: 5),
         Text("$likes", style: TextStyle(color: Colors.white, fontSize: 24)),
-        SizedBox(width: 20),
+      ],
+    );
+  }
+
+  Widget buildCommentButton(int comments) {
+    return Row(
+      children: [
         Icon(Icons.comment, size: 30),
         SizedBox(width: 5),
         Text("$comments", style: TextStyle(color: Colors.white, fontSize: 24)),
-        SizedBox(width: 20),
-        Icon(Icons.delete, size: 30),
       ],
     );
+  }
+
+  Widget buildDeleteButton() {
+    return Icon(Icons.delete, size: 30);
   }
 }

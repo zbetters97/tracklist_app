@@ -90,6 +90,7 @@ class AuthService {
 
         // Create new AuthUser object
         authUser.value = AuthUser(
+          uid: uid,
           email: data["email"],
           username: data["username"],
           displayName: data["displayName"],

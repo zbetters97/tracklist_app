@@ -5,7 +5,10 @@ import 'package:tracklist_app/services/review_service.dart';
 import 'package:tracklist_app/views/widgets/review_card_widget.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({super.key, required this.onOpenReview});
+
+  // Callback to open the review page
+  final void Function(Map<String, dynamic> review) onOpenReview;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -269,7 +272,12 @@ class _HomePageState extends State<HomePage> {
                 ),
               );
             }
-            return ReviewCardWidget(review: reviews[index]);
+
+            // Route to Review Page on tap using callback
+            return GestureDetector(
+              onTap: () => widget.onOpenReview(reviews[index]),
+              child: ReviewCardWidget(review: reviews[index]),
+            );
           },
           separatorBuilder: (context, index) => const Divider(color: Colors.grey),
         ),
