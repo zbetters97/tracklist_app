@@ -53,7 +53,7 @@ class AuthService {
     try {
       Map<String, dynamic> newUserData = {
         "email": email.toLowerCase(),
-        "displayName": displayname.toLowerCase(),
+        "displayname": displayname.toLowerCase(),
         "username": username.toLowerCase(),
         "bio": "",
         "profileUrl": DEFAULT_PROFILE_IMG,
@@ -93,7 +93,7 @@ class AuthService {
           uid: uid,
           email: data["email"],
           username: data["username"],
-          displayName: data["displayName"],
+          displayname: data["displayname"],
           profileUrl: data["profileUrl"],
         );
 
