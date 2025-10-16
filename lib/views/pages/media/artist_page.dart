@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/classes/media_class.dart';
 import 'package:tracklist_app/data/classes/review_class.dart';
 import 'package:tracklist_app/data/constants.dart';
 import 'package:tracklist_app/services/review_service.dart';
 import 'package:tracklist_app/views/widgets/my_app_bar.dart';
+import 'package:tracklist_app/views/widgets/rating_bar_widget.dart';
 import 'package:tracklist_app/views/widgets/stars_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -22,6 +24,7 @@ class _ArtistPageState extends State<ArtistPage> {
   bool isLoading = true;
   List<Review> reviews = [];
   double avgRating = 0.0;
+  late QuerySnapshot ratings;
   int totalReviews = 0;
 
   @override
@@ -37,10 +40,12 @@ class _ArtistPageState extends State<ArtistPage> {
 
     List<Review> fetchedReviews = await getReviewsByMediaId(widget.media.id);
     double fetchedAvgRating = await getAvgRating(widget.media.id);
+    QuerySnapshot fetchedRatings = await getRatings(widget.media.id);
 
     setState(() {
       reviews = fetchedReviews;
       avgRating = fetchedAvgRating;
+      ratings = fetchedRatings;
       isLoading = false;
     });
   }
@@ -75,7 +80,11 @@ class _ArtistPageState extends State<ArtistPage> {
                       Column(
                         children: [
                           buildMediaImage(media.spotify, media.image, media.name),
+                          const SizedBox(height: 12),
+                          RatingBar(ratings: ratings),
+                          const SizedBox(height: 12),
                           buildMediaReviews(avgRating, reviews.length),
+                          const SizedBox(height: 20),
                           buildMediaButtons(),
                         ],
                       ),
@@ -106,7 +115,6 @@ class _ArtistPageState extends State<ArtistPage> {
   Widget buildMediaReviews(double avgRating, int totalReviews) {
     return Column(
       children: [
-        Text("REVIEW BAR HERE"),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -129,7 +137,7 @@ class _ArtistPageState extends State<ArtistPage> {
 
   Widget buildMediaButtons() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Icon(Icons.favorite, color: Colors.white, size: 30),
         Icon(Icons.edit_square, color: Colors.white, size: 30),
