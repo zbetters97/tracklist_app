@@ -105,10 +105,21 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
     );
   }
 
-  Widget buildReviewStars(int rating) {
+  Widget buildReviewStars(double rating) {
+    Color getStarColor(double ratingValue) {
+      return ratingValue <= rating ? Colors.amber : Colors.grey;
+    }
+
     return Row(
-      children: List.generate(5, (index) {
-        return Icon(Icons.star, color: index < rating ? Colors.amber : Colors.grey);
+      children: List.generate(5, (i) {
+        double ratingValue = i + 1;
+        bool isHalf = rating == ratingValue - 0.5;
+
+        return Icon(
+          isHalf ? Icons.star_half : Icons.star,
+          color: isHalf ? Colors.amber : getStarColor(ratingValue),
+          size: 30,
+        );
       }),
     );
   }

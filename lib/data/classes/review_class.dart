@@ -7,7 +7,7 @@ class Review {
   final String username;
   final Timestamp createdAt;
   final String category;
-  final int rating;
+  final double rating;
   final String content;
   final List<dynamic> likes;
   final List<dynamic> dislikes;
@@ -37,7 +37,7 @@ class Review {
       username: json['username'],
       createdAt: json['createdAt'],
       category: json['category'],
-      rating: json['rating'],
+      rating: (json['rating'] as num).toDouble(),
       content: json['content'],
       likes: json['likes'] ?? [],
       dislikes: json['dislikes'] ?? [],
