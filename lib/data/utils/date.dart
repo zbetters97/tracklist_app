@@ -1,10 +1,18 @@
 import 'package:intl/intl.dart';
 
+// 01/01/2025 //
+String formatDateMDY(DateTime date) {
+  final formattedDate = DateFormat("MM/dd/yyyy", "en_US").format(date);
+  return formattedDate;
+}
+
+// January 1, 2025 //
 String formatDateMDYLong(DateTime date) {
   final formattedDate = DateFormat("MMM d, y", "en_US").format(date);
   return formattedDate;
 }
 
+// 1h ago //
 String getTimeSinceShort(DateTime date) {
   final now = DateTime.now();
   final difference = now.difference(date);
