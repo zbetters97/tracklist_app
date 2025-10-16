@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/constants.dart';
-import 'package:tracklist_app/views/pages/auth_page.dart';
+import 'package:tracklist_app/views/pages/auth/auth_page.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});

@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/classes/review_class.dart';
 import 'package:tracklist_app/data/constants.dart';
 import 'package:tracklist_app/data/utils/date.dart';
-import 'package:tracklist_app/views/pages/profile/user_page.dart';
+import 'package:tracklist_app/views/pages/media/artist_page.dart';
+import 'package:tracklist_app/views/pages/user/user_page.dart';
 import 'package:tracklist_app/views/widgets/my_app_bar.dart';
+import 'package:tracklist_app/views/widgets/stars_widget.dart';
 
 class ReviewPage extends StatefulWidget {
   const ReviewPage({super.key, required this.review});
@@ -46,25 +48,37 @@ class _ReviewPageState extends State<ReviewPage> {
         ? Icon(Icons.album, color: Colors.grey, size: 28)
         : Icon(Icons.music_note, color: Colors.grey, size: 28);
 
-    return Column(
-      children: [
-        Image.network(image, width: 275, height: 275, fit: BoxFit.cover),
-        const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            mediaIcon,
-            SizedBox(width: 5),
-            Flexible(
-              child: Text(
-                name,
-                style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return ArtistPage(media: widget.review.media);
+            },
+          ),
+        );
+      },
+      child: Column(
+        children: [
+          Image.network(image, width: 275, height: 275, fit: BoxFit.cover),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              mediaIcon,
+              SizedBox(width: 5),
+              Flexible(
+                child: Text(
+                  name,
+                  style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
               ),
-            ),
-          ],
-        ),
-      ],
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -98,30 +112,11 @@ class _ReviewPageState extends State<ReviewPage> {
                 ),
               ),
               Text(formatDateMDY(date), style: TextStyle(color: Colors.grey, fontSize: 18)),
-              buildReviewStars(rating),
+              buildStarRating(rating),
             ],
           ),
         ),
       ],
-    );
-  }
-
-  Widget buildReviewStars(double rating) {
-    Color getStarColor(double ratingValue) {
-      return ratingValue <= rating ? Colors.amber : Colors.grey;
-    }
-
-    return Row(
-      children: List.generate(5, (i) {
-        double ratingValue = i + 1;
-        bool isHalf = rating == ratingValue - 0.5;
-
-        return Icon(
-          isHalf ? Icons.star_half : Icons.star,
-          color: isHalf ? Colors.amber : getStarColor(ratingValue),
-          size: 30,
-        );
-      }),
     );
   }
 

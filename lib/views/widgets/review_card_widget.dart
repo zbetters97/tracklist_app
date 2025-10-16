@@ -5,6 +5,7 @@ import 'package:tracklist_app/data/classes/review_class.dart';
 import 'package:tracklist_app/data/constants.dart';
 import 'package:tracklist_app/data/utils/date.dart';
 import 'package:tracklist_app/services/auth_service.dart';
+import 'package:tracklist_app/views/widgets/stars_widget.dart';
 
 class ReviewCardWidget extends StatefulWidget {
   const ReviewCardWidget({super.key, required this.review});
@@ -42,7 +43,7 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
                       buildUserInfo(user.username),
                       buildReviewDate(review.createdAt.toDate()),
                       buildMediaName(review.category, media.name),
-                      buildReviewStars(review.rating),
+                      buildStarRating(review.rating),
                     ],
                   ),
                 ),
@@ -112,25 +113,6 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
       style: TextStyle(color: Colors.white, fontSize: 20),
       overflow: TextOverflow.ellipsis,
       maxLines: 4,
-    );
-  }
-
-  Widget buildReviewStars(double rating) {
-    Color getStarColor(double ratingValue) {
-      return ratingValue <= rating ? Colors.amber : Colors.grey;
-    }
-
-    return Row(
-      children: List.generate(5, (i) {
-        double ratingValue = i + 1;
-        bool isHalf = rating == ratingValue - 0.5;
-
-        return Icon(
-          isHalf ? Icons.star_half : Icons.star,
-          color: isHalf ? Colors.amber : getStarColor(ratingValue),
-          size: 30,
-        );
-      }),
     );
   }
 

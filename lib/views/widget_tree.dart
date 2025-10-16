@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/constants.dart';
 import 'package:tracklist_app/data/utils/notifiers.dart';
 import 'package:tracklist_app/views/pages/home/home_tab.dart';
-import 'package:tracklist_app/views/pages/profile/user_page.dart';
-import 'package:tracklist_app/views/pages/search_page.dart';
+import 'package:tracklist_app/views/pages/user/user_page.dart';
+import 'package:tracklist_app/views/pages/search/search_page.dart';
 import 'package:tracklist_app/views/widgets/navbar_widget.dart';
 
 final List<MapEntry<String, Widget>> pages = [

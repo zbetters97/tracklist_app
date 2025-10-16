@@ -8,7 +8,7 @@ import 'package:tracklist_app/data/constants.dart';
 import 'spotify_auth.dart';
 
 // Create an instance of the SpotifyAuth class using the client ID and client secret constants
-final SpotifyAuth _auth = SpotifyAuth(clientId: BACKUP_CLIENT_ID, clientSecret: BACKUP_CLIENT_SECRET);
+final SpotifyAuth _auth = SpotifyAuth(clientId: CLIENT_ID, clientSecret: CLIENT_SECRET);
 
 /// Search albums by name on Spotify
 /// [album] The name of the album
@@ -30,7 +30,7 @@ Future<List<Map<String, dynamic>>> searchAlbums({required String album, int limi
   );
 
   // Cannot retrieve HTTP response
-  if (response.statusCode != 200) {   
+  if (response.statusCode != 200) {
     throw Exception('Spotify API error: ${response.statusCode}');
   }
 
@@ -68,7 +68,7 @@ Future<List<Map<String, dynamic>>> searchArtists({required String artist, int li
     headers: {'Authorization': 'Bearer $token'},
   );
 
-  if (response.statusCode != 200) {    
+  if (response.statusCode != 200) {
     throw Exception('Spotify API error: ${response.statusCode}');
   }
 

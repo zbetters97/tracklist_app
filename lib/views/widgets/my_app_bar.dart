@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tracklist_app/data/constants.dart';
 
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   const MyAppBar({super.key, required this.title});
@@ -10,9 +9,10 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-      backgroundColor: BACKGROUND_COLOR,
+      backgroundColor: Colors.transparent,
       elevation: 0,
       centerTitle: true,
+      foregroundColor: Colors.white,
     );
   }
 

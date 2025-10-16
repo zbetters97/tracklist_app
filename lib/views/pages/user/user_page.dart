@@ -5,7 +5,7 @@ import 'package:tracklist_app/data/utils/date.dart';
 import 'package:tracklist_app/data/utils/notifiers.dart';
 import 'package:tracklist_app/data/utils/string_extensions.dart';
 import 'package:tracklist_app/services/auth_service.dart';
-import 'package:tracklist_app/views/pages/welcome_page.dart';
+import 'package:tracklist_app/views/pages/welcome/welcome_page.dart';
 import 'package:tracklist_app/views/widgets/my_app_bar.dart';
 
 class UserPage extends StatefulWidget {
@@ -65,6 +65,7 @@ class _UserPageState extends State<UserPage> {
 
     return Scaffold(
       appBar: MyAppBar(title: user.username),
+      backgroundColor: BACKGROUND_COLOR,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -76,8 +77,6 @@ class _UserPageState extends State<UserPage> {
           ListTile(onTap: onLogoutPressed, title: const Text("Logout")),
         ],
       ),
-
-      backgroundColor: BACKGROUND_COLOR,
     );
   }
 
