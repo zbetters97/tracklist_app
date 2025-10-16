@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/data/classes/media_class.dart';
 import 'package:tracklist_app/data/classes/review_class.dart';
 import 'package:tracklist_app/data/constants.dart';
 import 'package:tracklist_app/data/utils/date.dart';
@@ -17,6 +18,21 @@ class ReviewPage extends StatefulWidget {
   State<ReviewPage> createState() => _ReviewPageState();
 }
 
+void sendToMediaPage(BuildContext context, Media media) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) {
+        return ArtistPage(media: media);
+      },
+    ),
+  );
+}
+
+void sendToUserPage(BuildContext context, String uid) {
+  Navigator.push(context, MaterialPageRoute(builder: (context) => UserPage(uid: uid)));
+}
+
 class _ReviewPageState extends State<ReviewPage> {
   @override
   Widget build(BuildContext context) {
@@ -31,7 +47,12 @@ class _ReviewPageState extends State<ReviewPage> {
             children: [
               buildMediaBanner(widget.review.media.image, widget.review.category, widget.review.media.name),
               const SizedBox(height: 24),
-              buildReviewHeader(widget.review.user.username, widget.review.createdAt.toDate(), widget.review.rating),
+              buildReviewHeader(
+                widget.review.user.username,
+                widget.review.user.profileUrl,
+                widget.review.createdAt.toDate(),
+                widget.review.rating,
+              ),
               const SizedBox(height: 12),
               buildReviewContent(widget.review.content),
             ],
@@ -49,16 +70,7 @@ class _ReviewPageState extends State<ReviewPage> {
         : Icon(Icons.music_note, color: Colors.grey, size: 28);
 
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return ArtistPage(media: widget.review.media);
-            },
-          ),
-        );
-      },
+      onTap: () => sendToMediaPage(context, widget.review.media),
       child: Column(
         children: [
           Image.network(image, width: 275, height: 275, fit: BoxFit.cover),
@@ -82,12 +94,16 @@ class _ReviewPageState extends State<ReviewPage> {
     );
   }
 
-  Widget buildReviewHeader(String username, DateTime date, double rating) {
+  Widget buildReviewHeader(String username, String profileUrl, DateTime date, double rating) {
+    CircleAvatar profileImage = profileUrl.startsWith("https")
+        ? CircleAvatar(radius: 30.0, backgroundImage: NetworkImage(profileUrl))
+        : CircleAvatar(radius: 30.0, backgroundImage: AssetImage(DEFAULT_PROFILE_IMG));
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        CircleAvatar(radius: 30.0, backgroundImage: AssetImage(DEFAULT_PROFILE_IMG)),
-        SizedBox(width: 8),
+        GestureDetector(onTap: () => sendToUserPage(context, widget.review.user.uid), child: profileImage),
+        const SizedBox(width: 8),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,13 +116,7 @@ class _ReviewPageState extends State<ReviewPage> {
                     TextSpan(
                       text: username,
                       style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => UserPage(uid: widget.review.user.uid)),
-                          );
-                        },
+                      recognizer: TapGestureRecognizer()..onTap = () => sendToUserPage(context, widget.review.user.uid),
                     ),
                   ],
                 ),

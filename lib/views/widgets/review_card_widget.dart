@@ -40,7 +40,7 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      buildUserInfo(user.username),
+                      buildUserInfo(user.username, user.profileUrl),
                       buildReviewDate(review.createdAt.toDate()),
                       buildMediaName(review.category, media.name),
                       buildStarRating(review.rating),
@@ -60,17 +60,17 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
   }
 
   Widget buildMediaImage(String imageUrl) {
-    Image profileImage = imageUrl.startsWith("https")
-        ? Image.network(imageUrl, width: 125, height: 125, fit: BoxFit.cover)
-        : Image.asset(DEFAULT_PROFILE_IMG, width: 125, height: 125, fit: BoxFit.cover);
-
-    return profileImage;
+    return Image.network(imageUrl, width: 125, height: 125, fit: BoxFit.cover);
   }
 
-  Widget buildUserInfo(String username) {
+  Widget buildUserInfo(String username, String profileUrl) {
+    CircleAvatar profileImage = profileUrl.startsWith("https")
+        ? CircleAvatar(radius: 12.0, backgroundImage: NetworkImage(profileUrl))
+        : CircleAvatar(radius: 12.0, backgroundImage: AssetImage(DEFAULT_PROFILE_IMG));
+
     return Row(
       children: [
-        CircleAvatar(radius: 12.0, backgroundImage: AssetImage(DEFAULT_PROFILE_IMG)),
+        profileImage,
         SizedBox(width: 5),
         Text("@$username", style: TextStyle(color: Colors.grey, fontSize: 16)),
       ],
