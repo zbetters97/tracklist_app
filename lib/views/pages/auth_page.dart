@@ -375,7 +375,7 @@ class _AuthPageState extends State<AuthPage> {
       clearForm();
       redirectToWelcomePage();
     } else {
-      print("Registration failed");
+      throw Exception("Registration failed, invalid credentials");
     }
   }
 
@@ -385,7 +385,7 @@ class _AuthPageState extends State<AuthPage> {
     if (isValid) {
       redirectToWelcomePage();
     } else {
-      print("Login failed");
+      throw Exception("Login failed, invalid credentials");
     }
   }
 

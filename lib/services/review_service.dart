@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tracklist_app/data/classes/auth_user_class.dart';
 import 'package:tracklist_app/data/classes/media_class.dart';
 import 'package:tracklist_app/data/classes/review_class.dart';
 import 'package:tracklist_app/data/constants.dart';
@@ -26,15 +27,15 @@ Future<List<Review>> getNewReviews({DocumentSnapshot? lastDoc, int limit = MAX_R
         final data = doc.data() as Map<String, dynamic>;
 
         String userId = data["userId"];
-        String username = await authService.value.getUsernameById(userId: userId);
+        AuthUser user = await authService.value.getUserById(userId: userId);
 
         String mediaId = data["mediaId"];
         String category = data["category"];
 
         Media media = await getMediaById(mediaId, category);
 
-        final reviewJson = {...data, "reviewId": doc.id, "uid": userId, "username": username};
-        return Review.fromJson(reviewJson, media: media, doc: doc);
+        final reviewJson = {...data, "reviewId": doc.id};
+        return Review.fromJson(reviewJson, user: user, media: media, doc: doc);
       }),
     );
 
@@ -42,8 +43,7 @@ Future<List<Review>> getNewReviews({DocumentSnapshot? lastDoc, int limit = MAX_R
 
     return reviews;
   } catch (error) {
-    print("Error getting popular reviews: $error");
-    return [];
+    throw Exception("Error getting new reviews: $error");
   }
 }
 
@@ -75,21 +75,20 @@ Future<List<Review>> getPopularReviews({DocumentSnapshot? lastDoc, int limit = M
         final data = doc.data() as Map<String, dynamic>;
 
         String userId = data["userId"];
-        String username = await authService.value.getUsernameById(userId: userId);
+        AuthUser user = await authService.value.getUserById(userId: userId);
 
         String mediaId = data["mediaId"];
         String category = data["category"];
 
         Media media = await getMediaById(mediaId, category);
 
-        final reviewJson = {...data, "reviewId": doc.id, "uid": userId, "username": username};
-        return Review.fromJson(reviewJson, media: media, doc: doc);
+        final reviewJson = {...data, "reviewId": doc.id};
+        return Review.fromJson(reviewJson, user: user, media: media, doc: doc);
       }),
     );
 
     return reviews;
   } catch (error) {
-    print("Error getting popular reviews: $error");
-    return [];
+    throw Exception("Error getting popular reviews: $error");
   }
 }

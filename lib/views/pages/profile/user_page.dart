@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/data/classes/auth_user_class.dart';
 import 'package:tracklist_app/data/constants.dart';
 import 'package:tracklist_app/data/utils/date.dart';
 import 'package:tracklist_app/data/utils/notifiers.dart';
@@ -18,7 +19,7 @@ class UserPage extends StatefulWidget {
 
 class _UserPageState extends State<UserPage> {
   bool isLoading = true;
-  Map<String, dynamic> user = {};
+  late AuthUser user;
 
   @override
   void initState() {
@@ -30,7 +31,7 @@ class _UserPageState extends State<UserPage> {
     isLoading = true;
 
     String uid = widget.uid == "" ? authUser.value!.uid : widget.uid;
-    Map<String, dynamic> tempUser = await authService.value.getUserById(userId: uid);
+    AuthUser tempUser = await authService.value.getUserById(userId: uid);
 
     // User is on their own profile, go to Profile tab
     if (uid == authUser.value!.uid) {
@@ -63,15 +64,15 @@ class _UserPageState extends State<UserPage> {
     }
 
     return Scaffold(
-      appBar: MyAppBar(title: user["username"] ?? "User"),
+      appBar: MyAppBar(title: user.username),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          buildProfile(user["profileUrl"]),
+          buildProfile(user.profileUrl),
           const SizedBox(height: 4),
-          buildBio(user["bio"]),
+          buildBio(user.bio),
           const SizedBox(height: 4),
-          buildUserDate(user["createdAt"].toDate()),
+          buildUserDate(user.createdAt.toDate()),
           ListTile(onTap: onLogoutPressed, title: const Text("Logout")),
         ],
       ),
@@ -86,15 +87,12 @@ class _UserPageState extends State<UserPage> {
     return Column(
       children: [
         CircleAvatar(radius: 50.0, backgroundImage: profileImage.image),
-        Row(
+        Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              user["displayname"].toString().capitalizeEachWord(),
-              style: const TextStyle(color: Colors.white, fontSize: 20),
-            ),
+            Text(user.displayname.capitalizeEachWord(), style: const TextStyle(color: Colors.white, fontSize: 20)),
             SizedBox(width: 5),
-            Text("@${user["username"]}"),
+            Text("@${user.username}"),
           ],
         ),
       ],

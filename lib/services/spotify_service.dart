@@ -30,8 +30,7 @@ Future<List<Map<String, dynamic>>> searchAlbums({required String album, int limi
   );
 
   // Cannot retrieve HTTP response
-  if (response.statusCode != 200) {
-    print('Error searching albums: ${response.body}');
+  if (response.statusCode != 200) {   
     throw Exception('Spotify API error: ${response.statusCode}');
   }
 
@@ -69,8 +68,7 @@ Future<List<Map<String, dynamic>>> searchArtists({required String artist, int li
     headers: {'Authorization': 'Bearer $token'},
   );
 
-  if (response.statusCode != 200) {
-    print('Error searching artists: ${response.body}');
+  if (response.statusCode != 200) {    
     throw Exception('Spotify API error: ${response.statusCode}');
   }
 
@@ -110,7 +108,6 @@ Future<List<Map<String, dynamic>>> searchByCategory({
   );
 
   if (response.statusCode != 200) {
-    print('Error searching for media: ${response.body}');
     throw Exception('Spotify API error: ${response.statusCode}');
   }
 
@@ -179,7 +176,6 @@ Future<Artist> getArtistById(String artistId) async {
   );
 
   if (response.statusCode != 200) {
-    print('Error searching artist: ${response.body}');
     throw Exception('Spotify API error: ${response.statusCode}');
   }
 
@@ -206,7 +202,6 @@ Future<Album> getAlbumById(String albumId) async {
   );
 
   if (response.statusCode != 200) {
-    print('Error searching album: ${response.body}');
     throw Exception('Spotify API error: ${response.statusCode}');
   }
 
@@ -235,7 +230,6 @@ Future<Track> getTrackById(String trackId) async {
   );
 
   if (response.statusCode != 200) {
-    print('Error searching track: ${response.body}');
     throw Exception('Spotify API error: ${response.statusCode}');
   }
 
@@ -268,7 +262,6 @@ Future<List<Map<String, dynamic>>> getArtistAlbums({required String artistId, in
   );
 
   if (response.statusCode != 200) {
-    print('Error searching artist albums: ${response.body}');
     throw Exception('Spotify API error: ${response.statusCode}');
   }
 
@@ -303,7 +296,6 @@ Future<List<Map<String, dynamic>>> getAlbumTracks(String albumId) async {
   );
 
   if (response.statusCode != 200) {
-    print('Error searching artist tracks: ${response.body}');
     throw Exception('Spotify API error: ${response.statusCode}');
   }
 

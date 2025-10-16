@@ -29,7 +29,7 @@ class _ReviewPageState extends State<ReviewPage> {
             children: [
               buildMediaBanner(widget.review.media.image, widget.review.category, widget.review.media.name),
               const SizedBox(height: 24),
-              buildReviewHeader(widget.review.username, widget.review.createdAt.toDate(), widget.review.rating),
+              buildReviewHeader(widget.review.user.username, widget.review.createdAt.toDate(), widget.review.rating),
               const SizedBox(height: 12),
               buildReviewContent(widget.review.content),
             ],
@@ -90,7 +90,7 @@ class _ReviewPageState extends State<ReviewPage> {
                         ..onTap = () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => UserPage(uid: widget.review.uid)),
+                            MaterialPageRoute(builder: (context) => UserPage(uid: widget.review.user.uid)),
                           );
                         },
                     ),

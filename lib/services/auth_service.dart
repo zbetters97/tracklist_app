@@ -39,8 +39,7 @@ class AuthService {
 
       return result;
     } catch (error) {
-      print(error);
-      return false;
+      throw Exception("Error creating user: $error");
     }
   }
 
@@ -69,8 +68,7 @@ class AuthService {
 
       return true;
     } catch (error) {
-      print(error);
-      return false;
+      throw Exception("Error creating user: $error");
     }
   }
 
@@ -94,6 +92,8 @@ class AuthService {
           email: data["email"],
           username: data["username"],
           displayname: data["displayname"],
+          createdAt: data["createdAt"],
+          bio: data["bio"],
           profileUrl: data["profileUrl"],
         );
 
@@ -103,8 +103,7 @@ class AuthService {
         throw Exception("User does not exist in database");
       }
     } catch (error) {
-      print('Error signing in: $error');
-      return false;
+      throw Exception("Error signing in: $error");
     }
   }
 
@@ -142,18 +141,28 @@ class AuthService {
     authUser.value = null;
   }
 
-  Future<Map<String, dynamic>> getUserById({required String userId}) async {
+  Future<AuthUser> getUserById({required String userId}) async {
     try {
       final userRef = firestore.collection("users").doc(userId);
       final userDoc = await userRef.get();
 
-      if (!userDoc.exists) return {};
+      if (!userDoc.exists) throw Exception("User does not exist in database");
 
       final user = userDoc.data() as Map<String, dynamic>;
-      return user;
+
+      AuthUser myUser = AuthUser(
+        uid: userId,
+        email: user["email"],
+        username: user["username"],
+        displayname: user["displayname"],
+        createdAt: user["createdAt"],
+        bio: user["bio"],
+        profileUrl: user["profileUrl"],
+      );
+
+      return myUser;
     } catch (error) {
-      print("Error getting user by id: $error");
-      return {};
+      throw Exception("Error getting user by id: $error");
     }
   }
 
@@ -167,8 +176,7 @@ class AuthService {
       final user = userDoc.data() as Map<String, dynamic>;
       return user["username"];
     } catch (error) {
-      print("Error getting user by id: $error");
-      return "";
+      throw Exception("Error getting username by id: $error");
     }
   }
 }

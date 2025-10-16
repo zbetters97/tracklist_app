@@ -35,8 +35,7 @@ class SpotifyAuth {
 
       // Unsuccessful response if the status code is not 200
       if (response.statusCode != 200) {
-        print('Failed to fetch access token: ${response.body}');
-        return null;
+        throw Exception('Failed to fetch access token: ${response.body}');
       }
 
       final data = jsonDecode(response.body);
@@ -50,8 +49,7 @@ class SpotifyAuth {
 
       return _accessToken;
     } catch (error) {
-      print('Error fetching access token: $error');
-      return null;
+      throw Exception('Error fetching access token: $error');
     }
   }
 }

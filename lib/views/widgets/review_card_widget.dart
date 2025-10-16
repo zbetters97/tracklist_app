@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/data/classes/auth_user_class.dart';
+import 'package:tracklist_app/data/classes/media_class.dart';
 import 'package:tracklist_app/data/classes/review_class.dart';
 import 'package:tracklist_app/data/constants.dart';
 import 'package:tracklist_app/data/utils/date.dart';
@@ -14,6 +16,10 @@ class ReviewCardWidget extends StatefulWidget {
 }
 
 class _ReviewCardWidgetState extends State<ReviewCardWidget> {
+  Review get review => widget.review;
+  Media get media => widget.review.media;
+  AuthUser get user => widget.review.user;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -26,17 +32,17 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                buildMediaImage(widget.review.media.image),
+                buildMediaImage(media.image),
                 SizedBox(width: 10),
                 Flexible(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      buildUserInfo(widget.review.username),
-                      buildReviewDate(widget.review.createdAt.toDate()),
-                      buildMediaName(widget.review.category, widget.review.media.name),
-                      buildReviewStars(widget.review.rating),
+                      buildUserInfo(user.username),
+                      buildReviewDate(review.createdAt.toDate()),
+                      buildMediaName(review.category, media.name),
+                      buildReviewStars(review.rating),
                     ],
                   ),
                 ),
@@ -44,16 +50,20 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
             ),
           ),
           SizedBox(height: 10),
-          buildReviewContent(widget.review.content),
+          buildReviewContent(review.content),
           SizedBox(height: 10),
-          buildReviewButtons(widget.review.uid, widget.review.likes.length, widget.review.comments.length),
+          buildReviewButtons(user.uid, review.likes, review.comments.length),
         ],
       ),
     );
   }
 
   Widget buildMediaImage(String imageUrl) {
-    return Image.network(imageUrl, width: 125, height: 125, fit: BoxFit.cover);
+    Image profileImage = imageUrl.startsWith("https")
+        ? Image.network(imageUrl, width: 125, height: 125, fit: BoxFit.cover)
+        : Image.asset(DEFAULT_PROFILE_IMG, width: 125, height: 125, fit: BoxFit.cover);
+
+    return profileImage;
   }
 
   Widget buildUserInfo(String username) {
@@ -124,7 +134,7 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
     );
   }
 
-  Widget buildReviewButtons(String userId, int likes, int comments) {
+  Widget buildReviewButtons(String userId, List<String> likes, int comments) {
     bool isPoster = userId == authUser.value!.uid;
 
     return Row(
@@ -138,12 +148,14 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
     );
   }
 
-  Widget buildLikeButton(int likes) {
+  Widget buildLikeButton(List<String> likes) {
+    bool isLiked = likes.contains(authUser.value!.uid);
+
     return Row(
       children: [
-        Icon(Icons.favorite, size: 30),
-        SizedBox(width: 5),
-        Text("$likes", style: TextStyle(color: Colors.white, fontSize: 24)),
+        Icon(Icons.favorite, size: 30, color: isLiked ? PRIMARY_COLOR : Colors.white),
+        SizedBox(width: 3),
+        Text("${likes.length}", style: TextStyle(color: isLiked ? PRIMARY_COLOR : Colors.white, fontSize: 24)),
       ],
     );
   }
@@ -152,7 +164,7 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
     return Row(
       children: [
         Icon(Icons.comment, size: 30),
-        SizedBox(width: 5),
+        SizedBox(width: 3),
         Text("$comments", style: TextStyle(color: Colors.white, fontSize: 24)),
       ],
     );
