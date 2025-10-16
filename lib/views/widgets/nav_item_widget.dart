@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/constants.dart';
-import 'package:tracklist_app/data/notifiers.dart';
+import 'package:tracklist_app/data/utils/notifiers.dart';
 
 // Used to navigate between pages
 final GlobalKey<NavigatorState> homeNavigatorKey = GlobalKey<NavigatorState>();

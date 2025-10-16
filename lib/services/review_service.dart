@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tracklist_app/data/classes/media_class.dart';
+import 'package:tracklist_app/data/classes/review_class.dart';
 import 'package:tracklist_app/data/constants.dart';
 import 'package:tracklist_app/services/auth_service.dart';
 import 'package:tracklist_app/services/spotify_service.dart';
 
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-Future<List<Map<String, dynamic>>> getNewReviews({DocumentSnapshot? lastDoc, int limit = MAX_REVIEWS}) async {
+Future<List<Review>> getNewReviews({DocumentSnapshot? lastDoc, int limit = MAX_REVIEWS}) async {
   try {
     final reviewsRef = firestore.collection("reviews").orderBy("createdAt", descending: true).limit(limit);
 
@@ -19,7 +21,7 @@ Future<List<Map<String, dynamic>>> getNewReviews({DocumentSnapshot? lastDoc, int
 
     if (reviewsSnapshot.docs.isEmpty) return [];
 
-    final reviews = await Future.wait(
+    final List<Review> reviews = await Future.wait(
       reviewsSnapshot.docs.map((doc) async {
         final data = doc.data() as Map<String, dynamic>;
 
@@ -29,18 +31,14 @@ Future<List<Map<String, dynamic>>> getNewReviews({DocumentSnapshot? lastDoc, int
         String mediaId = data["mediaId"];
         String category = data["category"];
 
-        Map<String, dynamic> media = await getMediaById(mediaId, category);
+        Media media = await getMediaById(mediaId, category);
 
-        return {"id": doc.id, ...data, "uid": userId, "username": username, ...media, "doc": doc};
+        final reviewJson = {...data, "reviewId": doc.id, "uid": userId, "username": username};
+        return Review.fromJson(reviewJson, media: media, doc: doc);
       }),
     );
 
-    reviews.sort((a, b) {
-      final aDate = (a['createdAt'] as Timestamp).toDate();
-      final bDate = (b['createdAt'] as Timestamp).toDate();
-
-      return bDate.compareTo(aDate);
-    });
+    reviews.sort((Review.compareByDate));
 
     return reviews;
   } catch (error) {
@@ -49,7 +47,7 @@ Future<List<Map<String, dynamic>>> getNewReviews({DocumentSnapshot? lastDoc, int
   }
 }
 
-Future<List<Map<String, dynamic>>> getPopularReviews({DocumentSnapshot? lastDoc, int limit = MAX_REVIEWS}) async {
+Future<List<Review>> getPopularReviews({DocumentSnapshot? lastDoc, int limit = MAX_REVIEWS}) async {
   try {
     final reviewsRef = firestore.collection("reviews");
 
@@ -72,7 +70,7 @@ Future<List<Map<String, dynamic>>> getPopularReviews({DocumentSnapshot? lastDoc,
 
     if (reviewsSnapshot.docs.isEmpty) return [];
 
-    final List<Map<String, dynamic>> reviews = await Future.wait(
+    final List<Review> reviews = await Future.wait(
       reviewsSnapshot.docs.map((doc) async {
         final data = doc.data() as Map<String, dynamic>;
 
@@ -82,9 +80,10 @@ Future<List<Map<String, dynamic>>> getPopularReviews({DocumentSnapshot? lastDoc,
         String mediaId = data["mediaId"];
         String category = data["category"];
 
-        Map<String, dynamic> media = await getMediaById(mediaId, category);
+        Media media = await getMediaById(mediaId, category);
 
-        return {"id": doc.id, ...data, "uid": userId, "username": username, ...media, "doc": doc};
+        final reviewJson = {...data, "reviewId": doc.id, "uid": userId, "username": username};
+        return Review.fromJson(reviewJson, media: media, doc: doc);
       }),
     );
 

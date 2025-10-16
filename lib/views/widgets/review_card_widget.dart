@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/data/classes/review_class.dart';
 import 'package:tracklist_app/data/constants.dart';
-import 'package:tracklist_app/date.dart';
+import 'package:tracklist_app/data/utils/date.dart';
 import 'package:tracklist_app/services/auth_service.dart';
 
 class ReviewCardWidget extends StatefulWidget {
   const ReviewCardWidget({super.key, required this.review});
 
-  final Map<String, dynamic> review;
+  final Review review;
 
   @override
   State<ReviewCardWidget> createState() => _ReviewCardWidgetState();
@@ -25,17 +26,17 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                buildMediaImage(widget.review['image'] ?? DEFAULT_MEDIA_IMG),
+                buildMediaImage(widget.review.media.image),
                 SizedBox(width: 10),
                 Flexible(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      buildUserInfo(widget.review['username']),
-                      buildReviewDate(widget.review['createdAt'].toDate()),
-                      buildMediaName(widget.review['name']),
-                      buildReviewStars(widget.review["rating"]),
+                      buildUserInfo(widget.review.username),
+                      buildReviewDate(widget.review.createdAt.toDate()),
+                      buildMediaName(widget.review.category, widget.review.media.name),
+                      buildReviewStars(widget.review.rating),
                     ],
                   ),
                 ),
@@ -43,9 +44,9 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
             ),
           ),
           SizedBox(height: 10),
-          buildReviewContent(widget.review['content']),
+          buildReviewContent(widget.review.content),
           SizedBox(height: 10),
-          buildReviewButtons(widget.review["userId"], widget.review["likes"].length, widget.review["comments"].length),
+          buildReviewButtons(widget.review.uid, widget.review.likes.length, widget.review.comments.length),
         ],
       ),
     );
@@ -72,10 +73,16 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
     );
   }
 
-  Widget buildMediaName(String name) {
+  Widget buildMediaName(String category, String name) {
+    Icon mediaIcon = category == "artist"
+        ? Icon(Icons.person, color: Colors.grey, size: 24)
+        : category == "album"
+        ? Icon(Icons.album, color: Colors.grey, size: 24)
+        : Icon(Icons.music_note, color: Colors.grey, size: 24);
+
     return Row(
       children: [
-        Icon(Icons.music_note, color: Colors.grey, size: 24),
+        mediaIcon,
         Flexible(
           child: Text(
             name,

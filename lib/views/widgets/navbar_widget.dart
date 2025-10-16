@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tracklist_app/data/notifiers.dart';
+import 'package:tracklist_app/data/utils/notifiers.dart';
 import 'package:tracklist_app/views/widgets/nav_item_widget.dart';
 
 class NavbarWidget extends StatefulWidget {

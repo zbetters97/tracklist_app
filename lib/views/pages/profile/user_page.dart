@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/constants.dart';
-import 'package:tracklist_app/data/notifiers.dart';
-import 'package:tracklist_app/data/string_extensions.dart';
-import 'package:tracklist_app/date.dart';
+import 'package:tracklist_app/data/utils/date.dart';
+import 'package:tracklist_app/data/utils/notifiers.dart';
+import 'package:tracklist_app/data/utils/string_extensions.dart';
 import 'package:tracklist_app/services/auth_service.dart';
 import 'package:tracklist_app/views/pages/welcome_page.dart';
 import 'package:tracklist_app/views/widgets/my_app_bar.dart';
@@ -32,6 +32,11 @@ class _UserPageState extends State<UserPage> {
     String uid = widget.uid == "" ? authUser.value!.uid : widget.uid;
     Map<String, dynamic> tempUser = await authService.value.getUserById(userId: uid);
 
+    // User is on their own profile, go to Profile tab
+    if (uid == authUser.value!.uid) {
+      selectedPageNotifier.value = 4;
+    }
+
     setState(() {
       user = tempUser;
       isLoading = false;
@@ -57,45 +62,64 @@ class _UserPageState extends State<UserPage> {
       return const Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK));
     }
 
-    Image profileImage = user["profileUrl"].startsWith("https")
-        ? Image.network(user["profileUrl"])
-        : Image.asset(DEFAULT_PROFILE_IMG);
-
     return Scaffold(
       appBar: MyAppBar(title: user["username"] ?? "User"),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          CircleAvatar(radius: 50.0, backgroundImage: profileImage.image),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                user["displayname"].toString().capitalizeEachWord(),
-                style: const TextStyle(color: Colors.white, fontSize: 20),
-              ),
-              SizedBox(width: 5),
-              Text("@${user["username"]}"),
-            ],
-          ),
-          if (user["bio"] != "")
-            Text(
-              "${user["bio"]}",
-              style: const TextStyle(color: Colors.white, fontSize: 16, fontStyle: FontStyle.italic),
-            ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.calendar_month_outlined),
-              SizedBox(width: 5),
-              Text("Joined on ${formatDateMDYLong(user["createdAt"].toDate())}"),
-            ],
-          ),
+          buildProfile(user["profileUrl"]),
+          const SizedBox(height: 4),
+          buildBio(user["bio"]),
+          const SizedBox(height: 4),
+          buildUserDate(user["createdAt"].toDate()),
           ListTile(onTap: onLogoutPressed, title: const Text("Logout")),
         ],
       ),
 
       backgroundColor: BACKGROUND_COLOR,
+    );
+  }
+
+  Widget buildProfile(String profileUrl) {
+    Image profileImage = profileUrl.startsWith("https") ? Image.network(profileUrl) : Image.asset(DEFAULT_PROFILE_IMG);
+
+    return Column(
+      children: [
+        CircleAvatar(radius: 50.0, backgroundImage: profileImage.image),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              user["displayname"].toString().capitalizeEachWord(),
+              style: const TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            SizedBox(width: 5),
+            Text("@${user["username"]}"),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget buildBio(String bio) {
+    if (bio == "") {
+      return Container();
+    }
+
+    return Text(
+      bio,
+      style: const TextStyle(color: Colors.white, fontSize: 16, fontStyle: FontStyle.italic),
+    );
+  }
+
+  Widget buildUserDate(DateTime joinedOn) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.calendar_today, color: Colors.grey, size: 20),
+        SizedBox(width: 2),
+        Text("Joined on ${formatDateMDYLong(joinedOn)}", style: TextStyle(fontSize: 14)),
+      ],
     );
   }
 }

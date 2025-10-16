@@ -1,5 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:tracklist_app/data/classes/album_class.dart';
+import 'package:tracklist_app/data/classes/artist_class.dart';
+import 'package:tracklist_app/data/classes/media_class.dart';
+import 'package:tracklist_app/data/classes/track_class.dart';
 import 'package:tracklist_app/data/constants.dart';
 import 'spotify_auth.dart';
 
@@ -152,7 +156,17 @@ Future<List<Map<String, dynamic>>> searchByCategory({
   return media;
 }
 
-Future<Map<String, dynamic>> getArtistById(String artistId) async {
+Future<Media> getMediaById(String mediaId, String category) async {
+  Media media = category == "artist"
+      ? await getArtistById(mediaId)
+      : category == "album"
+      ? await getAlbumById(mediaId)
+      : await getTrackById(mediaId);
+
+  return media;
+}
+
+Future<Artist> getArtistById(String artistId) async {
   final token = await _auth.getAccessToken();
 
   if (token == null) {
@@ -171,24 +185,15 @@ Future<Map<String, dynamic>> getArtistById(String artistId) async {
 
   final artist = jsonDecode(response.body);
 
-  return {
+  return Artist.fromJson({
     'name': artist['name'],
     'id': artist['id'],
     'image': artist['images'].isNotEmpty ? artist['images'][0]['url'] : "",
-  };
+    'spotify': artist['external_urls']['spotify'],
+  });
 }
 
-Future<Map<String, dynamic>> getMediaById(String mediaId, String category) async {
-  Map<String, dynamic> media = category == "artist"
-      ? await getArtistById(mediaId)
-      : category == "album"
-      ? await getAlbumById(mediaId)
-      : await getTrackById(mediaId);
-
-  return media;
-}
-
-Future<Map<String, dynamic>> getAlbumById(String albumId) async {
+Future<Album> getAlbumById(String albumId) async {
   final token = await _auth.getAccessToken();
 
   if (token == null) {
@@ -207,16 +212,17 @@ Future<Map<String, dynamic>> getAlbumById(String albumId) async {
 
   final album = jsonDecode(response.body);
 
-  return {
+  return Album.fromJson({
     'name': album['name'],
     'id': album['id'],
-    'artist': album['artists'][0]['name'],
     'image': album['images'].isNotEmpty ? album['images'][0]['url'] : "",
+    'artist': album['artists'][0]['name'],
     'release_date': album['release_date'],
-  };
+    'spotify': album['external_urls']['spotify'],
+  });
 }
 
-Future<Map<String, dynamic>> getTrackById(String trackId) async {
+Future<Track> getTrackById(String trackId) async {
   final token = await _auth.getAccessToken();
 
   if (token == null) {
@@ -235,14 +241,14 @@ Future<Map<String, dynamic>> getTrackById(String trackId) async {
 
   final track = jsonDecode(response.body);
 
-  return {
+  return Track.fromJson({
     'name': track['name'],
     'id': track['id'],
-    'artist': track['artists'][0]['name'],
-    'album': track['album']['name'],
     'image': track['album']['images'].isNotEmpty ? track['album']['images'][0]['url'] : "",
+    'album': track['album']['name'],
     'release_date': track['album']['release_date'],
-  };
+    'spotify': track['external_urls']['spotify'],
+  });
 }
 
 /// Get albums by artist ID

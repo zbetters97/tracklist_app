@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/data/classes/review_class.dart';
 import 'package:tracklist_app/data/constants.dart';
 import 'package:tracklist_app/services/review_service.dart';
 import 'package:tracklist_app/views/widgets/review_card_widget.dart';
@@ -8,7 +9,7 @@ class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.onOpenReview});
 
   // Callback to open the review page
-  final void Function(Map<String, dynamic> review) onOpenReview;
+  final void Function(Review review) onOpenReview;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -27,8 +28,8 @@ class _HomePageState extends State<HomePage> {
   final ScrollController newReviewsController = ScrollController();
   final ScrollController popularReviewsController = ScrollController();
 
-  List<Map<String, dynamic>> newReviews = [];
-  List<Map<String, dynamic>> popularReviews = [];
+  List<Review> newReviews = [];
+  List<Review> popularReviews = [];
 
   @override
   void initState() {
@@ -55,13 +56,13 @@ class _HomePageState extends State<HomePage> {
 
     setState(() => isLoading = true);
 
-    final List<List<Map<String, dynamic>>> fetchedReviews = await Future.wait([getNewReviews(), getPopularReviews()]);
+    final List<List<Review>> fetchedReviews = await Future.wait([getNewReviews(), getPopularReviews()]);
 
     newReviews = fetchedReviews[0];
     popularReviews = fetchedReviews[1];
 
-    lastNewReviewDoc = newReviews.isNotEmpty ? newReviews.last["doc"] as DocumentSnapshot : null;
-    lastPopularReviewDoc = popularReviews.isNotEmpty ? popularReviews.last["doc"] as DocumentSnapshot : null;
+    lastNewReviewDoc = newReviews.isNotEmpty ? newReviews.last.doc : null;
+    lastPopularReviewDoc = popularReviews.isNotEmpty ? popularReviews.last.doc : null;
 
     setState(() {
       isLoading = false;
@@ -83,11 +84,11 @@ class _HomePageState extends State<HomePage> {
       isLoadingNew = true;
     });
 
-    final List<Map<String, dynamic>> moreNewReviews = await getNewReviews(lastDoc: lastNewReviewDoc);
+    final List<Review> moreNewReviews = await getNewReviews(lastDoc: lastNewReviewDoc);
 
     if (moreNewReviews.isNotEmpty) {
       setState(() {
-        lastNewReviewDoc = moreNewReviews.last["doc"] as DocumentSnapshot;
+        lastNewReviewDoc = moreNewReviews.last.doc;
         newReviews.addAll(moreNewReviews);
       });
     }
@@ -104,11 +105,11 @@ class _HomePageState extends State<HomePage> {
       isLoadingPopular = true;
     });
 
-    final List<Map<String, dynamic>> morePopularReviews = await getPopularReviews(lastDoc: lastPopularReviewDoc);
+    final List<Review> morePopularReviews = await getPopularReviews(lastDoc: lastPopularReviewDoc);
 
     if (morePopularReviews.isNotEmpty) {
       setState(() {
-        lastPopularReviewDoc = morePopularReviews.last["doc"] as DocumentSnapshot;
+        lastPopularReviewDoc = morePopularReviews.last.doc;
         popularReviews.addAll(morePopularReviews);
       });
     }
@@ -198,54 +199,31 @@ class _HomePageState extends State<HomePage> {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
+        children: [buildHomeTab(0, "Newest"), SizedBox(width: 30), buildHomeTab(1, "For You")],
+      ),
+    );
+  }
+
+  Widget buildHomeTab(int index, String title) {
+    return GestureDetector(
+      onTap: () => setReviews(index),
+      child: Column(
         children: [
-          GestureDetector(
-            onTap: () => setReviews(0),
-            child: Column(
-              children: [
-                Text(
-                  "Newest",
-                  style: TextStyle(
-                    color: currentTab == 0 ? PRIMARY_COLOR : Colors.grey,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 5),
-                Container(
-                  height: 5,
-                  width: 100,
-                  decoration: BoxDecoration(
-                    color: currentTab == 0 ? PRIMARY_COLOR : Colors.transparent,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ],
+          Text(
+            title,
+            style: TextStyle(
+              color: currentTab == index ? PRIMARY_COLOR : Colors.grey,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(width: 30),
-          GestureDetector(
-            onTap: () => setReviews(1),
-            child: Column(
-              children: [
-                Text(
-                  "For You",
-                  style: TextStyle(
-                    color: currentTab == 1 ? PRIMARY_COLOR : Colors.grey,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 5),
-                Container(
-                  height: 5,
-                  width: 100,
-                  decoration: BoxDecoration(
-                    color: currentTab == 1 ? PRIMARY_COLOR : Colors.transparent,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ],
+          SizedBox(height: 5),
+          Container(
+            height: 5,
+            width: 100,
+            decoration: BoxDecoration(
+              color: currentTab == index ? PRIMARY_COLOR : Colors.transparent,
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
         ],
@@ -253,7 +231,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget buildReviewsList(List<Map<String, dynamic>> reviews, bool isLoadingMore, ScrollController controller) {
+  Widget buildReviewsList(List<Review> reviews, bool isLoadingMore, ScrollController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: RefreshIndicator.adaptive(

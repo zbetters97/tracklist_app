@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/constants.dart';
-import 'package:tracklist_app/data/notifiers.dart';
+import 'package:tracklist_app/data/utils/notifiers.dart';
 import 'package:tracklist_app/views/pages/home/home_tab.dart';
 import 'package:tracklist_app/views/pages/profile/user_page.dart';
 import 'package:tracklist_app/views/pages/search_page.dart';

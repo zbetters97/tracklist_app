@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/data/classes/review_class.dart';
 import 'package:tracklist_app/views/pages/home/home_page.dart';
 import 'package:tracklist_app/views/pages/review/review_page.dart';
 import 'package:tracklist_app/views/widgets/nav_item_widget.dart';
@@ -25,7 +26,7 @@ class HomeTab extends StatelessWidget {
             break;
           // Open Review Page when a review is clicked
           case "/review":
-            page = ReviewPage(review: settings.arguments as Map<String, dynamic>);
+            page = ReviewPage(review: settings.arguments as Review);
             break;
           // Default case
           // TODO: Add default route to Errror Page
