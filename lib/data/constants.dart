@@ -23,3 +23,5 @@ const String DEFAULT_PROFILE_IMG = 'assets/images/default-profile-image.jpg';
 
 const int EARLIEST_DATE = 1000;
 const int MAX_REVIEWS = 3;
+
+const MAX_LIMIT = 15;

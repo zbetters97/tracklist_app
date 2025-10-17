@@ -106,6 +106,7 @@ class _ArtistPageState extends State<ArtistPage> {
           Text(
             name,
             style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
           ),
         ],
       ),

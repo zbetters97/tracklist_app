@@ -22,10 +22,9 @@ class _RatingBarState extends State<RatingBar> {
 
   void setRatings() {
     Map<double, int> baseRatings = {0.5: 0, 1: 0, 1.5: 0, 2: 0, 2.5: 0, 3: 0, 3.5: 0, 4: 0, 4.5: 0, 5: 0};
-
     totalRatings = widget.ratings.size;
 
-    for (var doc in widget.ratings.docs) {
+    for (DocumentSnapshot doc in widget.ratings.docs) {
       double rating = doc["rating"].toDouble();
       baseRatings[rating] = baseRatings[rating]! + 1;
     }
@@ -47,9 +46,7 @@ class _RatingBarState extends State<RatingBar> {
       spacing: 2,
       children: ratings.keys.map((rating) {
         final int count = ratings[rating] ?? 0;
-        double percentage = count / totalRatings;
-
-        if (percentage == 0) percentage = 0.075;
+        final double percentage = (count / totalRatings).clamp(0.05, 1.0); // Minimum of 5%, maximum of 100%
 
         return Tooltip(
           message: "$count ratings",

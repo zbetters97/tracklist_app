@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Widget buildStarRating(double rating) {
+Widget buildStarRating(double rating, {bool isCentered = false}) {
   double roundedRating = (rating * 2).round() / 2;
 
   Color getStarColor(double ratingValue) {
@@ -8,6 +8,7 @@ Widget buildStarRating(double rating) {
   }
 
   return Row(
+    mainAxisAlignment: isCentered ? MainAxisAlignment.center : MainAxisAlignment.start,
     children: List.generate(5, (i) {
       double ratingValue = i + 1;
       bool isHalf = roundedRating == ratingValue - 0.5;
