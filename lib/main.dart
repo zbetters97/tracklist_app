@@ -1,8 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:tracklist_app/data/constants.dart';
-import 'package:tracklist_app/services/firebase_options.dart';
-import 'package:tracklist_app/views/pages/welcome/welcome_page.dart';
+import 'package:tracklist_app/core/constants/constants.dart';
+import 'package:tracklist_app/data/sources/firebase_options.dart';
+import 'package:tracklist_app/features/welcome/pages/welcome_page.dart';
 
 void main() async {
   // Initialize Firebase

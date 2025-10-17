@@ -1,0 +1,160 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tracklist_app/data/models/auth_user_class.dart';
+import 'package:tracklist_app/data/models/media_class.dart';
+import 'package:tracklist_app/data/models/review_class.dart';
+import 'package:tracklist_app/core/constants/constants.dart';
+import 'package:tracklist_app/data/sources/auth_service.dart';
+import 'package:tracklist_app/data/sources/spotify_service.dart';
+
+final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+Future<List<Review>> getNewReviews({DocumentSnapshot? lastDoc, int limit = MAX_REVIEWS}) async {
+  try {
+    final reviewsRef = firestore.collection("reviews").orderBy("createdAt", descending: true).limit(limit);
+
+    QuerySnapshot reviewsSnapshot;
+
+    if (lastDoc != null) {
+      reviewsSnapshot = await reviewsRef.startAfterDocument(lastDoc).get();
+    } else {
+      reviewsSnapshot = await reviewsRef.get();
+    }
+
+    if (reviewsSnapshot.docs.isEmpty) return [];
+
+    final List<Review> reviews = await Future.wait(
+      reviewsSnapshot.docs.map((doc) async {
+        final data = doc.data() as Map<String, dynamic>;
+
+        String userId = data["userId"];
+        AuthUser user = await authService.value.getUserById(userId: userId);
+
+        String mediaId = data["mediaId"];
+        String category = data["category"];
+
+        Media media = await getMediaById(mediaId, category);
+
+        final reviewJson = {...data, "reviewId": doc.id};
+        return Review.fromJson(reviewJson, user: user, media: media, doc: doc);
+      }),
+    );
+
+    reviews.sort((Review.compareByDate));
+
+    return reviews;
+  } catch (error) {
+    throw Exception("Error getting new reviews: $error");
+  }
+}
+
+Future<List<Review>> getPopularReviews({DocumentSnapshot? lastDoc, int limit = MAX_REVIEWS}) async {
+  try {
+    final reviewsRef = firestore.collection("reviews");
+
+    DateTime earliestDate = DateTime.now();
+    earliestDate = earliestDate.subtract(Duration(days: EARLIEST_DATE));
+
+    final reviewsQuery = reviewsRef
+        .where("createdAt", isGreaterThanOrEqualTo: earliestDate)
+        .orderBy("likes", descending: true)
+        .orderBy("createdAt", descending: true)
+        .limit(limit);
+
+    QuerySnapshot reviewsSnapshot;
+
+    if (lastDoc != null) {
+      reviewsSnapshot = await reviewsQuery.startAfterDocument(lastDoc).get();
+    } else {
+      reviewsSnapshot = await reviewsQuery.get();
+    }
+
+    if (reviewsSnapshot.docs.isEmpty) return [];
+
+    final List<Review> reviews = await Future.wait(
+      reviewsSnapshot.docs.map((doc) async {
+        final data = doc.data() as Map<String, dynamic>;
+
+        String userId = data["userId"];
+        AuthUser user = await authService.value.getUserById(userId: userId);
+
+        String mediaId = data["mediaId"];
+        String category = data["category"];
+
+        Media media = await getMediaById(mediaId, category);
+
+        final reviewJson = {...data, "reviewId": doc.id};
+        return Review.fromJson(reviewJson, user: user, media: media, doc: doc);
+      }),
+    );
+
+    return reviews;
+  } catch (error) {
+    throw Exception("Error getting popular reviews: $error");
+  }
+}
+
+Future<List<Review>> getReviewsByMediaId(String mediaId) async {
+  try {
+    final reviewsRef = firestore.collection("reviews");
+
+    QuerySnapshot reviewsSnapshot = await reviewsRef.where("mediaId", isEqualTo: mediaId).get();
+
+    if (reviewsSnapshot.docs.isEmpty) return [];
+
+    final List<Review> reviews = await Future.wait(
+      reviewsSnapshot.docs.map((doc) async {
+        final data = doc.data() as Map<String, dynamic>;
+
+        String userId = data["userId"];
+
+        AuthUser user = await authService.value.getUserById(userId: userId);
+
+        String mediaId = data["mediaId"];
+        String category = data["category"];
+
+        Media media = await getMediaById(mediaId, category);
+
+        final reviewJson = {...data, "reviewId": doc.id};
+        return Review.fromJson(reviewJson, user: user, media: media, doc: doc);
+      }),
+    );
+
+    return reviews;
+  } catch (error) {
+    throw Exception("Error getting reviews by media id: $error");
+  }
+}
+
+Future<double> getAvgRating(String mediaId) async {
+  try {
+    QuerySnapshot mediaRatings = await getRatings(mediaId);
+
+    if (mediaRatings.docs.isEmpty) return 0.0;
+
+    int count = mediaRatings.docs.length;
+    double totalRating = 0.0;
+
+    for (DocumentSnapshot doc in mediaRatings.docs) {
+      final data = doc.data() as Map<String, dynamic>;
+      totalRating += data["rating"];
+    }
+
+    double avgRating = totalRating / count;
+
+    return avgRating;
+  } catch (error) {
+    throw Exception("Error getting average rating: $error");
+  }
+}
+
+Future<QuerySnapshot> getRatings(String mediaId) async {
+  try {
+    final reviewsRef = firestore.collection("reviews");
+
+    QuerySnapshot reviewsSnapshot = await reviewsRef.where("mediaId", isEqualTo: mediaId).get();
+
+    return reviewsSnapshot;
+  } catch (error) {
+    throw Exception("Error getting ratings: $error");
+  }
+}
