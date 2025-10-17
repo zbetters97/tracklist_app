@@ -78,9 +78,21 @@ class _ArtistPageState extends State<ArtistPage> {
                   children: [
                     Column(
                       children: [
-                        buildMediaImage(media.spotify, media.image, media.name),
-                        const SizedBox(height: 12),
-                        RatingBar(ratings: ratings),
+                        SizedBox(
+                          height: 275 + 75 + 75,
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              buildMediaImage(media.spotify, media.image, media.name),
+                              Positioned(
+                                top: 275 + 75,
+                                left: 0,
+                                right: 0,
+                                child: RatingBar(ratings: ratings),
+                              ),
+                            ],
+                          ),
+                        ),
                         const SizedBox(height: 12),
                         buildMediaReviews(avgRating, reviews.length),
                         const SizedBox(height: 20),
