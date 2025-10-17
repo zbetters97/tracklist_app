@@ -23,7 +23,7 @@ Future<List<Media>> searchByCategory({required String category, required String 
   }
 
   final response = await http.get(
-    Uri.parse('https://api.spotify.com/v1/search?q=$name&type=$category&limit=$limit'),
+    Uri.parse('https://api.spotify.com/v1/search?q=$name&type=$category&limit=$limit&market=US'),
     headers: {'Authorization': 'Bearer $token'},
   );
 
@@ -57,7 +57,7 @@ Future<List<Artist>> searchArtists({required String artist, int limit = MAX_LIMI
   }
 
   final response = await http.get(
-    Uri.parse('https://api.spotify.com/v1/search?q=$artist&type=artist&limit=$limit'),
+    Uri.parse('https://api.spotify.com/v1/search?q=$artist&type=artist&limit=$limit&market=US'),
     headers: {'Authorization': 'Bearer $token'},
   );
 
@@ -85,7 +85,7 @@ Future<List<Album>> searchAlbums({required String album, int limit = MAX_LIMIT})
 
   // Store HTTP response
   final response = await http.get(
-    Uri.parse('https://api.spotify.com/v1/search?q=$album&type=album&limit=$limit'),
+    Uri.parse('https://api.spotify.com/v1/search?q=$album&type=album&limit=$limit&market=US'),
     headers: {'Authorization': 'Bearer $token'},
   );
 
@@ -116,7 +116,7 @@ Future<List<Album>> searchTracks({required String track, int limit = MAX_LIMIT})
 
   // Store HTTP response
   final response = await http.get(
-    Uri.parse('https://api.spotify.com/v1/search?q=$track&type=track&limit=$limit'),
+    Uri.parse('https://api.spotify.com/v1/search?q=$track&type=track&limit=$limit&market=US'),
     headers: {'Authorization': 'Bearer $token'},
   );
 
@@ -157,7 +157,7 @@ Future<Artist> getArtistById(String artistId) async {
   }
 
   final response = await http.get(
-    Uri.parse('https://api.spotify.com/v1/artists/$artistId'),
+    Uri.parse('https://api.spotify.com/v1/artists/$artistId?market=US'),
     headers: {'Authorization': 'Bearer $token'},
   );
 
@@ -181,7 +181,7 @@ Future<Album> getAlbumById(String albumId) async {
   }
 
   final response = await http.get(
-    Uri.parse('https://api.spotify.com/v1/albums/$albumId'),
+    Uri.parse('https://api.spotify.com/v1/albums/$albumId?market=US'),
     headers: {'Authorization': 'Bearer $token'},
   );
 
@@ -204,8 +204,10 @@ Future<Track> getTrackById(String trackId) async {
     throw Exception('Unable to get access token');
   }
 
+  print(trackId);
+
   final response = await http.get(
-    Uri.parse('https://api.spotify.com/v1/tracks/$trackId'),
+    Uri.parse('https://api.spotify.com/v1/tracks/$trackId?market=US'),
     headers: {'Authorization': 'Bearer $token'},
   );
 
@@ -220,9 +222,8 @@ Future<Track> getTrackById(String trackId) async {
 
 /// Get albums by artist ID on Spotify
 /// [artistId] The ID of the artist
-/// [limit] The maximum number of albums to return
 /// Returns a list of Album objects
-Future<List<Album>> getArtistAlbums({required String artistId, int limit = 5}) async {
+Future<List<Album>> getArtistAlbums({required String artistId}) async {
   final token = await _auth.getAccessToken();
 
   if (token == null) {
@@ -230,7 +231,7 @@ Future<List<Album>> getArtistAlbums({required String artistId, int limit = 5}) a
   }
 
   final response = await http.get(
-    Uri.parse('https://api.spotify.com/v1/artists/$artistId/albums?include_groups=album&limit=$limit'),
+    Uri.parse('https://api.spotify.com/v1/artists/$artistId/albums?include_groups=album&market=US'),
     headers: {'Authorization': 'Bearer $token'},
   );
 
@@ -241,6 +242,30 @@ Future<List<Album>> getArtistAlbums({required String artistId, int limit = 5}) a
   final data = jsonDecode(response.body);
 
   return data['items'].map<Album>((album) => parseSpotifyAlbum(album)).toList();
+}
+
+/// Get singles by artist ID on Spotify
+/// [artistId] The ID of the artist
+/// Returns a list of Track objects
+Future<List<Track>> getArtistSingles({required String artistId}) async {
+  final token = await _auth.getAccessToken();
+
+  if (token == null) {
+    throw Exception('Unable to get access token');
+  }
+
+  final response = await http.get(
+    Uri.parse('https://api.spotify.com/v1/artists/$artistId/albums?include_groups=single&market=US'),
+    headers: {'Authorization': 'Bearer $token'},
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception('Spotify API error: ${response.statusCode}');
+  }
+
+  final data = jsonDecode(response.body);
+
+  return data['items'].map<Track>((track) => parseSpotifyTrack(track)).toList();
 }
 
 /// Get tracks by album ID on Spotify
@@ -254,7 +279,7 @@ Future<List<Track>> getAlbumTracks(String albumId) async {
   }
 
   final response = await http.get(
-    Uri.parse('https://api.spotify.com/v1/albums/$albumId/tracks'),
+    Uri.parse('https://api.spotify.com/v1/albums/$albumId/tracks&market=US'),
     headers: {'Authorization': 'Bearer $token'},
   );
 
@@ -301,10 +326,12 @@ Track parseSpotifyTrack(Map<String, dynamic> track) {
     'name': track['name'],
     'id': track['id'],
     'artist': track['artists'][0]['name'],
-    'album': track['album']['name'],
-    'image': track['album']['images'].isNotEmpty ? track['album']['images'][0]['url'] : DEFAULT_MEDIA_IMG,
-    'track_number': track['track_number'],
-    'release_date': track['album']['release_date'],
+    'album': track['album'] != null ? track['album']['name'] : '',
+    'image': track['album'] != null
+        ? track['album']['images'][0]['url']
+        : track['images'][0]['url'] ?? DEFAULT_MEDIA_IMG,
+    'track_number': track['track_number'] ?? 0,
+    'release_date': track['album'] != null ? track['album']['release_date'] : track['release_date'],
     'spotify': track['external_urls']['spotify'],
   });
 }

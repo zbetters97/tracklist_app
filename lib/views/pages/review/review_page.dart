@@ -5,7 +5,7 @@ import 'package:tracklist_app/data/classes/media_class.dart';
 import 'package:tracklist_app/data/classes/review_class.dart';
 import 'package:tracklist_app/data/constants.dart';
 import 'package:tracklist_app/data/utils/date.dart';
-import 'package:tracklist_app/views/pages/media/artist_page.dart';
+import 'package:tracklist_app/views/pages/media/media_page.dart';
 import 'package:tracklist_app/views/pages/user/user_page.dart';
 import 'package:tracklist_app/views/widgets/my_app_bar.dart';
 import 'package:tracklist_app/views/widgets/stars_widget.dart';
@@ -29,7 +29,7 @@ class _ReviewPageState extends State<ReviewPage> {
       context,
       MaterialPageRoute(
         builder: (context) {
-          return ArtistPage(media: media);
+          return MediaPage(media: media);
         },
       ),
     );

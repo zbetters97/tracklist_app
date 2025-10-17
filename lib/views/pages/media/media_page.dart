@@ -1,24 +1,26 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/data/classes/artist_class.dart';
 import 'package:tracklist_app/data/classes/media_class.dart';
 import 'package:tracklist_app/data/classes/review_class.dart';
 import 'package:tracklist_app/data/constants.dart';
 import 'package:tracklist_app/services/review_service.dart';
+import 'package:tracklist_app/views/pages/media/artist_content.dart';
 import 'package:tracklist_app/views/widgets/my_app_bar.dart';
 import 'package:tracklist_app/views/widgets/ratings_bar_widget.dart';
 import 'package:tracklist_app/views/widgets/stars_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class ArtistPage extends StatefulWidget {
-  const ArtistPage({super.key, required this.media});
+class MediaPage extends StatefulWidget {
+  const MediaPage({super.key, required this.media});
 
   final Media media;
 
   @override
-  State<ArtistPage> createState() => _ArtistPageState();
+  State<MediaPage> createState() => _MediaPageState();
 }
 
-class _ArtistPageState extends State<ArtistPage> {
+class _MediaPageState extends State<MediaPage> {
   Media get media => widget.media;
 
   bool isLoading = true;
@@ -76,30 +78,27 @@ class _ArtistPageState extends State<ArtistPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Column(
-                      children: [
-                        SizedBox(
-                          height: 275 + 75 + 75, // Image height + Ratings Bar height + gap height
-                          child: Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              buildMediaImage(media.spotify, media.image, media.name),
-                              Positioned(
-                                top: 275 + 75, // Image height + Ratings Bar height
-                                left: 0,
-                                right: 0,
-                                height: 75, // Fixed height of 75
-                                child: RatingsBar(ratings: ratings),
-                              ),
-                            ],
+                    SizedBox(
+                      height: 275 + 75 + 75, // Image height + Ratings Bar height + gap height
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          buildMediaImage(media.spotify, media.image, media.name),
+                          Positioned(
+                            top: 275 + 75, // Image height + Ratings Bar height
+                            left: 0,
+                            right: 0,
+                            height: 75, // Fixed height of 75
+                            child: RatingsBar(ratings: ratings),
                           ),
-                        ),
-                        const SizedBox(height: 12),
-                        buildMediaReviews(avgRating, reviews.length),
-                        const SizedBox(height: 20),
-                        buildMediaButtons(),
-                      ],
+                        ],
+                      ),
                     ),
+                    const SizedBox(height: 12),
+                    buildMediaReviews(avgRating, reviews.length),
+                    const SizedBox(height: 20),
+                    buildMediaButtons(),
+                    ArtistContent(artist: media as Artist),
                   ],
                 ),
               ),

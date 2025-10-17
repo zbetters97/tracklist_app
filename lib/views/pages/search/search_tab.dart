@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/classes/media_class.dart';
-import 'package:tracklist_app/views/pages/media/artist_page.dart';
+import 'package:tracklist_app/views/pages/media/media_page.dart';
 import 'package:tracklist_app/views/pages/search/search_page.dart';
 import 'package:tracklist_app/views/widgets/nav_item_widget.dart';
 
@@ -26,7 +26,7 @@ class SearchTab extends StatelessWidget {
             break;
           // Open Review Page when a review is clicked
           case "/media":
-            page = ArtistPage(media: settings.arguments as Media);
+            page = MediaPage(media: settings.arguments as Media);
             break;
           // Default case
           // TODO: Add default route to Errror Page

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/classes/media_class.dart';
 import 'package:tracklist_app/services/spotify_service.dart';
-import 'package:tracklist_app/views/pages/media/artist_page.dart';
+import 'package:tracklist_app/views/pages/media/media_page.dart';
 import 'package:tracklist_app/views/widgets/media_card_widget.dart';
 
 class SearchPage extends StatefulWidget {
@@ -46,7 +46,7 @@ class _SearchPageState extends State<SearchPage> {
       context,
       MaterialPageRoute(
         builder: (context) {
-          return ArtistPage(media: media);
+          return MediaPage(media: media);
         },
       ),
     );
