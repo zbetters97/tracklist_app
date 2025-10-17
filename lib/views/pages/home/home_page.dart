@@ -64,17 +64,13 @@ class _HomePageState extends State<HomePage> {
     lastNewReviewDoc = newReviews.isNotEmpty ? newReviews.last.doc : null;
     lastPopularReviewDoc = popularReviews.isNotEmpty ? popularReviews.last.doc : null;
 
-    setState(() {
-      isLoading = false;
-    });
+    setState(() => isLoading = false);
   }
 
   void setReviews(int tabIndex) {
     if (currentTab == tabIndex) return;
 
-    setState(() {
-      currentTab = tabIndex;
-    });
+    setState(() => currentTab = tabIndex);
   }
 
   Future<void> loadMoreNewReviews() async {
@@ -93,17 +89,13 @@ class _HomePageState extends State<HomePage> {
       });
     }
 
-    setState(() {
-      isLoadingNew = false;
-    });
+    setState(() => isLoadingNew = false);
   }
 
   Future<void> loadMorePopularReviews() async {
     if (popularReviews.isEmpty || isLoadingPopular) return;
 
-    setState(() {
-      isLoadingPopular = true;
-    });
+    setState(() => isLoadingPopular = true);
 
     final List<Review> morePopularReviews = await getPopularReviews(lastDoc: lastPopularReviewDoc);
 
@@ -114,9 +106,7 @@ class _HomePageState extends State<HomePage> {
       });
     }
 
-    setState(() {
-      isLoadingPopular = false;
-    });
+    setState(() => isLoadingPopular = false);
   }
 
   Future<void> refreshReviews() async {
@@ -130,6 +120,7 @@ class _HomePageState extends State<HomePage> {
       lastNewReviewDoc = null;
       lastPopularReviewDoc = null;
     });
+
     getReviews();
   }
 
@@ -148,20 +139,10 @@ class _HomePageState extends State<HomePage> {
                       index: currentTab,
                       children: [
                         newReviews.isEmpty
-                            ? Center(
-                                child: Text(
-                                  "No reviews found!",
-                                  style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic, fontSize: 24),
-                                ),
-                              )
+                            ? buildEmptyReviewsMessage()
                             : buildReviewsList(newReviews, isLoadingNew, newReviewsController),
                         popularReviews.isEmpty
-                            ? Center(
-                                child: Text(
-                                  "No reviews found!",
-                                  style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic, fontSize: 24),
-                                ),
-                              )
+                            ? buildEmptyReviewsMessage()
                             : buildReviewsList(popularReviews, isLoadingPopular, popularReviewsController),
                       ],
                     ),
@@ -227,6 +208,15 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget buildEmptyReviewsMessage() {
+    return Center(
+      child: Text(
+        "No reviews found!",
+        style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic, fontSize: 24),
       ),
     );
   }

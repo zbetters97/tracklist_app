@@ -4,7 +4,7 @@ import 'package:tracklist_app/data/utils/notifiers.dart';
 
 // Used to navigate between pages
 final GlobalKey<NavigatorState> homeNavigatorKey = GlobalKey<NavigatorState>();
-final GlobalKey<NavigatorState> profileNavigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> searchNavigatorKey = GlobalKey<NavigatorState>();
 
 class NavitemWidget extends StatelessWidget {
   const NavitemWidget({super.key, required this.icon, required this.index, required this.selectedPage});
@@ -32,10 +32,8 @@ class NavitemWidget extends StatelessWidget {
           onPressed: () {
             if (index == 0) {
               homeNavigatorKey.currentState?.popUntil((route) => route.isFirst);
-            }
-
-            if (index == 4) {
-              profileNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+            } else if (index == 2) {
+              searchNavigatorKey.currentState?.popUntil((route) => route.isFirst);
             }
 
             selectedPageNotifier.value = index;

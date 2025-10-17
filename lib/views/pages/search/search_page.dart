@@ -5,7 +5,10 @@ import 'package:tracklist_app/views/pages/media/artist_page.dart';
 import 'package:tracklist_app/views/widgets/media_card_widget.dart';
 
 class SearchPage extends StatefulWidget {
-  const SearchPage({super.key});
+  const SearchPage({super.key, required this.onOpenMedia});
+
+  // Callback to open the media page
+  final void Function(Media media) onOpenMedia;
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -124,7 +127,7 @@ class _SearchPageState extends State<SearchPage> {
               final result = searchList[index];
               return Center(
                 child: GestureDetector(
-                  onTap: () => sendToMediaPage(context, result),
+                  onTap: () => widget.onOpenMedia(result),
                   child: MediaCardWidget(media: result),
                 ),
               );

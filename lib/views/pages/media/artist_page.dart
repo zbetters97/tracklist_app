@@ -68,31 +68,29 @@ class _ArtistPageState extends State<ArtistPage> {
     return Scaffold(
       appBar: MyAppBar(title: media.name),
       backgroundColor: BACKGROUND_COLOR,
-      body: SingleChildScrollView(
-        child: Center(
-          child: isLoading
-              ? CircularProgressIndicator(color: PRIMARY_COLOR_DARK)
-              : Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Column(
-                        children: [
-                          buildMediaImage(media.spotify, media.image, media.name),
-                          const SizedBox(height: 12),
-                          RatingBar(ratings: ratings),
-                          const SizedBox(height: 12),
-                          buildMediaReviews(avgRating, reviews.length),
-                          const SizedBox(height: 20),
-                          buildMediaButtons(),
-                        ],
-                      ),
-                    ],
-                  ),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Column(
+                      children: [
+                        buildMediaImage(media.spotify, media.image, media.name),
+                        const SizedBox(height: 12),
+                        RatingBar(ratings: ratings),
+                        const SizedBox(height: 12),
+                        buildMediaReviews(avgRating, reviews.length),
+                        const SizedBox(height: 20),
+                        buildMediaButtons(),
+                      ],
+                    ),
+                  ],
                 ),
-        ),
-      ),
+              ),
+            ),
     );
   }
 
