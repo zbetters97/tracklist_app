@@ -13,6 +13,7 @@ class MediaCardWidget extends StatefulWidget {
 }
 
 class _MediaCardWidgetState extends State<MediaCardWidget> {
+  Media get media => widget.media;
   double rating = 0.0;
 
   @override
@@ -22,7 +23,7 @@ class _MediaCardWidgetState extends State<MediaCardWidget> {
   }
 
   void fetchRating() async {
-    double fetchedRating = await getAvgRating(widget.media.id);
+    double fetchedRating = await getAvgRating(media.id);
 
     setState(() {
       rating = fetchedRating;
@@ -32,7 +33,7 @@ class _MediaCardWidgetState extends State<MediaCardWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 275.0,
+      width: 300.0,
       padding: EdgeInsets.only(top: 5, bottom: 5),
       child: Card(
         color: Colors.white,
@@ -42,24 +43,36 @@ class _MediaCardWidgetState extends State<MediaCardWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  boxShadow: [BoxShadow(color: Colors.black.withAlpha(120), blurRadius: 8, offset: Offset(0, 4))],
-                ),
-                child: Image.network(widget.media.image, width: 250, height: 250, fit: BoxFit.cover),
-              ),
+              buildMediaImage(media.image),
               const SizedBox(height: 10.0),
-              Text(
-                widget.media.name,
-                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20.0),
-                textAlign: TextAlign.center,
-              ),
+              buildMediaName(media.name),
               const SizedBox(height: 10.0),
               buildStarRating(rating, isCentered: true),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget buildMediaImage(String imageUrl) {
+    Image mediaImage = imageUrl.startsWith("http")
+        ? Image.network(imageUrl, width: 275, height: 275, fit: BoxFit.cover)
+        : Image.asset(imageUrl, width: 275, height: 275, fit: BoxFit.cover);
+
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: [BoxShadow(color: Colors.black.withAlpha(120), blurRadius: 8, offset: Offset(0, 4))],
+      ),
+      child: mediaImage,
+    );
+  }
+
+  Widget buildMediaName(String name) {
+    return Text(
+      name,
+      style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20.0),
+      textAlign: TextAlign.center,
     );
   }
 }

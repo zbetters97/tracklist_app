@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/data/classes/auth_user_class.dart';
 import 'package:tracklist_app/data/classes/media_class.dart';
 import 'package:tracklist_app/data/classes/review_class.dart';
 import 'package:tracklist_app/data/constants.dart';
@@ -18,22 +19,26 @@ class ReviewPage extends StatefulWidget {
   State<ReviewPage> createState() => _ReviewPageState();
 }
 
-void sendToMediaPage(BuildContext context, Media media) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) {
-        return ArtistPage(media: media);
-      },
-    ),
-  );
-}
-
-void sendToUserPage(BuildContext context, String uid) {
-  Navigator.push(context, MaterialPageRoute(builder: (context) => UserPage(uid: uid)));
-}
-
 class _ReviewPageState extends State<ReviewPage> {
+  Review get review => widget.review;
+  Media get media => widget.review.media;
+  AuthUser get user => widget.review.user;
+
+  void sendToMediaPage(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return ArtistPage(media: media);
+        },
+      ),
+    );
+  }
+
+  void sendToUserPage(BuildContext context) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => UserPage(uid: user.uid)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,16 +50,11 @@ class _ReviewPageState extends State<ReviewPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              buildMediaBanner(widget.review.media.image, widget.review.category, widget.review.media.name),
+              buildMediaBanner(media.image, review.category, media.name),
               const SizedBox(height: 24),
-              buildReviewHeader(
-                widget.review.user.username,
-                widget.review.user.profileUrl,
-                widget.review.createdAt.toDate(),
-                widget.review.rating,
-              ),
+              buildReviewHeader(user.username, user.profileUrl, review.createdAt, review.rating),
               const SizedBox(height: 12),
-              buildReviewContent(widget.review.content),
+              buildReviewContent(review.content),
             ],
           ),
         ),
@@ -62,7 +62,7 @@ class _ReviewPageState extends State<ReviewPage> {
     );
   }
 
-  Widget buildMediaBanner(String image, String category, String name) {
+  Widget buildMediaBanner(String imageUrl, String category, String name) {
     Icon mediaIcon = category == "artist"
         ? Icon(Icons.person, color: Colors.grey, size: 28)
         : category == "album"
@@ -70,16 +70,21 @@ class _ReviewPageState extends State<ReviewPage> {
         : Icon(Icons.music_note, color: Colors.grey, size: 28);
 
     return GestureDetector(
-      onTap: () => sendToMediaPage(context, widget.review.media),
+      onTap: () => sendToMediaPage(context),
       child: Column(
         children: [
-          Image.network(image, width: 275, height: 275, fit: BoxFit.cover),
+          Container(
+            decoration: BoxDecoration(
+              boxShadow: [BoxShadow(color: Colors.black.withAlpha(75), blurRadius: 12, offset: Offset(0, 4))],
+            ),
+            child: Image.network(imageUrl, width: 275, height: 275, fit: BoxFit.cover),
+          ),
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               mediaIcon,
-              SizedBox(width: 5),
+              const SizedBox(width: 5),
               Flexible(
                 child: Text(
                   name,
@@ -102,7 +107,7 @@ class _ReviewPageState extends State<ReviewPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        GestureDetector(onTap: () => sendToUserPage(context, widget.review.user.uid), child: profileImage),
+        GestureDetector(onTap: () => sendToUserPage(context), child: profileImage),
         const SizedBox(width: 8),
         Expanded(
           child: Column(
@@ -116,7 +121,7 @@ class _ReviewPageState extends State<ReviewPage> {
                     TextSpan(
                       text: username,
                       style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                      recognizer: TapGestureRecognizer()..onTap = () => sendToUserPage(context, widget.review.user.uid),
+                      recognizer: TapGestureRecognizer()..onTap = () => sendToUserPage(context),
                     ),
                   ],
                 ),

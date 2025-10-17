@@ -20,6 +20,7 @@ class UserPage extends StatefulWidget {
 class _UserPageState extends State<UserPage> {
   bool isLoading = true;
   late AuthUser user;
+  bool isLoggedInUser = false;
 
   @override
   void initState() {
@@ -31,15 +32,16 @@ class _UserPageState extends State<UserPage> {
     isLoading = true;
 
     String uid = widget.uid == "" ? authUser.value!.uid : widget.uid;
-    AuthUser tempUser = await authService.value.getUserById(userId: uid);
+    AuthUser fetchedUser = await authService.value.getUserById(userId: uid);
 
     // User is on their own profile, go to Profile tab
     if (uid == authUser.value!.uid) {
       selectedPageNotifier.value = 4;
+      isLoggedInUser = true;
     }
 
     setState(() {
-      user = tempUser;
+      user = fetchedUser;
       isLoading = false;
     });
   }
@@ -73,8 +75,8 @@ class _UserPageState extends State<UserPage> {
           const SizedBox(height: 4),
           buildBio(user.bio),
           const SizedBox(height: 4),
-          buildUserDate(user.createdAt.toDate()),
-          ListTile(onTap: onLogoutPressed, title: const Text("Logout")),
+          buildUserDate(user.createdAt),
+          if (isLoggedInUser) ListTile(onTap: onLogoutPressed, title: const Text("Logout")),
         ],
       ),
     );

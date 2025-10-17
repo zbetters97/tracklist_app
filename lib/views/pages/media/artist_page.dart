@@ -38,9 +38,9 @@ class _ArtistPageState extends State<ArtistPage> {
       isLoading = true;
     });
 
-    List<Review> fetchedReviews = await getReviewsByMediaId(widget.media.id);
-    double fetchedAvgRating = await getAvgRating(widget.media.id);
-    QuerySnapshot fetchedRatings = await getRatings(widget.media.id);
+    List<Review> fetchedReviews = await getReviewsByMediaId(media.id);
+    double fetchedAvgRating = await getAvgRating(media.id);
+    QuerySnapshot fetchedRatings = await getRatings(media.id);
 
     setState(() {
       reviews = fetchedReviews;
@@ -66,7 +66,7 @@ class _ArtistPageState extends State<ArtistPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(title: widget.media.name),
+      appBar: MyAppBar(title: media.name),
       backgroundColor: BACKGROUND_COLOR,
       body: SingleChildScrollView(
         child: Center(
@@ -101,7 +101,12 @@ class _ArtistPageState extends State<ArtistPage> {
       onTap: () async => launchSpotify(spotifyUrl),
       child: Column(
         children: [
-          Image.network(imageUrl, width: 275, height: 275, fit: BoxFit.cover),
+          Container(
+            decoration: BoxDecoration(
+              boxShadow: [BoxShadow(color: Colors.black.withAlpha(75), blurRadius: 12, offset: Offset(0, 4))],
+            ),
+            child: Image.network(imageUrl, width: 275, height: 275, fit: BoxFit.cover),
+          ),
           const SizedBox(height: 8),
           Text(
             name,

@@ -46,7 +46,9 @@ class _RatingBarState extends State<RatingBar> {
       spacing: 2,
       children: ratings.keys.map((rating) {
         final int count = ratings[rating] ?? 0;
-        final double percentage = (count / totalRatings).clamp(0.05, 1.0); // Minimum of 5%, maximum of 100%
+
+        // Minimum of 5%, maximum of 100%
+        final double percentage = totalRatings == 0 ? 0.05 : (count / totalRatings).clamp(0.05, 1.0);
 
         return Tooltip(
           message: "$count ratings",

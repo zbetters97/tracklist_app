@@ -41,7 +41,7 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       buildUserInfo(user.username, user.profileUrl),
-                      buildReviewDate(review.createdAt.toDate()),
+                      buildReviewDate(review.createdAt),
                       buildMediaName(review.category, media.name),
                       buildStarRating(review.rating),
                     ],

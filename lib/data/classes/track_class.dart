@@ -1,5 +1,4 @@
 import 'package:tracklist_app/data/classes/media_class.dart';
-import 'package:tracklist_app/data/constants.dart';
 
 class Track extends Media {
   final String artist;
@@ -24,7 +23,7 @@ class Track extends Media {
       name: json['name'],
       artist: json['artist'],
       album: json['album'],
-      image: json['image'] ?? DEFAULT_MEDIA_IMG,
+      image: json['image'],
       trackNumber: json['track_number'],
       releaseDate: json['release_date'],
       spotify: json['spotify'],

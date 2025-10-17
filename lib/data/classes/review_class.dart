@@ -4,7 +4,7 @@ import 'package:tracklist_app/data/classes/media_class.dart';
 
 class Review {
   final String reviewId;
-  final Timestamp createdAt;
+  final DateTime createdAt;
   final String category;
   final double rating;
   final String content;
@@ -37,7 +37,7 @@ class Review {
   }) {
     return Review(
       reviewId: json['reviewId'],
-      createdAt: json['createdAt'],
+      createdAt: (json['createdAt'] as Timestamp).toDate(),
       category: json['category'],
       rating: (json['rating'] as num).toDouble(),
       content: json['content'],

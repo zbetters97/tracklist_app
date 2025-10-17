@@ -18,10 +18,10 @@ const Color BACKGROUND_COLOR = Color.fromARGB(255, 21, 20, 26);
 const String LOGO_IMG_LG = 'assets/images/logo-primary-large.png';
 const String LOGO_IMG_SM = 'assets/images/logo-primary-small.png';
 
-const String DEFAULT_MEDIA_IMG = 'assets/images/default-image.jpg';
+const String DEFAULT_MEDIA_IMG = 'assets/images/default-media-image.jpg';
 const String DEFAULT_PROFILE_IMG = 'assets/images/default-profile-image.jpg';
 
 const int EARLIEST_DATE = 1000;
 const int MAX_REVIEWS = 3;
 
-const MAX_LIMIT = 15;
+const int MAX_LIMIT = 15;

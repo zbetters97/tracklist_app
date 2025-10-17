@@ -35,44 +35,11 @@ Future<List<Media>> searchByCategory({required String category, required String 
   List<Media> media = [];
 
   if (category == "artist") {
-    media = data['artists']['items']
-        .map<Artist>(
-          (artist) => Artist.fromJson({
-            'name': artist['name'],
-            'id': artist['id'],
-            'image': artist['images'].isNotEmpty ? artist['images'][0]['url'] : "",
-            'spotify': artist['external_urls']['spotify'],
-          }),
-        )
-        .toList();
+    media = data['artists']['items'].map<Artist>((artist) => parseSpotifyArtist(artist)).toList();
   } else if (category == "album") {
-    media = data['albums']['items']
-        .map<Album>(
-          (album) => Album.fromJson({
-            'name': album['name'],
-            'id': album['id'],
-            'artist': album['artists'][0]['name'],
-            'image': album['images'].isNotEmpty ? album['images'][0]['url'] : "",
-            'release_date': album['release_date'],
-            'spotify': album['external_urls']['spotify'],
-          }),
-        )
-        .toList();
+    media = data['albums']['items'].map<Album>((album) => parseSpotifyAlbum(album)).toList();
   } else if (category == "track") {
-    media = data['tracks']['items']
-        .map<Track>(
-          (track) => Track.fromJson({
-            'name': track['name'],
-            'id': track['id'],
-            'artist': track['artists'][0]['name'],
-            'album': track['album']['name'],
-            'image': track['album']['images'].isNotEmpty ? track['album']['images'][0]['url'] : "",
-            'track_number': track['track_number'],
-            'release_date': track['album']['release_date'],
-            'spotify': track['external_urls']['spotify'],
-          }),
-        )
-        .toList();
+    media = data['tracks']['items'].map<Track>((track) => parseSpotifyTrack(track)).toList();
   }
 
   return media;
@@ -100,15 +67,7 @@ Future<List<Artist>> searchArtists({required String artist, int limit = MAX_LIMI
 
   final data = jsonDecode(response.body);
 
-  return data['artists']['items']
-      .map<Artist>(
-        (artist) => Artist.fromJson({
-          'name': artist['name'],
-          'id': artist['id'],
-          'image': artist['images'].isNotEmpty ? artist['images'][0]['url'] : "",
-        }),
-      )
-      .toList();
+  return data['artists']['items'].map<Artist>((artist) => parseSpotifyArtist(artist)).toList();
 }
 
 /// Search albums by name on Spotify
@@ -139,17 +98,7 @@ Future<List<Album>> searchAlbums({required String album, int limit = MAX_LIMIT})
   final data = jsonDecode(response.body);
 
   // Return list of albums
-  return data['albums']['items']
-      .map<Album>(
-        (album) => Album.fromJson({
-          'name': album['name'],
-          'id': album['id'],
-          'artist': album['artists'][0]['name'],
-          'image': album['images'].isNotEmpty ? album['images'][0]['url'] : "",
-          'release_date': album['release_date'],
-        }),
-      )
-      .toList();
+  return data['albums']['items'].map<Album>((album) => parseSpotifyAlbum(album)).toList();
 }
 
 /// Search tracks by name on Spotify
@@ -180,17 +129,7 @@ Future<List<Album>> searchTracks({required String track, int limit = MAX_LIMIT})
   final data = jsonDecode(response.body);
 
   // Return list of tracks
-  return data['tracks']['items']
-      .map<Track>(
-        (track) => Track.fromJson({
-          'name': track['name'],
-          'id': track['id'],
-          'artist': track['artists'][0]['name'],
-          'image': track['images'].isNotEmpty ? track['images'][0]['url'] : "",
-          'release_date': track['release_date'],
-        }),
-      )
-      .toList();
+  return data['tracks']['items'].map<Track>((track) => parseSpotifyTrack(track)).toList();
 }
 
 /// Get media by the ID and category on Spotify
@@ -228,12 +167,7 @@ Future<Artist> getArtistById(String artistId) async {
 
   final artist = jsonDecode(response.body);
 
-  return Artist.fromJson({
-    'name': artist['name'],
-    'id': artist['id'],
-    'image': artist['images'].isNotEmpty ? artist['images'][0]['url'] : "",
-    'spotify': artist['external_urls']['spotify'],
-  });
+  return parseSpotifyArtist(artist);
 }
 
 /// Get album by ID on Spotify
@@ -257,14 +191,7 @@ Future<Album> getAlbumById(String albumId) async {
 
   final album = jsonDecode(response.body);
 
-  return Album.fromJson({
-    'name': album['name'],
-    'id': album['id'],
-    'artist': album['artists'][0]['name'],
-    'image': album['images'].isNotEmpty ? album['images'][0]['url'] : "",
-    'release_date': album['release_date'],
-    'spotify': album['external_urls']['spotify'],
-  });
+  return parseSpotifyAlbum(album);
 }
 
 /// Get track by ID on Spotify
@@ -288,16 +215,7 @@ Future<Track> getTrackById(String trackId) async {
 
   final track = jsonDecode(response.body);
 
-  return Track.fromJson({
-    'name': track['name'],
-    'id': track['id'],
-    'artist': track['artists'][0]['name'],
-    'album': track['album']['name'],
-    'image': track['album']['images'].isNotEmpty ? track['album']['images'][0]['url'] : "",
-    'track_number': track['track_number'],
-    'release_date': track['album']['release_date'],
-    'spotify': track['external_urls']['spotify'],
-  });
+  return parseSpotifyTrack(track);
 }
 
 /// Get albums by artist ID on Spotify
@@ -322,18 +240,7 @@ Future<List<Album>> getArtistAlbums({required String artistId, int limit = 5}) a
 
   final data = jsonDecode(response.body);
 
-  return data['items']
-      .map<Album>(
-        (album) => Album.fromJson({
-          'name': album['name'],
-          'id': album['id'],
-          'artist': album['artists'][0]['name'],
-          'image': album['images'].isNotEmpty ? album['images'][0]['url'] : "",
-          'release_date': album['release_date'],
-          'spotify': album['external_urls']['spotify'],
-        }),
-      )
-      .toList();
+  return data['items'].map<Album>((album) => parseSpotifyAlbum(album)).toList();
 }
 
 /// Get tracks by album ID on Spotify
@@ -357,18 +264,47 @@ Future<List<Track>> getAlbumTracks(String albumId) async {
 
   final data = jsonDecode(response.body);
 
-  return data['items']
-      .map<Track>(
-        (track) => Track.fromJson({
-          'name': track['name'],
-          'id': track['id'],
-          'artist': track['artists'][0]['name'],
-          'album': track['album']['name'],
-          'image': track['album']['images'].isNotEmpty ? track['album']['images'][0]['url'] : "",
-          'track_number': track['track_number'],
-          'release_date': track['album']['release_date'],
-          'spotify': track['external_urls']['spotify'],
-        }),
-      )
-      .toList();
+  return data['items'].map<Track>((track) => parseSpotifyTrack(track)).toList();
+}
+
+/// Create an Artist object from a map
+/// [artist] The artist map from the Spotify API
+/// Returns an Artist object
+Artist parseSpotifyArtist(Map<String, dynamic> artist) {
+  return Artist.fromJson({
+    'name': artist['name'],
+    'id': artist['id'],
+    'image': artist['images'].isNotEmpty ? artist['images'][0]['url'] : DEFAULT_MEDIA_IMG,
+    'spotify': artist['external_urls']['spotify'],
+  });
+}
+
+/// Create an Album object from a map
+/// [album] The album map from the Spotify API
+/// Returns an Album object
+Album parseSpotifyAlbum(Map<String, dynamic> album) {
+  return Album.fromJson({
+    'name': album['name'],
+    'id': album['id'],
+    'artist': album['artists'][0]['name'],
+    'image': album['images'].isNotEmpty ? album['images'][0]['url'] : DEFAULT_MEDIA_IMG,
+    'release_date': album['release_date'],
+    'spotify': album['external_urls']['spotify'],
+  });
+}
+
+/// Create a Track object from a map
+/// [track] The track map from the Spotify API
+/// Returns a Track object
+Track parseSpotifyTrack(Map<String, dynamic> track) {
+  return Track.fromJson({
+    'name': track['name'],
+    'id': track['id'],
+    'artist': track['artists'][0]['name'],
+    'album': track['album']['name'],
+    'image': track['album']['images'].isNotEmpty ? track['album']['images'][0]['url'] : DEFAULT_MEDIA_IMG,
+    'track_number': track['track_number'],
+    'release_date': track['album']['release_date'],
+    'spotify': track['external_urls']['spotify'],
+  });
 }

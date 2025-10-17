@@ -92,7 +92,7 @@ class AuthService {
           email: data["email"],
           username: data["username"],
           displayname: data["displayname"],
-          createdAt: data["createdAt"],
+          createdAt: (data["createdAt"] as Timestamp).toDate(),
           bio: data["bio"],
           profileUrl: data["profileUrl"],
         );
@@ -155,7 +155,7 @@ class AuthService {
         email: user["email"],
         username: user["username"],
         displayname: user["displayname"],
-        createdAt: user["createdAt"],
+        createdAt: (user["createdAt"] as Timestamp).toDate(),
         bio: user["bio"],
         profileUrl: user["profileUrl"],
       );

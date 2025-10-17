@@ -5,7 +5,7 @@ class AuthUser {
   final String email;
   final String username;
   final String displayname;
-  final Timestamp createdAt;
+  final DateTime createdAt;
   final String bio;
   final String profileUrl;
 
@@ -25,7 +25,7 @@ class AuthUser {
       email: json['email'],
       username: json['username'],
       displayname: json['displayname'],
-      createdAt: json['createdAt'],
+      createdAt: (json['createdAt'] as Timestamp).toDate(),
       bio: json['bio'],
       profileUrl: json['profileUrl'],
     );
