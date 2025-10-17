@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/constants.dart';
 import 'package:tracklist_app/services/auth_service.dart';
 import 'package:tracklist_app/views/widget_tree.dart';
-import 'package:tracklist_app/views/widgets/auth_text_field.dart';
+import 'package:tracklist_app/views/pages/auth/widgets/auth_text_field.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key, required this.isRegistration});

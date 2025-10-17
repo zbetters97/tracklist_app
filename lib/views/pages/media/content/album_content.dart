@@ -1,55 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/classes/album_class.dart';
-import 'package:tracklist_app/data/classes/artist_class.dart';
 import 'package:tracklist_app/data/classes/review_class.dart';
 import 'package:tracklist_app/data/classes/track_class.dart';
 import 'package:tracklist_app/data/constants.dart';
 import 'package:tracklist_app/services/review_service.dart';
 import 'package:tracklist_app/services/spotify_service.dart';
-import 'package:tracklist_app/views/widgets/media_card_widget.dart';
-import 'package:tracklist_app/views/widgets/review_card_widget.dart';
+import 'package:tracklist_app/views/pages/media/content/media_reviews_content.dart';
+import 'package:tracklist_app/views/pages/media/media_page.dart';
+import 'package:tracklist_app/views/pages/media/widgets/track_card_widget.dart';
 
-class ArtistContent extends StatefulWidget {
-  const ArtistContent({super.key, required this.artist});
+class AlbumContent extends StatefulWidget {
+  const AlbumContent({super.key, required this.album});
 
-  final Artist artist;
+  final Album album;
 
   @override
-  State<ArtistContent> createState() => _ArtistContentState();
+  State<AlbumContent> createState() => _AlbumContentState();
 }
 
-class _ArtistContentState extends State<ArtistContent> {
+class _AlbumContentState extends State<AlbumContent> {
   bool isLoading = true;
   int currentTab = 0;
 
-  List<Album> albums = [];
-  List<Track> singles = [];
+  List<Track> tracks = [];
   List<Review> reviews = [];
 
   @override
   void initState() {
     super.initState();
-    fetchAlbums();
+    fetchTracks();
   }
 
-  void fetchAlbums() async {
+  void fetchTracks() async {
     setState(() => isLoading = true);
 
-    List<Album> fetchedAlbums = await getArtistAlbums(artistId: widget.artist.id);
+    List<Track> fetchedTracks = await getAlbumTracks(widget.album.id, widget.album);
 
     setState(() {
-      albums = fetchedAlbums;
-      isLoading = false;
-    });
-  }
-
-  void fetchSingles() async {
-    setState(() => isLoading = true);
-
-    List<Track> fetchedSingles = await getArtistSingles(artistId: widget.artist.id);
-
-    setState(() {
-      singles = fetchedSingles;
+      tracks = fetchedTracks;
       isLoading = false;
     });
   }
@@ -57,7 +45,7 @@ class _ArtistContentState extends State<ArtistContent> {
   void fetchReviews() async {
     setState(() => isLoading = true);
 
-    List<Review> fetchedReviews = await getReviewsByMediaId(widget.artist.id);
+    List<Review> fetchedReviews = await getReviewsByMediaId(widget.album.id);
 
     setState(() {
       reviews = fetchedReviews;
@@ -78,13 +66,9 @@ class _ArtistContentState extends State<ArtistContent> {
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [buildTab(0, "Albums"), buildTab(1, "Singles"), buildTab(2, "Reviews")],
+            children: [buildTab(0, "Tracks"), buildTab(1, "Reviews")],
           ),
-          currentTab == 0
-              ? buildAlbumsList()
-              : currentTab == 1
-              ? buildSinglesList()
-              : buildReviewsList(),
+          currentTab == 0 ? buildTracksList() : MediaReviews(reviews: reviews, isLoading: isLoading),
         ],
       ),
     );
@@ -93,13 +77,13 @@ class _ArtistContentState extends State<ArtistContent> {
   Widget buildTab(int index, String title) {
     return GestureDetector(
       onTap: () => setState(() {
+        if (currentTab == index) return;
+
         currentTab = index;
 
         if (currentTab == 0) {
-          fetchAlbums();
+          fetchTracks();
         } else if (currentTab == 1) {
-          fetchSingles();
-        } else if (currentTab == 2) {
           fetchReviews();
         }
       }),
@@ -127,50 +111,27 @@ class _ArtistContentState extends State<ArtistContent> {
     );
   }
 
-  Widget buildAlbumsList() {
+  Widget buildTracksList() {
     if (isLoading) {
       return Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK));
     }
-    if (albums.isEmpty) {
-      return Text("No albums found");
-    }
-
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(spacing: 12.0, children: [...albums.map((album) => MediaCardWidget(media: album))]),
-    );
-  }
-
-  Widget buildSinglesList() {
-    if (isLoading) {
-      return Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK));
-    }
-    if (singles.isEmpty) {
-      return Text("No singles found");
-    }
-
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(spacing: 12.0, children: [...singles.map((single) => MediaCardWidget(media: single))]),
-    );
-  }
-
-  Widget buildReviewsList() {
-    if (isLoading) {
-      return Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK));
-    }
-    if (reviews.isEmpty) {
-      return Text("No reviews found");
+    if (tracks.isEmpty) {
+      return Text("No tracks found");
     }
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
-        spacing: 12.0,
+        spacing: 16.0,
         children: [
-          ...reviews.map((review) {
-            return Text(review.content);
-          }),
+          ...tracks.map(
+            (track) => GestureDetector(
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => MediaPage(media: track)));
+              },
+              child: TrackCardWidget(track: track),
+            ),
+          ),
         ],
       ),
     );

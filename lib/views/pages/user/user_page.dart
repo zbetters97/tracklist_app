@@ -7,7 +7,7 @@ import 'package:tracklist_app/data/utils/string_extensions.dart';
 import 'package:tracklist_app/services/auth_service.dart';
 import 'package:tracklist_app/views/pages/welcome/welcome_page.dart';
 import 'package:tracklist_app/views/widgets/my_app_bar.dart';
-import 'package:tracklist_app/views/widgets/user_app_bar.dart';
+import 'package:tracklist_app/views/pages/user/widgets/user_app_bar.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key, this.uid = ""});

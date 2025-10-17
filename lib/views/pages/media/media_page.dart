@@ -1,13 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/data/classes/album_class.dart';
 import 'package:tracklist_app/data/classes/artist_class.dart';
 import 'package:tracklist_app/data/classes/media_class.dart';
 import 'package:tracklist_app/data/classes/review_class.dart';
+import 'package:tracklist_app/data/classes/track_class.dart';
 import 'package:tracklist_app/data/constants.dart';
 import 'package:tracklist_app/services/review_service.dart';
-import 'package:tracklist_app/views/pages/media/artist_content.dart';
+import 'package:tracklist_app/views/pages/media/content/album_content.dart';
+import 'package:tracklist_app/views/pages/media/content/artist_content.dart';
+import 'package:tracklist_app/views/pages/media/content/track_content.dart';
 import 'package:tracklist_app/views/widgets/my_app_bar.dart';
-import 'package:tracklist_app/views/widgets/ratings_bar_widget.dart';
+import 'package:tracklist_app/views/pages/media/widgets/ratings_bar_widget.dart';
 import 'package:tracklist_app/views/widgets/stars_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -98,7 +102,9 @@ class _MediaPageState extends State<MediaPage> {
                     buildMediaReviews(avgRating, reviews.length),
                     const SizedBox(height: 20),
                     buildMediaButtons(),
-                    ArtistContent(artist: media as Artist),
+                    if (media is Artist) ArtistContent(artist: media as Artist),
+                    if (media is Album) AlbumContent(album: media as Album),
+                    if (media is Track) TrackContent(track: media as Track),
                   ],
                 ),
               ),
@@ -139,7 +145,7 @@ class _MediaPageState extends State<MediaPage> {
               style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(width: 5),
-            buildStarRating(avgRating),
+            StarRating(rating: avgRating),
             const SizedBox(width: 5),
             Text(
               "(${totalReviews.toString()})",

@@ -47,7 +47,7 @@ class _MediaCardWidgetState extends State<MediaCardWidget> {
               const SizedBox(height: 10.0),
               buildMediaName(media.name),
               const SizedBox(height: 10.0),
-              buildStarRating(rating, isCentered: true),
+              StarRating(rating: rating, isCentered: true),
             ],
           ),
         ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/classes/media_class.dart';
 import 'package:tracklist_app/services/spotify_service.dart';
 import 'package:tracklist_app/views/pages/media/media_page.dart';
-import 'package:tracklist_app/views/widgets/media_card_widget.dart';
+import 'package:tracklist_app/views/pages/media/widgets/media_card_widget.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key, required this.onOpenMedia});
@@ -30,7 +30,7 @@ class _SearchPageState extends State<SearchPage> {
     String categoryQuery = selectedCategory;
     String mediaQuery = searchController.text;
 
-    final List<Media> media = await searchByCategory(category: categoryQuery, name: mediaQuery);
+    final List<Media> media = await searchByCategory(categoryQuery, mediaQuery);
 
     if (media.isEmpty) return;
 

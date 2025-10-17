@@ -43,7 +43,7 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
                       buildUserInfo(user.username, user.profileUrl),
                       buildReviewDate(review.createdAt),
                       buildMediaName(review.category, media.name),
-                      buildStarRating(review.rating),
+                      StarRating(rating: review.rating),
                     ],
                   ),
                 ),

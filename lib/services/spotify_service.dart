@@ -15,7 +15,7 @@ final SpotifyAuth _auth = SpotifyAuth(clientId: CLIENT_ID, clientSecret: CLIENT_
 /// [name] The name of the media
 /// [limit] The maximum number of entries to return
 /// Returns a list of Media objects
-Future<List<Media>> searchByCategory({required String category, required String name, int limit = MAX_LIMIT}) async {
+Future<List<Media>> searchByCategory(String category, String name, {int limit = MAX_LIMIT}) async {
   final token = await _auth.getAccessToken();
 
   if (token == null) {
@@ -49,7 +49,7 @@ Future<List<Media>> searchByCategory({required String category, required String 
 /// [artist] The name of the artist
 /// [limit] The maximum number of artists to return
 /// Returns a list of Artist objects
-Future<List<Artist>> searchArtists({required String artist, int limit = MAX_LIMIT}) async {
+Future<List<Artist>> searchArtists(String artist, {int limit = MAX_LIMIT}) async {
   final token = await _auth.getAccessToken();
 
   if (token == null) {
@@ -74,7 +74,7 @@ Future<List<Artist>> searchArtists({required String artist, int limit = MAX_LIMI
 /// [album] The name of the album
 /// [limit] The maximum number of albums to return
 /// Returns a list of Album objects
-Future<List<Album>> searchAlbums({required String album, int limit = MAX_LIMIT}) async {
+Future<List<Album>> searchAlbums(String album, {int limit = MAX_LIMIT}) async {
   // Get access token
   final token = await _auth.getAccessToken();
 
@@ -105,7 +105,7 @@ Future<List<Album>> searchAlbums({required String album, int limit = MAX_LIMIT})
 /// [track] The name of the track
 /// [limit] The maximum number of tracks to return
 /// Returns a list of Track objects
-Future<List<Album>> searchTracks({required String track, int limit = MAX_LIMIT}) async {
+Future<List<Album>> searchTracks(String track, {int limit = MAX_LIMIT}) async {
   // Get access token
   final token = await _auth.getAccessToken();
 
@@ -204,8 +204,6 @@ Future<Track> getTrackById(String trackId) async {
     throw Exception('Unable to get access token');
   }
 
-  print(trackId);
-
   final response = await http.get(
     Uri.parse('https://api.spotify.com/v1/tracks/$trackId?market=US'),
     headers: {'Authorization': 'Bearer $token'},
@@ -223,7 +221,7 @@ Future<Track> getTrackById(String trackId) async {
 /// Get albums by artist ID on Spotify
 /// [artistId] The ID of the artist
 /// Returns a list of Album objects
-Future<List<Album>> getArtistAlbums({required String artistId}) async {
+Future<List<Album>> getArtistAlbums(String artistId) async {
   final token = await _auth.getAccessToken();
 
   if (token == null) {
@@ -246,8 +244,8 @@ Future<List<Album>> getArtistAlbums({required String artistId}) async {
 
 /// Get singles by artist ID on Spotify
 /// [artistId] The ID of the artist
-/// Returns a list of Track objects
-Future<List<Track>> getArtistSingles({required String artistId}) async {
+/// Returns a list of Album objects
+Future<List<Album>> getArtistSingles(String artistId) async {
   final token = await _auth.getAccessToken();
 
   if (token == null) {
@@ -265,13 +263,13 @@ Future<List<Track>> getArtistSingles({required String artistId}) async {
 
   final data = jsonDecode(response.body);
 
-  return data['items'].map<Track>((track) => parseSpotifyTrack(track)).toList();
+  return data['items'].map<Album>((single) => parseSpotifyAlbum(single)).toList();
 }
 
 /// Get tracks by album ID on Spotify
 /// [albumId] The ID of the album
 /// Returns a list of Track objects
-Future<List<Track>> getAlbumTracks(String albumId) async {
+Future<List<Track>> getAlbumTracks(String albumId, Album album) async {
   final token = await _auth.getAccessToken();
 
   if (token == null) {
@@ -279,7 +277,7 @@ Future<List<Track>> getAlbumTracks(String albumId) async {
   }
 
   final response = await http.get(
-    Uri.parse('https://api.spotify.com/v1/albums/$albumId/tracks&market=US'),
+    Uri.parse('https://api.spotify.com/v1/albums/$albumId/tracks'),
     headers: {'Authorization': 'Bearer $token'},
   );
 
@@ -289,7 +287,20 @@ Future<List<Track>> getAlbumTracks(String albumId) async {
 
   final data = jsonDecode(response.body);
 
-  return data['items'].map<Track>((track) => parseSpotifyTrack(track)).toList();
+  return data['items']
+      .map<Track>(
+        (track) => Track.fromJson({
+          'name': track['name'],
+          'id': track['id'],
+          'artist': track['artists'][0]['name'],
+          'album': album.name,
+          'image': album.image,
+          'track_number': track['track_number'] ?? 0,
+          'release_date': album.releaseDate,
+          'spotify': track['external_urls']['spotify'],
+        }),
+      )
+      .toList();
 }
 
 /// Create an Artist object from a map

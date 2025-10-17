@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/classes/media_class.dart';
 import 'package:tracklist_app/views/pages/media/media_page.dart';
 import 'package:tracklist_app/views/pages/search/search_page.dart';
-import 'package:tracklist_app/views/widgets/nav_item_widget.dart';
+import 'package:tracklist_app/views/nav/widgets/nav_item_widget.dart';
 
 class SearchTab extends StatelessWidget {
   const SearchTab({super.key});

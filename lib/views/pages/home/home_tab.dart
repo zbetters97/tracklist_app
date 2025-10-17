@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/classes/review_class.dart';
 import 'package:tracklist_app/views/pages/home/home_page.dart';
 import 'package:tracklist_app/views/pages/review/review_page.dart';
-import 'package:tracklist_app/views/widgets/nav_item_widget.dart';
+import 'package:tracklist_app/views/nav/widgets/nav_item_widget.dart';
 
 class HomeTab extends StatelessWidget {
   const HomeTab({super.key});

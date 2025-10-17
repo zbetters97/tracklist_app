@@ -127,7 +127,7 @@ class _ReviewPageState extends State<ReviewPage> {
                 ),
               ),
               Text(formatDateMDY(date), style: TextStyle(color: Colors.grey, fontSize: 18)),
-              buildStarRating(rating),
+              StarRating(rating: rating),
             ],
           ),
         ),
