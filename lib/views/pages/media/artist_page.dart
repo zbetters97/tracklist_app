@@ -5,7 +5,7 @@ import 'package:tracklist_app/data/classes/review_class.dart';
 import 'package:tracklist_app/data/constants.dart';
 import 'package:tracklist_app/services/review_service.dart';
 import 'package:tracklist_app/views/widgets/my_app_bar.dart';
-import 'package:tracklist_app/views/widgets/rating_bar_widget.dart';
+import 'package:tracklist_app/views/widgets/ratings_bar_widget.dart';
 import 'package:tracklist_app/views/widgets/stars_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -79,16 +79,17 @@ class _ArtistPageState extends State<ArtistPage> {
                     Column(
                       children: [
                         SizedBox(
-                          height: 275 + 75 + 75,
+                          height: 275 + 75 + 75, // Image height + Ratings Bar height + gap height
                           child: Stack(
                             clipBehavior: Clip.none,
                             children: [
                               buildMediaImage(media.spotify, media.image, media.name),
                               Positioned(
-                                top: 275 + 75,
+                                top: 275 + 75, // Image height + Ratings Bar height
                                 left: 0,
                                 right: 0,
-                                child: RatingBar(ratings: ratings),
+                                height: 75, // Fixed height of 75
+                                child: RatingsBar(ratings: ratings),
                               ),
                             ],
                           ),

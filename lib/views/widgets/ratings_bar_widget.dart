@@ -1,16 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class RatingBar extends StatefulWidget {
-  const RatingBar({super.key, required this.ratings});
+class RatingsBar extends StatefulWidget {
+  const RatingsBar({super.key, required this.ratings});
 
   final QuerySnapshot ratings;
 
   @override
-  State<RatingBar> createState() => _RatingBarState();
+  State<RatingsBar> createState() => _RatingsBarState();
 }
 
-class _RatingBarState extends State<RatingBar> {
+class _RatingsBarState extends State<RatingsBar> {
   late Map<double, int> ratings;
   int totalRatings = 0;
 

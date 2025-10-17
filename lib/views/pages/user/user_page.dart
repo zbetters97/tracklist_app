@@ -31,19 +31,26 @@ class _UserPageState extends State<UserPage> {
   void fetchUser() async {
     isLoading = true;
 
+    // If no passed uid, get current user's uid
     String uid = widget.uid == "" ? authUser.value!.uid : widget.uid;
-    AuthUser fetchedUser = await authService.value.getUserById(userId: uid);
 
-    // User is on their own profile, go to Profile tab
+    // User is on their own profile, highlight Profile tab
     if (uid == authUser.value!.uid) {
       selectedPageNotifier.value = 4;
       isLoggedInUser = true;
-    }
 
-    setState(() {
-      user = fetchedUser;
-      isLoading = false;
-    });
+      setState(() {
+        user = authUser.value!;
+        isLoading = false;
+      });
+    } else {
+      AuthUser fetchedUser = await authService.value.getUserById(userId: uid);
+
+      setState(() {
+        user = fetchedUser;
+        isLoading = false;
+      });
+    }
   }
 
   void onLogoutPressed() {
@@ -75,7 +82,9 @@ class _UserPageState extends State<UserPage> {
           const SizedBox(height: 4),
           buildBio(user.bio),
           const SizedBox(height: 4),
-          buildUserDate(user.createdAt),
+          buildDate(user.createdAt),
+          const SizedBox(height: 4),
+          buildFriends(user.followers.length, user.following.length),
           if (isLoggedInUser) ListTile(onTap: onLogoutPressed, title: const Text("Logout")),
         ],
       ),
@@ -93,7 +102,7 @@ class _UserPageState extends State<UserPage> {
           children: [
             Text(user.displayname.capitalizeEachWord(), style: const TextStyle(color: Colors.white, fontSize: 20)),
             SizedBox(width: 5),
-            Text("@${user.username}"),
+            Text("@${user.username}", style: const TextStyle(color: Colors.grey, fontSize: 16)),
           ],
         ),
       ],
@@ -107,17 +116,50 @@ class _UserPageState extends State<UserPage> {
 
     return Text(
       bio,
-      style: const TextStyle(color: Colors.white, fontSize: 16, fontStyle: FontStyle.italic),
+      style: const TextStyle(color: Colors.white, fontSize: 18, fontStyle: FontStyle.italic),
     );
   }
 
-  Widget buildUserDate(DateTime joinedOn) {
+  Widget buildDate(DateTime joinedOn) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(Icons.calendar_today, color: Colors.grey, size: 20),
+        Icon(Icons.calendar_today, color: Colors.grey, size: 18),
         SizedBox(width: 2),
-        Text("Joined on ${formatDateMDYLong(joinedOn)}", style: TextStyle(fontSize: 14)),
+        Text("Joined on ${formatDateMDYLong(joinedOn)}", style: TextStyle(fontSize: 16)),
+      ],
+    );
+  }
+
+  Widget buildFriends(int followers, int following) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text.rich(
+          TextSpan(
+            style: TextStyle(color: Colors.grey, fontSize: 16),
+            children: [
+              TextSpan(
+                text: followers.toString(),
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              TextSpan(text: " followers"),
+            ],
+          ),
+        ),
+        const SizedBox(width: 10),
+        Text.rich(
+          TextSpan(
+            style: TextStyle(color: Colors.grey, fontSize: 16),
+            children: [
+              TextSpan(
+                text: following.toString(),
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              TextSpan(text: " following"),
+            ],
+          ),
+        ),
       ],
     );
   }

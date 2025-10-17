@@ -8,6 +8,8 @@ class AuthUser {
   final DateTime createdAt;
   final String bio;
   final String profileUrl;
+  final List<String> followers;
+  final List<String> following;
 
   AuthUser({
     required this.uid,
@@ -17,6 +19,8 @@ class AuthUser {
     required this.createdAt,
     required this.bio,
     required this.profileUrl,
+    required this.followers,
+    required this.following,
   });
 
   factory AuthUser.fromJson(Map<String, dynamic> json) {
@@ -25,9 +29,11 @@ class AuthUser {
       email: json['email'],
       username: json['username'],
       displayname: json['displayname'],
-      createdAt: (json['createdAt'] as Timestamp).toDate(),
+      createdAt: (json['created_at'] as Timestamp).toDate(),
       bio: json['bio'],
-      profileUrl: json['profileUrl'],
+      profileUrl: json['profile_url'],
+      followers: List<String>.from(json['followers']),
+      following: List<String>.from(json['following']),
     );
   }
 }

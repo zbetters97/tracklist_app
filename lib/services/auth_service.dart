@@ -87,15 +87,17 @@ class AuthService {
         final data = userDoc.data() as Map<String, dynamic>;
 
         // Create new AuthUser object
-        authUser.value = AuthUser(
-          uid: uid,
-          email: data["email"],
-          username: data["username"],
-          displayname: data["displayname"],
-          createdAt: (data["createdAt"] as Timestamp).toDate(),
-          bio: data["bio"],
-          profileUrl: data["profileUrl"],
-        );
+        authUser.value = AuthUser.fromJson({
+          'uid': uid,
+          'email': data["email"],
+          'username': data["username"],
+          'displayname': data["displayname"],
+          'created_at': data["createdAt"],
+          'bio': data["bio"],
+          'profile_url': data["profileUrl"],
+          'following': data["following"],
+          'followers': data["followers"],
+        });
 
         return true;
       } else {
@@ -150,15 +152,17 @@ class AuthService {
 
       final user = userDoc.data() as Map<String, dynamic>;
 
-      AuthUser myUser = AuthUser(
-        uid: userId,
-        email: user["email"],
-        username: user["username"],
-        displayname: user["displayname"],
-        createdAt: (user["createdAt"] as Timestamp).toDate(),
-        bio: user["bio"],
-        profileUrl: user["profileUrl"],
-      );
+      AuthUser myUser = AuthUser.fromJson({
+        'uid': userId,
+        'email': user["email"],
+        'username': user["username"],
+        'displayname': user["displayname"],
+        'created_at': user["createdAt"],
+        'bio': user["bio"],
+        'profile_url': user["profileUrl"],
+        'following': user["following"],
+        'followers': user["followers"],
+      });
 
       return myUser;
     } catch (error) {
