@@ -157,7 +157,7 @@ Future<Artist> getArtistById(String artistId) async {
   }
 
   final response = await http.get(
-    Uri.parse('https://api.spotify.com/v1/artists/$artistId?market=US'),
+    Uri.parse('https://api.spotify.com/v1/artists/$artistId'),
     headers: {'Authorization': 'Bearer $token'},
   );
 
@@ -293,6 +293,7 @@ Future<List<Track>> getAlbumTracks(String albumId, Album album) async {
           'name': track['name'],
           'id': track['id'],
           'artist': track['artists'][0]['name'],
+          'artist_id': track['artists'][0]['id'],
           'album': album.name,
           'image': album.image,
           'track_number': track['track_number'] ?? 0,
@@ -323,6 +324,7 @@ Album parseSpotifyAlbum(Map<String, dynamic> album) {
     'name': album['name'],
     'id': album['id'],
     'artist': album['artists'][0]['name'],
+    'artist_id': album['artists'][0]['id'],
     'image': album['images'].isNotEmpty ? album['images'][0]['url'] : DEFAULT_MEDIA_IMG,
     'release_date': album['release_date'],
     'spotify': album['external_urls']['spotify'],
@@ -337,6 +339,7 @@ Track parseSpotifyTrack(Map<String, dynamic> track) {
     'name': track['name'],
     'id': track['id'],
     'artist': track['artists'][0]['name'],
+    'artist_id': track['artists'][0]['id'],
     'album': track['album'] != null ? track['album']['name'] : '',
     'image': track['album'] != null
         ? track['album']['images'][0]['url']

@@ -7,6 +7,7 @@ import 'package:tracklist_app/data/classes/review_class.dart';
 import 'package:tracklist_app/data/classes/track_class.dart';
 import 'package:tracklist_app/data/constants.dart';
 import 'package:tracklist_app/services/review_service.dart';
+import 'package:tracklist_app/services/spotify_service.dart';
 import 'package:tracklist_app/views/pages/media/content/album_content.dart';
 import 'package:tracklist_app/views/pages/media/content/artist_content.dart';
 import 'package:tracklist_app/views/pages/media/content/track_content.dart';
@@ -69,6 +70,13 @@ class _MediaPageState extends State<MediaPage> {
     }
   }
 
+  void sendToArtistPage(BuildContext content, String artistId) async {
+    final navigator = Navigator.of(content);
+    final Artist artist = await getArtistById(artistId);
+
+    navigator.push(MaterialPageRoute(builder: (_) => MediaPage(media: artist)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,7 +95,7 @@ class _MediaPageState extends State<MediaPage> {
                       child: Stack(
                         clipBehavior: Clip.none,
                         children: [
-                          buildMediaImage(media.spotify, media.image, media.name),
+                          buildMediaImage(media),
                           Positioned(
                             top: 275 + 75, // Image height + Ratings Bar height
                             left: 0,
@@ -112,25 +120,34 @@ class _MediaPageState extends State<MediaPage> {
     );
   }
 
-  Widget buildMediaImage(String spotifyUrl, String imageUrl, String name) {
-    return GestureDetector(
-      onTap: () async => launchSpotify(spotifyUrl),
-      child: Column(
-        children: [
-          Container(
+  Widget buildMediaImage(Media media) {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () async => launchSpotify(media.spotify),
+          child: Container(
             decoration: BoxDecoration(
               boxShadow: [BoxShadow(color: Colors.black.withAlpha(75), blurRadius: 12, offset: Offset(0, 4))],
             ),
-            child: Image.network(imageUrl, width: 275, height: 275, fit: BoxFit.cover),
+            child: Image.network(media.image, width: 275, height: 275, fit: BoxFit.cover),
           ),
-          const SizedBox(height: 8),
-          Text(
-            name,
-            style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          media.name,
+          style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
+        ),
+        if (media is Album || media is Track)
+          GestureDetector(
+            onTap: () async => sendToArtistPage(context, (media as dynamic).artistId),
+            child: Text(
+              (media as dynamic).artist,
+              style: const TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
           ),
-        ],
-      ),
+      ],
     );
   }
 
