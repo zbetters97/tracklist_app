@@ -7,6 +7,7 @@ import 'package:tracklist_app/data/utils/string_extensions.dart';
 import 'package:tracklist_app/services/auth_service.dart';
 import 'package:tracklist_app/views/pages/welcome/welcome_page.dart';
 import 'package:tracklist_app/views/widgets/my_app_bar.dart';
+import 'package:tracklist_app/views/widgets/user_app_bar.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key, this.uid = ""});
@@ -73,20 +74,25 @@ class _UserPageState extends State<UserPage> {
     }
 
     return Scaffold(
-      appBar: MyAppBar(title: user.username),
+      appBar: isLoggedInUser ? UserAppBar(user: user, onLogoutPressed: onLogoutPressed) : MyAppBar(title: ""),
       backgroundColor: BACKGROUND_COLOR,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          buildProfile(user.profileUrl),
-          const SizedBox(height: 4),
-          buildBio(user.bio),
-          const SizedBox(height: 4),
-          buildDate(user.createdAt),
-          const SizedBox(height: 4),
-          buildFriends(user.followers.length, user.following.length),
-          if (isLoggedInUser) ListTile(onTap: onLogoutPressed, title: const Text("Logout")),
-        ],
+      extendBodyBehindAppBar: true,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              buildProfile(user.profileUrl),
+              const SizedBox(height: 4),
+              buildBio(user.bio),
+              const SizedBox(height: 4),
+              buildDate(user.createdAt),
+              const SizedBox(height: 4),
+              buildFriends(user.followers.length, user.following.length),
+            ],
+          ),
+        ),
       ),
     );
   }

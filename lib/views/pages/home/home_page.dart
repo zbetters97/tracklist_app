@@ -58,6 +58,9 @@ class _HomePageState extends State<HomePage> {
 
     final List<List<Review>> fetchedReviews = await Future.wait([getNewReviews(), getPopularReviews()]);
 
+    // Avoids memory leaks
+    if (!mounted) return;
+
     newReviews = fetchedReviews[0];
     popularReviews = fetchedReviews[1];
 
@@ -122,6 +125,13 @@ class _HomePageState extends State<HomePage> {
     });
 
     getReviews();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    newReviewsController.dispose();
+    popularReviewsController.dispose();
   }
 
   @override
