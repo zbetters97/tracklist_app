@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/data/classes/media_class.dart';
 import 'package:tracklist_app/services/spotify_service.dart';
+import 'package:tracklist_app/views/pages/media/artist_page.dart';
 import 'package:tracklist_app/views/widgets/media_card_widget.dart';
 
 class SearchPage extends StatefulWidget {
@@ -15,7 +17,7 @@ class _SearchPageState extends State<SearchPage> {
   String selectedCategory = "artist";
   TextEditingController searchController = TextEditingController(text: "Hippo Campus");
 
-  List<Map<String, dynamic>> results = [];
+  List<Media> results = [];
 
   Future<void> onSearchPressed() async {
     if (searchController.text.isEmpty) return;
@@ -25,15 +27,52 @@ class _SearchPageState extends State<SearchPage> {
     String categoryQuery = selectedCategory;
     String mediaQuery = searchController.text;
 
-    final List<Map<String, dynamic>> media = await searchByCategory(category: categoryQuery, name: mediaQuery);
+    final List<Media> media = await searchByCategory(category: categoryQuery, name: mediaQuery);
 
     if (media.isEmpty) return;
 
-    for (final Map<String, dynamic> item in media) {
+    for (final Media item in media) {
       setState(() {
         results.add(item);
       });
     }
+  }
+
+  void sendToMediaPage(BuildContext context, Media media) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return ArtistPage(media: media);
+        },
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            buildSearchBar(),
+            const SizedBox(height: 10),
+            buildCategoryDropdown(),
+            const SizedBox(height: 10),
+            Expanded(child: buildSearchResults(results)),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget buildSearchBar() {
@@ -74,43 +113,22 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  @override
-  void dispose() {
-    searchController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            buildSearchBar(),
-            const SizedBox(height: 10),
-            buildCategoryDropdown(),
-            const SizedBox(height: 10),
-            Expanded(
-              child: results.isEmpty
-                  ? searchController.text == ""
-                        ? Center(child: Text(""))
-                        : Center(child: Text("No results"))
-                  : ListView.builder(
-                      itemCount: results.length,
-                      itemBuilder: (context, index) {
-                        final result = results[index];
-                        return Center(
-                          child: MediaCardWidget(name: result["name"], imageUrl: result["image"]),
-                        );
-                      },
-                    ),
-            ),
-          ],
-        ),
-      ),
-    );
+  Widget buildSearchResults(List<Media> searchList) {
+    return searchList.isEmpty
+        ? searchController.text == ""
+              ? Center(child: Text(""))
+              : Center(child: Text("No results"))
+        : ListView.builder(
+            itemCount: searchList.length,
+            itemBuilder: (context, index) {
+              final result = searchList[index];
+              return Center(
+                child: GestureDetector(
+                  onTap: () => sendToMediaPage(context, result),
+                  child: MediaCardWidget(media: result),
+                ),
+              );
+            },
+          );
   }
 }

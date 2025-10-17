@@ -14,7 +14,7 @@ final SpotifyAuth _auth = SpotifyAuth(clientId: CLIENT_ID, clientSecret: CLIENT_
 /// [album] The name of the album
 /// [limit] The maximum number of albums to return
 /// Returns a list of albums
-Future<List<Map<String, dynamic>>> searchAlbums({required String album, int limit = 5}) async {
+Future<List<Album>> searchAlbums({required String album, int limit = 5}) async {
   // Get access token
   final token = await _auth.getAccessToken();
 
@@ -36,18 +36,17 @@ Future<List<Map<String, dynamic>>> searchAlbums({required String album, int limi
 
   // Decode JSON response
   final data = jsonDecode(response.body);
-  final albums = data['albums']['items'] as List;
 
   // Return list of albums
-  return albums
-      .map<Map<String, dynamic>>(
-        (album) => {
+  return data['albums']['items']
+      .map<Album>(
+        (album) => Album.fromJson({
           'name': album['name'],
           'id': album['id'],
           'artist': album['artists'][0]['name'],
           'image': album['images'].isNotEmpty ? album['images'][0]['url'] : "",
           'release_date': album['release_date'],
-        },
+        }),
       )
       .toList();
 }
@@ -56,7 +55,7 @@ Future<List<Map<String, dynamic>>> searchAlbums({required String album, int limi
 /// [artist] The name of the artist
 /// [limit] The maximum number of artists to return
 /// Returns a list of artists
-Future<List<Map<String, dynamic>>> searchArtists({required String artist, int limit = 5}) async {
+Future<List<Artist>> searchArtists({required String artist, int limit = 5}) async {
   final token = await _auth.getAccessToken();
 
   if (token == null) {
@@ -73,15 +72,14 @@ Future<List<Map<String, dynamic>>> searchArtists({required String artist, int li
   }
 
   final data = jsonDecode(response.body);
-  final artists = data['artists']['items'] as List;
 
-  return artists
-      .map<Map<String, dynamic>>(
-        (artist) => {
+  return data['artists']['items']
+      .map<Artist>(
+        (artist) => Artist.fromJson({
           'name': artist['name'],
           'id': artist['id'],
           'image': artist['images'].isNotEmpty ? artist['images'][0]['url'] : "",
-        },
+        }),
       )
       .toList();
 }
@@ -91,11 +89,7 @@ Future<List<Map<String, dynamic>>> searchArtists({required String artist, int li
 /// [name] The name of the media
 /// [limit] The maximum number of entries to return
 /// Returns a list of media entries
-Future<List<Map<String, dynamic>>> searchByCategory({
-  required String category,
-  required String name,
-  int limit = 5,
-}) async {
+Future<List<Media>> searchByCategory({required String category, required String name, int limit = 5}) async {
   final token = await _auth.getAccessToken();
 
   if (token == null) {
@@ -112,40 +106,45 @@ Future<List<Map<String, dynamic>>> searchByCategory({
   }
 
   final data = jsonDecode(response.body);
-  List<Map<String, dynamic>> media = [];
+  List<Media> media = [];
 
   if (category == "artist") {
     media = data['artists']['items']
-        .map<Map<String, dynamic>>(
-          (artist) => {
+        .map<Artist>(
+          (artist) => Artist.fromJson({
             'name': artist['name'],
             'id': artist['id'],
             'image': artist['images'].isNotEmpty ? artist['images'][0]['url'] : "",
-          },
+            'spotify': artist['external_urls']['spotify'],
+          }),
         )
         .toList();
   } else if (category == "album") {
     media = data['albums']['items']
-        .map<Map<String, dynamic>>(
-          (album) => {
-            'name': album['name'],
+        .map<Album>(
+          (album) => Album.fromJson({
+            name: album['name'],
             'id': album['id'],
             'artist': album['artists'][0]['name'],
             'image': album['images'].isNotEmpty ? album['images'][0]['url'] : "",
             'release_date': album['release_date'],
-          },
+            'spotify': album['external_urls']['spotify'],
+          }),
         )
         .toList();
   } else if (category == "track") {
     media = data['tracks']['items']
-        .map<Map<String, dynamic>>(
-          (track) => {
+        .map<Track>(
+          (track) => Track.fromJson({
             'name': track['name'],
             'id': track['id'],
+            'artist': track['artists'][0]['name'],
+            'album': track['album']['name'],
             'image': track['album']['images'].isNotEmpty ? track['album']['images'][0]['url'] : "",
             'track_number': track['track_number'],
-            'duration': track['duration_ms'],
-          },
+            'release_date': track['album']['release_date'],
+            'spotify': track['external_urls']['spotify'],
+          }),
         )
         .toList();
   }
@@ -210,8 +209,8 @@ Future<Album> getAlbumById(String albumId) async {
   return Album.fromJson({
     'name': album['name'],
     'id': album['id'],
-    'image': album['images'].isNotEmpty ? album['images'][0]['url'] : "",
     'artist': album['artists'][0]['name'],
+    'image': album['images'].isNotEmpty ? album['images'][0]['url'] : "",
     'release_date': album['release_date'],
     'spotify': album['external_urls']['spotify'],
   });
@@ -238,8 +237,10 @@ Future<Track> getTrackById(String trackId) async {
   return Track.fromJson({
     'name': track['name'],
     'id': track['id'],
-    'image': track['album']['images'].isNotEmpty ? track['album']['images'][0]['url'] : "",
+    'artist': track['artists'][0]['name'],
     'album': track['album']['name'],
+    'image': track['album']['images'].isNotEmpty ? track['album']['images'][0]['url'] : "",
+    'track_number': track['track_number'],
     'release_date': track['album']['release_date'],
     'spotify': track['external_urls']['spotify'],
   });
@@ -249,7 +250,7 @@ Future<Track> getTrackById(String trackId) async {
 /// [artistId] The ID of the artist
 /// [limit] The maximum number of albums to return
 /// Returns a list of albums
-Future<List<Map<String, dynamic>>> getArtistAlbums({required String artistId, int limit = 5}) async {
+Future<List<Album>> getArtistAlbums({required String artistId, int limit = 5}) async {
   final token = await _auth.getAccessToken();
 
   if (token == null) {
@@ -266,16 +267,17 @@ Future<List<Map<String, dynamic>>> getArtistAlbums({required String artistId, in
   }
 
   final data = jsonDecode(response.body);
-  final albums = data['items'] as List;
 
-  return albums
-      .map<Map<String, dynamic>>(
-        (album) => {
+  return data['items']
+      .map<Album>(
+        (album) => Album.fromJson({
           'name': album['name'],
           'id': album['id'],
+          'artist': album['artists'][0]['name'],
           'image': album['images'].isNotEmpty ? album['images'][0]['url'] : "",
           'release_date': album['release_date'],
-        },
+          'spotify': album['external_urls']['spotify'],
+        }),
       )
       .toList();
 }
@@ -283,7 +285,7 @@ Future<List<Map<String, dynamic>>> getArtistAlbums({required String artistId, in
 /// Get tracks by album ID
 /// [albumId] The ID of the album
 /// Returns a list of tracks
-Future<List<Map<String, dynamic>>> getAlbumTracks(String albumId) async {
+Future<List<Track>> getAlbumTracks(String albumId) async {
   final token = await _auth.getAccessToken();
 
   if (token == null) {
@@ -300,17 +302,19 @@ Future<List<Map<String, dynamic>>> getAlbumTracks(String albumId) async {
   }
 
   final data = jsonDecode(response.body);
-  final tracks = data['items'] as List;
 
-  return tracks
-      .map<Map<String, dynamic>>(
-        (track) => {
+  return data['items']
+      .map<Track>(
+        (track) => Track.fromJson({
           'name': track['name'],
           'id': track['id'],
+          'artist': track['artists'][0]['name'],
+          'album': track['album']['name'],
           'image': track['album']['images'].isNotEmpty ? track['album']['images'][0]['url'] : "",
           'track_number': track['track_number'],
-          'duration': track['duration_ms'],
-        },
+          'release_date': track['album']['release_date'],
+          'spotify': track['external_urls']['spotify'],
+        }),
       )
       .toList();
 }

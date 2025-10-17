@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:tracklist_app/data/constants.dart';
+import 'package:tracklist_app/data/classes/media_class.dart';
 
 class MediaCardWidget extends StatelessWidget {
-  const MediaCardWidget({super.key, required this.name, required this.imageUrl});
+  const MediaCardWidget({super.key, required this.media});
 
-  final String name;
-  final String imageUrl;
+  final Media media;
 
   @override
   Widget build(BuildContext context) {
@@ -22,21 +21,13 @@ class MediaCardWidget extends StatelessWidget {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withAlpha(120), // Opacity (0 - 255)
-                      blurRadius: 8,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
+                  boxShadow: [BoxShadow(color: Colors.black.withAlpha(120), blurRadius: 8, offset: Offset(0, 4))],
                 ),
-                child: imageUrl == ""
-                    ? Image.asset(DEFAULT_MEDIA_IMG)
-                    : Image.network(imageUrl, width: 250, height: 250, fit: BoxFit.cover),
+                child: Image.network(media.image, width: 250, height: 250, fit: BoxFit.cover),
               ),
               SizedBox(height: 10.0),
               Text(
-                name,
+                media.name,
                 style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20.0),
               ),
             ],
