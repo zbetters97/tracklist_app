@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/core/utils/color.dart';
 import 'package:tracklist_app/data/models/album_class.dart';
 import 'package:tracklist_app/data/models/artist_class.dart';
 import 'package:tracklist_app/data/models/media_class.dart';
@@ -27,6 +28,8 @@ class MediaPage extends StatefulWidget {
 
 class _MediaPageState extends State<MediaPage> {
   Media get media => widget.media;
+  Color bgColorA = BACKGROUND_COLOR;
+  Color bgColorB = BACKGROUND_COLOR;
 
   bool isLoading = true;
   List<Review> reviews = [];
@@ -49,11 +52,22 @@ class _MediaPageState extends State<MediaPage> {
     double fetchedAvgRating = await getAvgRating(media.id);
     QuerySnapshot fetchedRatings = await getRatings(media.id);
 
+    await getMediaColor(media.image);
+
     setState(() {
       reviews = fetchedReviews;
       avgRating = fetchedAvgRating;
       ratings = fetchedRatings;
       isLoading = false;
+    });
+  }
+
+  Future<void> getMediaColor(String imageUrl) async {
+    final palette = await getColors(imageUrl);
+
+    setState(() {
+      bgColorA = palette.light;
+      bgColorB = palette.dark;
     });
   }
 
@@ -70,7 +84,7 @@ class _MediaPageState extends State<MediaPage> {
     }
   }
 
-  void sendToArtistPage(BuildContext content, String artistId) async {
+  void sendToMediaPage(BuildContext content, String artistId) async {
     final navigator = Navigator.of(content);
     final Artist artist = await getArtistById(artistId);
 
@@ -85,36 +99,49 @@ class _MediaPageState extends State<MediaPage> {
       body: isLoading
           ? Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))
           : SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: 275 + 75 + 75, // Image height + Ratings Bar height + gap height
-                      child: Stack(
-                        clipBehavior: Clip.none,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [bgColorA, bgColorB],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
                         children: [
-                          buildMediaImage(media),
-                          Positioned(
-                            top: 275 + 75, // Image height + Ratings Bar height
-                            left: 0,
-                            right: 0,
-                            height: 75, // Fixed height of 75
-                            child: RatingsBar(ratings: ratings),
+                          SizedBox(
+                            height: 275 + 75 + 75, // Image height + Ratings Bar height + gap height
+                            child: Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                buildMediaImage(media),
+                                Positioned(
+                                  top: 275 + 75, // Image height + Ratings Bar height
+                                  left: 0,
+                                  right: 0,
+                                  height: 75, // Fixed height of 75
+                                  child: RatingsBar(ratings: ratings),
+                                ),
+                              ],
+                            ),
                           ),
+                          const SizedBox(height: 12),
+                          buildMediaReviews(avgRating, reviews.length),
+                          const SizedBox(height: 20),
+                          buildMediaButtons(),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    buildMediaReviews(avgRating, reviews.length),
-                    const SizedBox(height: 20),
-                    buildMediaButtons(),
-                    if (media is Artist) ArtistContent(artist: media as Artist),
-                    if (media is Album) AlbumContent(album: media as Album),
-                    if (media is Track) TrackContent(track: media as Track),
-                  ],
-                ),
+                  ),
+                  if (media is Artist) ArtistContent(artist: media as Artist),
+                  if (media is Album) AlbumContent(album: media as Album),
+                  if (media is Track) TrackContent(track: media as Track),
+                ],
               ),
             ),
     );
@@ -127,7 +154,7 @@ class _MediaPageState extends State<MediaPage> {
           onTap: () async => launchSpotify(media.spotify),
           child: Container(
             decoration: BoxDecoration(
-              boxShadow: [BoxShadow(color: Colors.black.withAlpha(75), blurRadius: 12, offset: Offset(0, 4))],
+              boxShadow: [BoxShadow(color: Colors.black.withAlpha(125), blurRadius: 12, offset: Offset(0, 4))],
             ),
             child: Image.network(media.image, width: 275, height: 275, fit: BoxFit.cover),
           ),
@@ -140,7 +167,7 @@ class _MediaPageState extends State<MediaPage> {
         ),
         if (media is Album || media is Track)
           GestureDetector(
-            onTap: () async => sendToArtistPage(context, (media as dynamic).artistId),
+            onTap: () async => sendToMediaPage(context, (media as dynamic).artistId),
             child: Text(
               (media as dynamic).artist,
               style: const TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),
