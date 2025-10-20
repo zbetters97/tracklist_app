@@ -64,9 +64,12 @@ class _AlbumContentState extends State<AlbumContent> {
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [buildTab(0, "Tracks"), buildTab(1, "Reviews")],
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [buildTab(0, "Tracks"), buildTab(1, "Reviews")],
+            ),
           ),
           currentTab == 0 ? buildTracksList() : MediaReviews(reviews: reviews, isLoading: isLoading),
         ],

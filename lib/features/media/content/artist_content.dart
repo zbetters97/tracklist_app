@@ -76,9 +76,12 @@ class _ArtistContentState extends State<ArtistContent> {
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [buildTab(0, "Albums"), buildTab(1, "Singles"), buildTab(2, "Reviews")],
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [buildTab(0, "Albums"), buildTab(1, "Singles"), buildTab(2, "Reviews")],
+            ),
           ),
           currentTab == 0
               ? buildAlbumsList()

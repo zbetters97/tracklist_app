@@ -103,13 +103,7 @@ class _MediaPageState extends State<MediaPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [bgColorA, bgColorB],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                    ),
+                    decoration: buildMediaGradient(),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
@@ -144,6 +138,12 @@ class _MediaPageState extends State<MediaPage> {
                 ],
               ),
             ),
+    );
+  }
+
+  BoxDecoration buildMediaGradient() {
+    return BoxDecoration(
+      gradient: LinearGradient(colors: [bgColorA, bgColorB], begin: Alignment.topLeft, end: Alignment.bottomRight),
     );
   }
 
