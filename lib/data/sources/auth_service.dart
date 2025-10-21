@@ -114,8 +114,24 @@ class AuthService {
     authUser.value = null;
   }
 
-  Future<void> sendPasswordReset({required String email}) async {
-    await firebaseAuth.sendPasswordResetEmail(email: email);
+  Future<bool> checkIfEmailExists({required String email}) async {
+    final userRef = firestore.collection("users");
+    final querySnapshot = await userRef.where("email", isEqualTo: email).get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> sendPasswordReset({required String email}) async {
+    try {
+      await firebaseAuth.sendPasswordResetEmail(email: email);
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
   Future<void> updatePassword({

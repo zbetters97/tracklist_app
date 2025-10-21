@@ -8,6 +8,7 @@ class AuthTextField extends StatelessWidget {
     required this.keyboardType,
     this.isHidden = false,
     this.validator,
+    this.error,
   });
 
   final String label;
@@ -15,6 +16,7 @@ class AuthTextField extends StatelessWidget {
   final TextInputType keyboardType;
   final bool? isHidden;
   final String? Function(String?)? validator;
+  final String? error;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +32,7 @@ class AuthTextField extends StatelessWidget {
           decoration: InputDecoration(
             border: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
             focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.green)),
+            error: error != null ? Text(error!, style: const TextStyle(color: Colors.red)) : null,
           ),
           style: const TextStyle(color: Colors.white),
           validator: validator,
