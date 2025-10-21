@@ -71,7 +71,11 @@ class _AlbumContentState extends State<AlbumContent> {
               children: [buildTab(0, "Tracks"), buildTab(1, "Reviews")],
             ),
           ),
-          currentTab == 0 ? buildTracksList() : MediaReviews(reviews: reviews, isLoading: isLoading),
+          isLoading
+              ? Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))
+              : currentTab == 0
+              ? buildTracksList()
+              : MediaReviews(reviews: reviews),
         ],
       ),
     );
@@ -84,11 +88,7 @@ class _AlbumContentState extends State<AlbumContent> {
 
         currentTab = index;
 
-        if (currentTab == 0) {
-          fetchTracks();
-        } else if (currentTab == 1) {
-          fetchReviews();
-        }
+        currentTab == 0 ? fetchTracks() : fetchReviews();
       }),
       child: Column(
         children: [

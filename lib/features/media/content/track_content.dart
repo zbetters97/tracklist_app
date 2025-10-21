@@ -50,7 +50,9 @@ class _TrackContentState extends State<TrackContent> {
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [buildTab(0, "Reviews")]),
           ),
-          MediaReviews(reviews: reviews, isLoading: isLoading),
+          isLoading
+              ? Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))
+              : MediaReviews(reviews: reviews),
         ],
       ),
     );

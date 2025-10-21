@@ -83,11 +83,13 @@ class _ArtistContentState extends State<ArtistContent> {
               children: [buildTab(0, "Albums"), buildTab(1, "Singles"), buildTab(2, "Reviews")],
             ),
           ),
-          currentTab == 0
+          isLoading
+              ? Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))
+              : currentTab == 0
               ? buildAlbumsList()
               : currentTab == 1
               ? buildSinglesList()
-              : MediaReviews(reviews: reviews, isLoading: isLoading),
+              : MediaReviews(reviews: reviews),
         ],
       ),
     );
@@ -100,13 +102,11 @@ class _ArtistContentState extends State<ArtistContent> {
 
         currentTab = index;
 
-        if (currentTab == 0) {
-          fetchAlbums();
-        } else if (currentTab == 1) {
-          fetchSingles();
-        } else if (currentTab == 2) {
-          fetchReviews();
-        }
+        currentTab == 0
+            ? fetchAlbums()
+            : currentTab == 1
+            ? fetchSingles()
+            : fetchReviews();
       }),
       child: Column(
         children: [
