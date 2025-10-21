@@ -32,9 +32,7 @@ class _MediaReviewsState extends State<MediaReviews> {
       return;
     }
 
-    setState(() {
-      reviews = widget.reviews.where((review) => review.rating == stars).toList();
-    });
+    setState(() => reviews = widget.reviews.where((review) => review.rating == stars).toList());
   }
 
   @override

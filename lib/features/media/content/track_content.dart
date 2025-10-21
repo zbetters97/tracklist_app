@@ -60,7 +60,7 @@ class _TrackContentState extends State<TrackContent> {
 
   Widget buildTab(int index, String title) {
     return GestureDetector(
-      onTap: () => setState(() => fetchReviews()),
+      onTap: () => switchTab(index),
       child: Column(
         children: [
           Text(
@@ -76,5 +76,9 @@ class _TrackContentState extends State<TrackContent> {
         ],
       ),
     );
+  }
+
+  void switchTab(int index) {
+    setState(() => fetchReviews());
   }
 }

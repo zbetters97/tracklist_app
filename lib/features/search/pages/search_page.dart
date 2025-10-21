@@ -35,9 +35,7 @@ class _SearchPageState extends State<SearchPage> {
     if (media.isEmpty) return;
 
     for (final Media item in media) {
-      setState(() {
-        results.add(item);
-      });
+      setState(() => results.add(item));
     }
   }
 

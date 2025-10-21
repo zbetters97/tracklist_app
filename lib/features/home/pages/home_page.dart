@@ -79,9 +79,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> loadMoreNewReviews() async {
     if (newReviews.isEmpty || isLoadingNew) return;
 
-    setState(() {
-      isLoadingNew = true;
-    });
+    setState(() => isLoadingNew = true);
 
     final List<Review> moreNewReviews = await getNewReviews(lastDoc: lastNewReviewDoc);
 

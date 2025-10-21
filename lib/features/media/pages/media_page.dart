@@ -44,9 +44,7 @@ class _MediaPageState extends State<MediaPage> {
   }
 
   void fetchReviews() async {
-    setState(() {
-      isLoading = true;
-    });
+    setState(() => isLoading = true);
 
     List<Review> fetchedReviews = await getReviewsByMediaId(media.id);
     double fetchedAvgRating = await getAvgRating(media.id);

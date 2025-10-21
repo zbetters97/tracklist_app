@@ -29,9 +29,7 @@ class _RatingsBarState extends State<RatingsBar> {
       baseRatings[rating] = baseRatings[rating]! + 1;
     }
 
-    setState(() {
-      ratings = baseRatings;
-    });
+    setState(() => ratings = baseRatings);
   }
 
   @override

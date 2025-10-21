@@ -83,13 +83,7 @@ class _AlbumContentState extends State<AlbumContent> {
 
   Widget buildTab(int index, String title) {
     return GestureDetector(
-      onTap: () => setState(() {
-        if (currentTab == index) return;
-
-        currentTab = index;
-
-        currentTab == 0 ? fetchTracks() : fetchReviews();
-      }),
+      onTap: () => switchTab(index),
       child: Column(
         children: [
           Text(
@@ -112,6 +106,16 @@ class _AlbumContentState extends State<AlbumContent> {
         ],
       ),
     );
+  }
+
+  void switchTab(int index) {
+    setState(() {
+      if (currentTab == index) return;
+
+      currentTab = index;
+
+      currentTab == 0 ? fetchTracks() : fetchReviews();
+    });
   }
 
   Widget buildTracksList() {

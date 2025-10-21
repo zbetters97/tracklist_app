@@ -25,9 +25,7 @@ class _MediaCardWidgetState extends State<MediaCardWidget> {
   void fetchRating() async {
     double fetchedRating = await getAvgRating(media.id);
 
-    setState(() {
-      rating = fetchedRating;
-    });
+    setState(() => rating = fetchedRating);
   }
 
   @override
