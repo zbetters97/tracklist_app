@@ -67,7 +67,7 @@ class _TrackContentState extends State<TrackContent> {
             title,
             style: TextStyle(color: PRIMARY_COLOR, fontSize: 24, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           Container(
             height: 5,
             width: 85,

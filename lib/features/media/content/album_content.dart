@@ -94,7 +94,7 @@ class _AlbumContentState extends State<AlbumContent> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           Container(
             height: 5,
             width: 85,

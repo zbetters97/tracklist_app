@@ -199,4 +199,11 @@ class AuthService {
       throw Exception("Error getting username by id: $error");
     }
   }
+
+  List<String> getFollowingByUserId() {
+    if (authUser.value == null) return [];
+
+    List<String> following = authUser.value!.following.map((e) => e).toList();
+    return following;
+  }
 }

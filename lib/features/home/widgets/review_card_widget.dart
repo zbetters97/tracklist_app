@@ -34,7 +34,7 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 buildMediaImage(media.image),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Flexible(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,9 +50,9 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
               ],
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           buildReviewContent(review.content),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           buildReviewButtons(user.uid, review.likes, review.comments.length),
         ],
       ),
@@ -71,7 +71,7 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
     return Row(
       children: [
         profileImage,
-        SizedBox(width: 5),
+        const SizedBox(width: 5),
         Text("@$username", style: TextStyle(color: Colors.grey, fontSize: 16)),
       ],
     );
@@ -122,9 +122,9 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
     return Row(
       children: [
         buildLikeButton(likes),
-        SizedBox(width: 20),
+        const SizedBox(width: 20),
         buildCommentButton(comments),
-        SizedBox(width: 20),
+        const SizedBox(width: 20),
         if (isPoster) buildDeleteButton(),
       ],
     );
@@ -136,7 +136,7 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
     return Row(
       children: [
         Icon(Icons.favorite, size: 30, color: isLiked ? PRIMARY_COLOR : Colors.white),
-        SizedBox(width: 3),
+        const SizedBox(width: 3),
         Text("${likes.length}", style: TextStyle(color: isLiked ? PRIMARY_COLOR : Colors.white, fontSize: 24)),
       ],
     );
@@ -146,7 +146,7 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
     return Row(
       children: [
         Icon(Icons.comment, size: 30),
-        SizedBox(width: 3),
+        const SizedBox(width: 3),
         Text("$comments", style: TextStyle(color: Colors.white, fontSize: 24)),
       ],
     );

@@ -71,7 +71,7 @@ class _ResetPasswordWidgetState extends State<ResetPasswordWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("Reset your password", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Container(height: 1, color: Colors.white),
                 ],
               ),
@@ -85,7 +85,7 @@ class _ResetPasswordWidgetState extends State<ResetPasswordWidget> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text("Email", style: const TextStyle(color: Colors.white, fontSize: 16)),
-                      SizedBox(height: 5),
+                      const SizedBox(height: 5),
                       TextFormField(
                         controller: controllerForgotEmail,
                         keyboardType: TextInputType.emailAddress,
@@ -105,7 +105,7 @@ class _ResetPasswordWidgetState extends State<ResetPasswordWidget> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Center(
                         child: IntrinsicWidth(
                           child: FilledButton(

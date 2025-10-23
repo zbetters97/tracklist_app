@@ -177,23 +177,19 @@ class _MediaPageState extends State<MediaPage> {
   }
 
   Widget buildMediaReviews(double avgRating, int totalReviews) {
-    return Column(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              avgRating.toString(),
-              style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(width: 5),
-            StarRating(rating: avgRating),
-            const SizedBox(width: 5),
-            Text(
-              "(${totalReviews.toString()})",
-              style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-          ],
+        Text(
+          avgRating.toString(),
+          style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(width: 5),
+        StarRating(rating: avgRating),
+        const SizedBox(width: 5),
+        Text(
+          "(${totalReviews.toString()})",
+          style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ],
     );

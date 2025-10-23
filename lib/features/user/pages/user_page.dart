@@ -107,7 +107,7 @@ class _UserPageState extends State<UserPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(user.displayname.capitalizeEachWord(), style: const TextStyle(color: Colors.white, fontSize: 20)),
-            SizedBox(width: 5),
+            const SizedBox(width: 5),
             Text("@${user.username}", style: const TextStyle(color: Colors.grey, fontSize: 16)),
           ],
         ),
@@ -131,7 +131,7 @@ class _UserPageState extends State<UserPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(Icons.calendar_today, color: Colors.grey, size: 18),
-        SizedBox(width: 2),
+        const SizedBox(width: 2),
         Text("Joined on ${formatDateMDYLong(joinedOn)}", style: TextStyle(fontSize: 16)),
       ],
     );

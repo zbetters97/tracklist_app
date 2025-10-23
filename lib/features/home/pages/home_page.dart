@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:tracklist_app/data/models/review_class.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/data/sources/review_service.dart';
-import 'package:tracklist_app/core/widgets/review_card_widget.dart';
+import 'package:tracklist_app/features/home/widgets/review_card_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.onOpenReview});
@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage> {
 
     setState(() => isLoading = true);
 
-    final List<List<Review>> fetchedReviews = await Future.wait([getNewReviews(), getPopularReviews()]);
+    final List<List<Review>> fetchedReviews = await Future.wait([getFollowingReviews(), getPopularReviews()]);
 
     // Avoids memory leaks
     if (!mounted) return;
@@ -81,7 +81,7 @@ class _HomePageState extends State<HomePage> {
 
     setState(() => isLoadingNew = true);
 
-    final List<Review> moreNewReviews = await getNewReviews(lastDoc: lastNewReviewDoc);
+    final List<Review> moreNewReviews = await getFollowingReviews(lastDoc: lastNewReviewDoc);
 
     if (moreNewReviews.isNotEmpty) {
       setState(() {
@@ -206,7 +206,7 @@ class _HomePageState extends State<HomePage> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           Container(
             height: 5,
             width: 100,

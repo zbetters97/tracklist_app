@@ -26,7 +26,7 @@ class WelcomePage extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 FilledButton(
                   onPressed: () {
                     Navigator.push(
@@ -43,7 +43,7 @@ class WelcomePage extends StatelessWidget {
                   ),
                   child: Text("Get Started"),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 TextButton(
                   onPressed: () {
                     Navigator.push(

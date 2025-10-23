@@ -108,7 +108,7 @@ class _ArtistContentState extends State<ArtistContent> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           Container(
             height: 5,
             width: 85,
