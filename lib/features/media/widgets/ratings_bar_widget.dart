@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/core/utils/notifiers.dart';
 
 class RatingsBar extends StatefulWidget {
   const RatingsBar({super.key, required this.ratings});
@@ -38,21 +39,29 @@ class _RatingsBarState extends State<RatingsBar> {
       return Container();
     }
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      spacing: 2,
-      children: ratings.keys.map((rating) {
-        final int count = ratings[rating] ?? 0;
+    return ValueListenableBuilder<double>(
+      valueListenable: ratingNotifier,
+      builder: (context, value, child) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          spacing: 2,
+          children: ratings.keys.map((rating) {
+            final int count = ratings[rating] ?? 0;
 
-        // Minimum of 5%, maximum of 100%
-        final double percentage = totalRatings == 0 ? 0.05 : (count / totalRatings).clamp(0.05, 1.0);
+            // Minimum of 5%, maximum of 100%
+            final double percentage = totalRatings == 0 ? 0.05 : (count / totalRatings).clamp(0.05, 1.0);
 
-        return Tooltip(
-          message: "$count ratings",
-          child: Container(width: 24, height: 75 * percentage, color: Colors.grey),
+            return GestureDetector(
+              onTap: () => ratingNotifier.value = rating,
+              child: Tooltip(
+                message: "$count ratings",
+                child: Container(width: 24, height: 75 * percentage, color: Colors.grey),
+              ),
+            );
+          }).toList(),
         );
-      }).toList(),
+      },
     );
   }
 }

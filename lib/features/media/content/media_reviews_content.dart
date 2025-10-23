@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/core/utils/notifiers.dart';
 import 'package:tracklist_app/data/models/review_class.dart';
 import 'package:tracklist_app/features/review/pages/review_page.dart';
 import 'package:tracklist_app/features/media/widgets/media_review_widget.dart';
@@ -14,12 +15,18 @@ class MediaReviews extends StatefulWidget {
 
 class _MediaReviewsState extends State<MediaReviews> {
   List<Review> reviews = [];
-  double selectedStars = 0.0;
 
   @override
   void initState() {
     super.initState();
-    setState(() => reviews = widget.reviews);
+    ratingNotifier.addListener(onRatingsChanged);
+    reviews = widget.reviews;
+  }
+
+  void onRatingsChanged() {
+    if (!mounted) return;
+
+    filterByStars(ratingNotifier.value);
   }
 
   void sendToReviewPage(BuildContext context, Review review) {
@@ -27,19 +34,21 @@ class _MediaReviewsState extends State<MediaReviews> {
   }
 
   void filterByStars(double stars) {
+    if (!mounted) return;
+
     if (stars == 0.0) {
       setState(() => reviews = widget.reviews);
-      return;
+    } else {
+      setState(() => reviews = widget.reviews.where((review) => review.rating == stars).toList());
     }
-
-    setState(() => reviews = widget.reviews.where((review) => review.rating == stars).toList());
   }
 
   @override
   void dispose() {
-    super.dispose();
+    ratingNotifier.removeListener(onRatingsChanged);
+    ratingNotifier.value = 0.0;
     reviews.clear();
-    selectedStars = 0.0;
+    super.dispose();
   }
 
   @override
@@ -74,26 +83,31 @@ class _MediaReviewsState extends State<MediaReviews> {
   }
 
   Widget buildStarsDropdown() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8),
-      decoration: BoxDecoration(border: Border.all(color: Colors.white)),
-      child: DropdownButton(
-        items: [
-          ...List.generate(11, (i) {
-            double rating = 5 - (i * 0.5);
-            return DropdownMenuItem(value: rating, child: Text(rating == 0.0 ? "All" : "$rating stars"));
-          }),
-        ],
-        underline: SizedBox(),
-        style: TextStyle(fontSize: 20),
-        value: selectedStars,
-        onChanged: (value) => {
-          setState(() {
-            selectedStars = value!.toDouble();
-            filterByStars(selectedStars);
-          }),
-        },
-      ),
+    return ValueListenableBuilder(
+      valueListenable: ratingNotifier,
+      builder: (context, value, child) {
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          decoration: BoxDecoration(border: Border.all(color: Colors.white)),
+          child: DropdownButton(
+            items: [
+              ...List.generate(11, (i) {
+                double rating = 5 - (i * 0.5);
+                return DropdownMenuItem(value: rating, child: Text(rating == 0.0 ? "All" : "$rating stars"));
+              }),
+            ],
+            underline: SizedBox(),
+            style: TextStyle(fontSize: 20),
+            value: ratingNotifier.value,
+            onChanged: (value) => {
+              setState(() {
+                ratingNotifier.value = value!.toDouble();
+                filterByStars(ratingNotifier.value);
+              }),
+            },
+          ),
+        );
+      },
     );
   }
 }

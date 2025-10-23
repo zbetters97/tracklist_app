@@ -127,9 +127,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    super.dispose();
     newReviewsController.dispose();
     popularReviewsController.dispose();
+    super.dispose();
   }
 
   @override

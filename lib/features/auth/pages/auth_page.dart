@@ -41,8 +41,8 @@ class _AuthPageState extends State<AuthPage> {
 
   @override
   void dispose() {
-    super.dispose();
     disposeForm();
+    super.dispose();
   }
 
   void disposeForm() {
