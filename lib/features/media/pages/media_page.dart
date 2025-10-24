@@ -34,7 +34,7 @@ class _MediaPageState extends State<MediaPage> {
   bool isLoading = true;
   List<Review> reviews = [];
   double avgRating = 0.0;
-  late QuerySnapshot ratings;
+  late QuerySnapshot reviewDocs;
   int totalReviews = 0;
 
   @override
@@ -48,14 +48,14 @@ class _MediaPageState extends State<MediaPage> {
 
     List<Review> fetchedReviews = await getReviewsByMediaId(media.id);
     double fetchedAvgRating = await getAvgRating(media.id);
-    QuerySnapshot fetchedRatings = await getRatings(media.id);
+    QuerySnapshot fetchedReviewDocs = await getReviewDocsByMediaId(media.id);
 
     await getMediaColor(media.image);
 
     setState(() {
       reviews = fetchedReviews;
       avgRating = fetchedAvgRating;
-      ratings = fetchedRatings;
+      reviewDocs = fetchedReviewDocs;
       isLoading = false;
     });
   }
@@ -117,7 +117,7 @@ class _MediaPageState extends State<MediaPage> {
                                   left: 0,
                                   right: 0,
                                   height: 75, // Fixed height of 75
-                                  child: RatingsBar(ratings: ratings),
+                                  child: RatingsBar(reviews: reviewDocs),
                                 ),
                               ],
                             ),

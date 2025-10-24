@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:tracklist_app/core/utils/notifiers.dart';
 
 class RatingsBar extends StatefulWidget {
-  const RatingsBar({super.key, required this.ratings});
+  const RatingsBar({super.key, required this.reviews});
 
-  final QuerySnapshot ratings;
+  final QuerySnapshot reviews;
 
   @override
   State<RatingsBar> createState() => _RatingsBarState();
@@ -23,9 +23,9 @@ class _RatingsBarState extends State<RatingsBar> {
 
   void setRatings() {
     Map<double, int> baseRatings = {0.5: 0, 1: 0, 1.5: 0, 2: 0, 2.5: 0, 3: 0, 3.5: 0, 4: 0, 4.5: 0, 5: 0};
-    totalRatings = widget.ratings.size;
+    totalRatings = widget.reviews.size;
 
-    for (DocumentSnapshot doc in widget.ratings.docs) {
+    for (DocumentSnapshot doc in widget.reviews.docs) {
       double rating = doc["rating"].toDouble();
       baseRatings[rating] = baseRatings[rating]! + 1;
     }

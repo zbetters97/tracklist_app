@@ -125,6 +125,16 @@ Future<List<Review>> getFollowingReviews({DocumentSnapshot? lastDoc, int limit =
   return followingReviews;
 }
 
+Future<QuerySnapshot> getReviewDocsByMediaId(String mediaId) async {
+  // Retrieve Reviews from Firestore
+  final reviewsRef = firestore.collection("reviews");
+
+  // Filter by reviews whose mediaId matches
+  QuerySnapshot reviewsSnapshot = await reviewsRef.where("mediaId", isEqualTo: mediaId).get();
+
+  return reviewsSnapshot;
+}
+
 Future<List<Review>> getReviewsByMediaId(String mediaId) async {
   try {
     // Retrieve Reviews from Firestore
@@ -162,11 +172,8 @@ Future<List<Review>> getReviewsByMediaId(String mediaId) async {
 
 Future<double> getAvgRating(String mediaId) async {
   try {
-    // Retrieve Reviews from Firestore
-    final reviewsRef = firestore.collection("reviews");
-
     // Filter by reviews whose mediaId matches
-    QuerySnapshot reviewsSnapshot = await reviewsRef.where("mediaId", isEqualTo: mediaId).get();
+    QuerySnapshot reviewsSnapshot = await getReviewDocsByMediaId(mediaId);
 
     if (reviewsSnapshot.docs.isEmpty) return 0.0;
 
