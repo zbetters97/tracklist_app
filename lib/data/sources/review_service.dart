@@ -8,52 +8,6 @@ import 'package:tracklist_app/data/sources/spotify_service.dart';
 
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-Future<List<Review>> getNewReviews({DocumentSnapshot? lastDoc, int limit = MAX_REVIEWS}) async {
-  try {
-    // Retrieve Reviews from Firestore and sort by date
-    final reviewsRef = firestore.collection("reviews").orderBy("createdAt", descending: true).limit(limit);
-
-    QuerySnapshot reviewsSnapshot;
-
-    // If lastDoc is not null, start after it
-    if (lastDoc != null) {
-      reviewsSnapshot = await reviewsRef.startAfterDocument(lastDoc).get();
-    } else {
-      reviewsSnapshot = await reviewsRef.get();
-    }
-
-    if (reviewsSnapshot.docs.isEmpty) return [];
-
-    // Map each review to a Review object
-    final List<Review> reviews = await Future.wait(
-      reviewsSnapshot.docs.map((doc) async {
-        // Store data from Firestore
-        final data = doc.data() as Map<String, dynamic>;
-
-        String userId = data["userId"];
-        AuthUser user = await authService.value.getUserById(userId: userId);
-
-        String mediaId = data["mediaId"];
-        String category = data["category"];
-
-        Media media = await getMediaById(mediaId, category);
-
-        final reviewJson = {...data, "reviewId": doc.id};
-
-        // Create Review object
-        return Review.fromJson(reviewJson, user: user, media: media, doc: doc);
-      }),
-    );
-
-    // Sort reviews by date
-    reviews.sort((Review.compareByDate));
-
-    return reviews;
-  } catch (error) {
-    throw Exception("Error getting new reviews: $error");
-  }
-}
-
 Future<List<Review>> getPopularReviews({DocumentSnapshot? lastDoc, int limit = MAX_REVIEWS}) async {
   try {
     // Retrieve Reviews from Firestore
@@ -108,21 +62,61 @@ Future<List<Review>> getPopularReviews({DocumentSnapshot? lastDoc, int limit = M
 }
 
 Future<List<Review>> getFollowingReviews({DocumentSnapshot? lastDoc, int limit = MAX_REVIEWS}) async {
-  if (authUser.value == null) return [];
+  try {
+    if (authUser.value == null) return [];
 
-  // Get newest reviews
-  List<Review> newestReviews = await getNewReviews(lastDoc: lastDoc, limit: limit);
+    // Get list of users that the current user is following
+    List<String> following = authService.value.getFollowingByUserId();
 
-  // Get list of users that the current user is following
-  List<String> followers = authService.value.getFollowingByUserId();
+    // Include current user's reviews
+    following.add(authUser.value!.uid);
 
-  // Include current user's reviews
-  followers.add(authUser.value!.uid);
+    // Retrieve Reviews from Firestore where userId is in following, sort by date
+    final reviewsRef = firestore
+        .collection("reviews")
+        .where("userId", whereIn: following)
+        .orderBy("createdAt", descending: true)
+        .limit(limit);
 
-  // Filter newest reviews by users that the current user is following
-  List<Review> followingReviews = newestReviews.where((review) => followers.contains(review.user.uid)).toList();
+    QuerySnapshot reviewsSnapshot;
 
-  return followingReviews;
+    // If lastDoc is not null, start after it
+    if (lastDoc != null) {
+      reviewsSnapshot = await reviewsRef.startAfterDocument(lastDoc).get();
+    } else {
+      reviewsSnapshot = await reviewsRef.get();
+    }
+
+    if (reviewsSnapshot.docs.isEmpty) return [];
+
+    // Map each review to a Review object
+    final List<Review> reviews = await Future.wait(
+      reviewsSnapshot.docs.map((doc) async {
+        // Store data from Firestore
+        final data = doc.data() as Map<String, dynamic>;
+
+        String userId = data["userId"];
+        AuthUser user = await authService.value.getUserById(userId: userId);
+
+        String mediaId = data["mediaId"];
+        String category = data["category"];
+
+        Media media = await getMediaById(mediaId, category);
+
+        final reviewJson = {...data, "reviewId": doc.id};
+
+        // Create Review object
+        return Review.fromJson(reviewJson, user: user, media: media, doc: doc);
+      }),
+    );
+
+    // Sort reviews by date
+    reviews.sort((Review.compareByDate));
+
+    return reviews;
+  } catch (error) {
+    throw Exception("Error getting new reviews: $error");
+  }
 }
 
 Future<QuerySnapshot> getReviewDocsByMediaId(String mediaId) async {
