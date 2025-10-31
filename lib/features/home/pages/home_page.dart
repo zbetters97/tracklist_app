@@ -250,10 +250,7 @@ class _HomePageState extends State<HomePage> {
             }
 
             // Route to Review Page on tap using callback
-            return GestureDetector(
-              onTap: () => widget.onOpenReview(reviews[index]),
-              child: ReviewCardWidget(review: reviews[index]),
-            );
+            return ReviewCardWidget(review: reviews[index], onOpenReview: widget.onOpenReview);
           },
           separatorBuilder: (context, index) => const Divider(color: Colors.grey),
         ),

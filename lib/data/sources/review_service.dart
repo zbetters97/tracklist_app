@@ -190,3 +190,31 @@ Future<double> getAvgRating(String mediaId) async {
     throw Exception("Error getting average rating: $error");
   }
 }
+
+Future<int> likeReview(String reviewId, String userId) async {
+  try {
+    DocumentSnapshot reviewDoc = await firestore.collection("reviews").doc(reviewId).get();
+
+    if (!reviewDoc.exists) return 0;
+
+    List<dynamic> likes = reviewDoc["likes"];
+
+    if (likes.contains(userId)) {
+      // Remove userId from list of likes
+      await reviewDoc.reference.update({
+        "likes": FieldValue.arrayRemove([userId]),
+      });
+    } else {
+      // Add userId to list of likes
+      await reviewDoc.reference.update({
+        "likes": FieldValue.arrayUnion([userId]),
+      });
+    }
+
+    int numLikes = reviewDoc["likes"].length;
+
+    return numLikes;
+  } catch (error) {
+    throw Exception("Error liking review: $error");
+  }
+}
