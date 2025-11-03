@@ -30,6 +30,63 @@ Future<Comment> getCommentById(String commentId) async {
   }
 }
 
+Future<Comment> addComment(String content, String userId, String reviewId, {String replyingToId = ""}) async {
+  try {
+    final reviewRef = firestore.collection("reviews").doc(reviewId);
+    final reviewDoc = await reviewRef.get();
+
+    if (!reviewDoc.exists) throw Exception("Review does not exist in database");
+
+    // Gather comment data
+    Map<String, dynamic> newCommentData = {
+      "content": content,
+      "createdAt": FieldValue.serverTimestamp(),
+      "reviewId": reviewId,
+      "userId": userId,
+      "likes": [],
+      "dislikes": [],
+      "replyingTo": replyingToId,
+      "replies": [],
+    };
+
+    // Create comment document in Firestore, grab generated ID
+    Comment newComment = await firestore
+        .collection("comments")
+        .add(newCommentData)
+        .then((docRef) => getCommentById(docRef.id));
+
+    // Add comment ID to review doc
+    await reviewRef.update({
+      "comments": FieldValue.arrayUnion([newComment.commentId]),
+    });
+
+    return newComment;
+  } catch (error) {
+    throw Exception("Error adding comment: $error");
+  }
+}
+
+Future<void> deleteComment(String commentId) async {
+  try {
+    // Fetch Comment doc from Firestore by ID
+    final commentRef = firestore.collection("comments").doc(commentId);
+    final commentDoc = await commentRef.get();
+
+    if (!commentDoc.exists) throw Exception("Comment does not exist in database");
+
+    // Delete comment doc
+    await commentRef.delete();
+
+    // Remove comment ID from review doc
+    final reviewRef = firestore.collection("reviews").doc(commentDoc["reviewId"]);
+    await reviewRef.update({
+      "comments": FieldValue.arrayRemove([commentId]),
+    });
+  } catch (error) {
+    throw Exception("Error deleting comment: $error");
+  }
+}
+
 Future<void> likeComment(String commentId, String userId) async {
   try {
     // Fetch Comment doc from Firestore by ID

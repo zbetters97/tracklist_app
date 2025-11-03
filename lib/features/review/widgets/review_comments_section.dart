@@ -18,6 +18,8 @@ class ReviewCommentsSection extends StatefulWidget {
 class _ReviewCommentsSectionState extends State<ReviewCommentsSection> {
   Review get review => widget.review;
 
+  TextEditingController commentController = TextEditingController();
+
   final List<String> commentFilters = ["Newest", "Oldest", "Best", "Worst"];
   int selectedFilter = 0;
 
@@ -38,9 +40,10 @@ class _ReviewCommentsSectionState extends State<ReviewCommentsSection> {
       comments.add(comment);
     }
 
-    sortComments();
-
-    setState(() => isLoading = false);
+    setState(() {
+      sortComments();
+      isLoading = false;
+    });
   }
 
   void sortComments() {
@@ -48,6 +51,37 @@ class _ReviewCommentsSectionState extends State<ReviewCommentsSection> {
     if (selectedFilter == 1) comments.sort(Comment.compareByOldest);
     if (selectedFilter == 2) comments.sort(Comment.compareByLikes);
     if (selectedFilter == 3) comments.sort(Comment.compareByDislikes);
+  }
+
+  void postComment(String content) async {
+    Comment newComment = await addComment(content, authUser.value!.uid, review.reviewId);
+
+    FocusManager.instance.primaryFocus?.unfocus();
+    commentController.clear();
+
+    setState(() {
+      comments.insert(0, newComment);
+      sortComments();
+    });
+  }
+
+  void removeComment(String commentId) async {
+    bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Delete Comment"),
+        content: const Text("Are you sure you want to delete this comment?"),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancel")),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text("Delete")),
+        ],
+      ),
+    );
+
+    if (!confirm!) return;
+
+    await deleteComment(commentId);
+    setState(() => comments.removeWhere((comment) => comment.commentId == commentId));
   }
 
   @override
@@ -77,7 +111,7 @@ class _ReviewCommentsSectionState extends State<ReviewCommentsSection> {
 
   Widget buildCommentsHeader() {
     return Text(
-      "${review.comments.length} Comments",
+      "${comments.length} Comments",
       style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
     );
   }
@@ -118,6 +152,7 @@ class _ReviewCommentsSectionState extends State<ReviewCommentsSection> {
         profileImage,
         Expanded(
           child: TextField(
+            controller: commentController,
             style: TextStyle(fontSize: 20),
             decoration: InputDecoration(
               contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
@@ -135,7 +170,11 @@ class _ReviewCommentsSectionState extends State<ReviewCommentsSection> {
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
           ),
-          onPressed: () {},
+          onPressed: () {
+            if (commentController.text.isEmpty) return;
+            if (commentController.text.trim().isEmpty) return;
+            postComment(commentController.text);
+          },
           child: Text("Post", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
         ),
       ],
@@ -143,6 +182,14 @@ class _ReviewCommentsSectionState extends State<ReviewCommentsSection> {
   }
 
   Widget buildCommentsList() {
-    return Column(spacing: 12.0, children: comments.map((comment) => CommentCardWidget(comment: comment)).toList());
+    return Column(
+      spacing: 12.0,
+      children: comments
+          .map(
+            (comment) =>
+                CommentCardWidget(key: ValueKey(comment.commentId), comment: comment, onDeleteComment: removeComment),
+          )
+          .toList(),
+    );
   }
 }

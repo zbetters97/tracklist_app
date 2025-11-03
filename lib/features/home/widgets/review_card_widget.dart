@@ -154,9 +154,9 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
       },
       child: Row(
         children: [
-          Icon(Icons.favorite, size: 30, color: isLiked ? PRIMARY_COLOR : Colors.white),
+          Icon(Icons.favorite, size: 30, color: isLiked ? PRIMARY_COLOR_LIGHT : Colors.white),
           const SizedBox(width: 3),
-          Text("$likes", style: TextStyle(color: isLiked ? PRIMARY_COLOR : Colors.white, fontSize: 24)),
+          Text("$likes", style: TextStyle(color: isLiked ? PRIMARY_COLOR_LIGHT : Colors.white, fontSize: 24)),
         ],
       ),
     );

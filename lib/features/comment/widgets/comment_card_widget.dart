@@ -7,9 +7,10 @@ import 'package:tracklist_app/data/sources/comment_service.dart';
 import 'package:tracklist_app/features/user/pages/user_page.dart';
 
 class CommentCardWidget extends StatefulWidget {
-  const CommentCardWidget({super.key, required this.comment});
+  const CommentCardWidget({super.key, required this.comment, required this.onDeleteComment});
 
   final Comment comment;
+  final void Function(String commentId) onDeleteComment;
 
   @override
   State<CommentCardWidget> createState() => _CommentCardWidgetState();
@@ -129,7 +130,10 @@ class _CommentCardWidgetState extends State<CommentCardWidget> {
 
   Widget buildDeleteButton() {
     if (authUser.value?.uid == comment.user.uid) {
-      return Icon(Icons.delete, size: 20);
+      return GestureDetector(
+        onTap: () => widget.onDeleteComment(comment.commentId),
+        child: Icon(Icons.delete, size: 20),
+      );
     }
 
     return Container();

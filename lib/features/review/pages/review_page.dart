@@ -28,8 +28,6 @@ class _ReviewPageState extends State<ReviewPage> {
   AuthUser get user => widget.review.user;
   int get likes => review.likes.length;
 
-  TextEditingController commentController = TextEditingController();
-
   void sendToMediaPage(BuildContext context) {
     Navigator.push(
       context,
@@ -59,11 +57,11 @@ class _ReviewPageState extends State<ReviewPage> {
               child: Column(
                 children: [
                   buildMediaBanner(media.image, review.category, media.name),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 24.0),
                   buildReviewHeader(user.username, user.profileUrl, review.createdAt, review.rating),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8.0),
                   buildReviewContent(review.content),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 12.0),
                   buildReviewButtons(user.uid, review),
                 ],
               ),
@@ -151,7 +149,7 @@ class _ReviewPageState extends State<ReviewPage> {
 
   Widget buildReviewContent(String content) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(4.0),
       child: Text(content, style: TextStyle(color: Colors.white, fontSize: 20)),
     );
   }
@@ -182,9 +180,9 @@ class _ReviewPageState extends State<ReviewPage> {
       },
       child: Row(
         children: [
-          Icon(Icons.favorite, size: 30, color: isLiked ? PRIMARY_COLOR : Colors.white),
+          Icon(Icons.favorite, size: 30, color: isLiked ? PRIMARY_COLOR_LIGHT : Colors.white),
           const SizedBox(width: 3),
-          Text("$likes", style: TextStyle(color: isLiked ? PRIMARY_COLOR : Colors.white, fontSize: 24)),
+          Text("$likes", style: TextStyle(color: isLiked ? PRIMARY_COLOR_LIGHT : Colors.white, fontSize: 24)),
         ],
       ),
     );
