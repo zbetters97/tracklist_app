@@ -4,12 +4,22 @@ import 'package:tracklist_app/core/utils/date.dart';
 import 'package:tracklist_app/data/models/comment_class.dart';
 import 'package:tracklist_app/data/sources/auth_service.dart';
 import 'package:tracklist_app/data/sources/comment_service.dart';
+import 'package:tracklist_app/features/comment/widgets/post_comment_widget.dart';
+import 'package:tracklist_app/features/comment/widgets/replies_widget.dart';
 import 'package:tracklist_app/features/user/pages/user_page.dart';
 
 class CommentCardWidget extends StatefulWidget {
-  const CommentCardWidget({super.key, required this.comment, required this.onDeleteComment});
+  const CommentCardWidget({
+    super.key,
+    required this.comment,
+    required this.reviewId,
+    required this.onPostComment,
+    required this.onDeleteComment,
+  });
 
   final Comment comment;
+  final String reviewId;
+  final void Function(String content, String replyingToId) onPostComment;
   final void Function(String commentId) onDeleteComment;
 
   @override
@@ -19,6 +29,8 @@ class CommentCardWidget extends StatefulWidget {
 class _CommentCardWidgetState extends State<CommentCardWidget> {
   late Comment comment;
 
+  bool isReplying = false;
+
   @override
   void initState() {
     super.initState();
@@ -27,6 +39,12 @@ class _CommentCardWidgetState extends State<CommentCardWidget> {
 
   void sendToUserPage(BuildContext context, String userId) {
     Navigator.push(context, MaterialPageRoute(builder: (context) => UserPage(uid: userId)));
+  }
+
+  @override
+  void dispose() {
+    isReplying = false;
+    super.dispose();
   }
 
   @override
@@ -56,12 +74,24 @@ class _CommentCardWidgetState extends State<CommentCardWidget> {
                 ],
               ),
             ),
-            const SizedBox(width: 4.0),
+            const SizedBox(width: 8.0),
             Text(getTimeSinceShort(comment.createdAt), style: TextStyle(color: Colors.grey)),
           ],
         ),
-        Text(comment.content, style: TextStyle(color: Colors.white, fontSize: 16)),
+        Text(comment.content, style: TextStyle(color: Colors.white, fontSize: 16.0)),
         buildCommentButtons(),
+        if (isReplying)
+          PostCommentWidget(
+            reviewId: widget.reviewId,
+            replyingToId: comment.commentId,
+            onPostComment: widget.onPostComment,
+          ),
+        RepliesWidget(
+          comment: comment,
+          reviewId: widget.reviewId,
+          onPostComment: widget.onPostComment,
+          onDeleteComment: widget.onDeleteComment,
+        ),
       ],
     );
   }
@@ -125,7 +155,10 @@ class _CommentCardWidgetState extends State<CommentCardWidget> {
   }
 
   Widget buildReplyButton() {
-    return Text("Reply", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16));
+    return GestureDetector(
+      onTap: () => setState(() => isReplying = !isReplying),
+      child: Text("Reply", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+    );
   }
 
   Widget buildDeleteButton() {

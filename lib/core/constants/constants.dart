@@ -15,6 +15,8 @@ const Color TERTIARY_COLOR = Color.fromARGB(255, 16, 24, 40);
 
 const Color BACKGROUND_COLOR = Color.fromARGB(255, 21, 20, 26);
 
+const Color PRIMARY_BLUE = Color.fromARGB(255, 71, 112, 235);
+
 const String LOGO_IMG_LG = 'assets/images/logo-primary-large.png';
 const String LOGO_IMG_SM = 'assets/images/logo-primary-small.png';
 

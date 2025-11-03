@@ -5,6 +5,7 @@ import 'package:tracklist_app/data/models/review_class.dart';
 import 'package:tracklist_app/data/sources/auth_service.dart';
 import 'package:tracklist_app/data/sources/comment_service.dart';
 import 'package:tracklist_app/features/comment/widgets/comment_card_widget.dart';
+import 'package:tracklist_app/features/comment/widgets/post_comment_widget.dart';
 
 class ReviewCommentsSection extends StatefulWidget {
   const ReviewCommentsSection({super.key, required this.review});
@@ -17,8 +18,6 @@ class ReviewCommentsSection extends StatefulWidget {
 
 class _ReviewCommentsSectionState extends State<ReviewCommentsSection> {
   Review get review => widget.review;
-
-  TextEditingController commentController = TextEditingController();
 
   final List<String> commentFilters = ["Newest", "Oldest", "Best", "Worst"];
   int selectedFilter = 0;
@@ -35,10 +34,11 @@ class _ReviewCommentsSectionState extends State<ReviewCommentsSection> {
   void fetchComments() async {
     setState(() => isLoading = true);
 
-    for (String commentId in review.comments) {
-      Comment comment = await getCommentById(commentId);
-      comments.add(comment);
-    }
+    // Fetch comments
+    comments = await getCommentsByReviewId(review);
+
+    // Avoid memory leak
+    if (!mounted) return;
 
     setState(() {
       sortComments();
@@ -53,11 +53,10 @@ class _ReviewCommentsSectionState extends State<ReviewCommentsSection> {
     if (selectedFilter == 3) comments.sort(Comment.compareByDislikes);
   }
 
-  void postComment(String content) async {
-    Comment newComment = await addComment(content, authUser.value!.uid, review.reviewId);
+  void postComment(String content, String replyingToId) async {
+    Comment newComment = await addComment(content, authUser.value!.uid, review.reviewId, replyingToId: replyingToId);
 
     FocusManager.instance.primaryFocus?.unfocus();
-    commentController.clear();
 
     setState(() {
       comments.insert(0, newComment);
@@ -78,10 +77,16 @@ class _ReviewCommentsSectionState extends State<ReviewCommentsSection> {
       ),
     );
 
-    if (!confirm!) return;
+    if (!confirm! || !mounted) return;
 
     await deleteComment(commentId);
     setState(() => comments.removeWhere((comment) => comment.commentId == commentId));
+  }
+
+  @override
+  void dispose() {
+    comments.clear();
+    super.dispose();
   }
 
   @override
@@ -100,7 +105,7 @@ class _ReviewCommentsSectionState extends State<ReviewCommentsSection> {
                   const SizedBox(height: 8.0),
                   buildCommentFilters(),
                   const SizedBox(height: 24.0),
-                  buildPostCommentWidget(),
+                  PostCommentWidget(reviewId: review.reviewId, onPostComment: postComment),
                   const SizedBox(height: 24.0),
                   buildCommentsList(),
                 ],
@@ -139,55 +144,18 @@ class _ReviewCommentsSectionState extends State<ReviewCommentsSection> {
     );
   }
 
-  Widget buildPostCommentWidget() {
-    String profileUrl = authUser.value?.profileUrl ?? "";
-    CircleAvatar profileImage = profileUrl.startsWith("https")
-        ? CircleAvatar(radius: 20.0, backgroundImage: NetworkImage(profileUrl))
-        : CircleAvatar(radius: 20.0, backgroundImage: AssetImage(DEFAULT_PROFILE_IMG));
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      spacing: 8.0,
-      children: [
-        profileImage,
-        Expanded(
-          child: TextField(
-            controller: commentController,
-            style: TextStyle(fontSize: 20),
-            decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-              border: OutlineInputBorder(),
-              focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-              enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-            ),
-          ),
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            minimumSize: Size(0.0, 40.0),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            backgroundColor: PRIMARY_COLOR_DARK,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
-          ),
-          onPressed: () {
-            if (commentController.text.isEmpty) return;
-            if (commentController.text.trim().isEmpty) return;
-            postComment(commentController.text);
-          },
-          child: Text("Post", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-        ),
-      ],
-    );
-  }
-
   Widget buildCommentsList() {
     return Column(
       spacing: 12.0,
       children: comments
           .map(
-            (comment) =>
-                CommentCardWidget(key: ValueKey(comment.commentId), comment: comment, onDeleteComment: removeComment),
+            (comment) => CommentCardWidget(
+              key: ValueKey(comment.commentId),
+              comment: comment,
+              reviewId: review.reviewId,
+              onPostComment: postComment,
+              onDeleteComment: removeComment,
+            ),
           )
           .toList(),
     );

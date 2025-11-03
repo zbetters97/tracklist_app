@@ -14,19 +14,41 @@ import 'package:tracklist_app/core/widgets/my_app_bar.dart';
 import 'package:tracklist_app/core/widgets/stars_widget.dart';
 
 class ReviewPage extends StatefulWidget {
-  const ReviewPage({super.key, required this.review});
+  const ReviewPage({super.key, required this.reviewId});
 
-  final Review review;
+  final String reviewId;
 
   @override
   State<ReviewPage> createState() => _ReviewPageState();
 }
 
 class _ReviewPageState extends State<ReviewPage> {
-  Review get review => widget.review;
-  Media get media => widget.review.media;
-  AuthUser get user => widget.review.user;
-  int get likes => review.likes.length;
+  late Review review;
+  late Media media;
+  late AuthUser user;
+  late int likes;
+
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchReview();
+  }
+
+  void fetchReview() async {
+    setState(() => isLoading = true);
+
+    Review fetchedReview = await getReviewById(widget.reviewId);
+
+    setState(() {
+      review = fetchedReview;
+      media = fetchedReview.media;
+      user = fetchedReview.user;
+      likes = fetchedReview.likes.length;
+      isLoading = false;
+    });
+  }
 
   void sendToMediaPage(BuildContext context) {
     Navigator.push(
@@ -49,27 +71,29 @@ class _ReviewPageState extends State<ReviewPage> {
       appBar: MyAppBar(title: "Review"),
       backgroundColor: BACKGROUND_COLOR,
       body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  buildMediaBanner(media.image, review.category, media.name),
-                  const SizedBox(height: 24.0),
-                  buildReviewHeader(user.username, user.profileUrl, review.createdAt, review.rating),
-                  const SizedBox(height: 8.0),
-                  buildReviewContent(review.content),
-                  const SizedBox(height: 12.0),
-                  buildReviewButtons(user.uid, review),
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      children: [
+                        buildMediaBanner(media.image, review.category, media.name),
+                        const SizedBox(height: 24.0),
+                        buildReviewHeader(user.username, user.profileUrl, review.createdAt, review.rating),
+                        const SizedBox(height: 8.0),
+                        buildReviewContent(review.content),
+                        const SizedBox(height: 12.0),
+                        buildReviewButtons(user.uid, review),
+                      ],
+                    ),
+                  ),
+                  const Divider(color: Colors.white, thickness: 1, height: 0),
+                  ReviewCommentsSection(review: review),
                 ],
               ),
-            ),
-            const Divider(color: Colors.white, thickness: 1, height: 0),
-            ReviewCommentsSection(review: review),
-          ],
-        ),
       ),
     );
   }

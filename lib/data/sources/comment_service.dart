@@ -23,10 +23,46 @@ Future<Comment> getCommentById(String commentId) async {
     AuthUser user = await authService.value.getUserById(userId: data["userId"]);
 
     // Create Comment object
-    Comment myComment = Comment.fromJson({"commentId": commentDoc.id, ...data}, user: user, review: review);
-    return myComment;
+    Comment comment = Comment.fromJson({"commentId": commentDoc.id, ...data}, user: user, review: review);
+    return comment;
   } catch (error) {
     throw Exception("Error getting comment by id: $error");
+  }
+}
+
+Future<List<Comment>> getCommentsByReviewId(Review review) async {
+  try {
+    List<Comment> comments = [];
+
+    for (String commentId in review.comments) {
+      Comment comment = await getCommentById(commentId);
+      comments.add(comment);
+    }
+
+    // Only show top-level comments
+    List<Comment> filteredComments = comments.where((comment) => comment.replyingTo == "").toList();
+
+    return filteredComments;
+  } catch (error) {
+    throw Exception("Error getting comments by review id: $error");
+  }
+}
+
+Future<List<Comment>> getRepliesByComment(Comment comment) async {
+  try {
+    List<Comment> replies = [];
+
+    for (String replyId in comment.replies) {
+      Comment reply = await getCommentById(replyId);
+      replies.add(reply);
+    }
+
+    // Only show top-level comments
+    //   List<Comment> filteredComments = comments.where((comment) => comment.replyingTo == "").toList();
+
+    return replies;
+  } catch (error) {
+    throw Exception("Error getting comments by review id: $error");
   }
 }
 
@@ -54,6 +90,13 @@ Future<Comment> addComment(String content, String userId, String reviewId, {Stri
         .collection("comments")
         .add(newCommentData)
         .then((docRef) => getCommentById(docRef.id));
+
+    // Add comment ID to replyingTo doc
+    if (replyingToId != "") {
+      await firestore.collection("comments").doc(replyingToId).update({
+        "replies": FieldValue.arrayUnion([newComment.commentId]),
+      });
+    }
 
     // Add comment ID to review doc
     await reviewRef.update({

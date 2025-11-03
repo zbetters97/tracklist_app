@@ -30,7 +30,7 @@ class _MediaReviewsState extends State<MediaReviews> {
   }
 
   void sendToReviewPage(BuildContext context, Review review) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => ReviewPage(review: review)));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ReviewPage(reviewId: review.reviewId)));
   }
 
   void filterByStars(double stars) {

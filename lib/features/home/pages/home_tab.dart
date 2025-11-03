@@ -26,7 +26,8 @@ class HomeTab extends StatelessWidget {
             break;
           // Open Review Page when a review is clicked
           case "/review":
-            page = ReviewPage(review: settings.arguments as Review);
+            Review review = settings.arguments as Review;
+            page = ReviewPage(reviewId: review.reviewId);
             break;
           // Default case
           // TODO: Add default route to Errror Page
