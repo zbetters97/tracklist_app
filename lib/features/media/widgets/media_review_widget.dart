@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tracklist_app/data/models/auth_user_class.dart';
-import 'package:tracklist_app/data/models/review_class.dart';
+import 'package:tracklist_app/features/auth/models/auth_user_class.dart';
+import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/core/utils/date.dart';
 import 'package:tracklist_app/core/widgets/stars_widget.dart';

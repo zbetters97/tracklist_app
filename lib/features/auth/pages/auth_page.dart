@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
-import 'package:tracklist_app/data/sources/auth_service.dart';
+import 'package:tracklist_app/features/auth/services/auth_service.dart';
 import 'package:tracklist_app/app/widget_tree.dart';
 import 'package:tracklist_app/features/auth/widgets/auth_text_field.dart';
 import 'package:tracklist_app/features/auth/widgets/reset_password_widget.dart';

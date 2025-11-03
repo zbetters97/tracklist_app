@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
-import 'package:tracklist_app/data/models/comment_class.dart';
-import 'package:tracklist_app/data/models/review_class.dart';
-import 'package:tracklist_app/data/sources/auth_service.dart';
-import 'package:tracklist_app/data/sources/comment_service.dart';
+import 'package:tracklist_app/features/comment/models/comment_class.dart';
+import 'package:tracklist_app/features/review/models/review_class.dart';
+import 'package:tracklist_app/features/auth/services/auth_service.dart';
+import 'package:tracklist_app/features/comment/services/comment_service.dart';
 import 'package:tracklist_app/features/comment/widgets/comment_card_widget.dart';
 import 'package:tracklist_app/features/comment/widgets/post_comment_widget.dart';
+import 'package:tracklist_app/features/review/pages/review_page.dart';
 
 class ReviewCommentsSection extends StatefulWidget {
   const ReviewCommentsSection({super.key, required this.review});
@@ -54,14 +55,17 @@ class _ReviewCommentsSectionState extends State<ReviewCommentsSection> {
   }
 
   void postComment(String content, String replyingToId) async {
-    Comment newComment = await addComment(content, authUser.value!.uid, review.reviewId, replyingToId: replyingToId);
+    await addComment(content, authUser.value!.uid, review.reviewId, replyingToId: replyingToId);
 
     FocusManager.instance.primaryFocus?.unfocus();
 
-    setState(() {
-      comments.insert(0, newComment);
-      sortComments();
-    });
+    // Avoid memory leak
+    if (!mounted) return;
+
+    // TODO: Implement cleaner way of updating comments without refreshing
+    // Refresh entire page to update comments
+    Navigator.pop(context);
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ReviewPage(reviewId: review.reviewId)));
   }
 
   void removeComment(String commentId) async {

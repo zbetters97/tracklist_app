@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tracklist_app/data/models/track_class.dart';
-import 'package:tracklist_app/data/sources/review_service.dart';
+import 'package:tracklist_app/features/media/models/track_class.dart';
+import 'package:tracklist_app/features/review/services/review_service.dart';
 import 'package:tracklist_app/core/widgets/stars_widget.dart';
 
 class TrackCardWidget extends StatefulWidget {

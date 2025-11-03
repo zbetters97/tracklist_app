@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:tracklist_app/data/models/auth_user_class.dart';
-import 'package:tracklist_app/data/models/media_class.dart';
-import 'package:tracklist_app/data/models/review_class.dart';
+import 'package:tracklist_app/features/auth/models/auth_user_class.dart';
+import 'package:tracklist_app/features/media/models/media_class.dart';
+import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/core/utils/date.dart';
-import 'package:tracklist_app/data/sources/auth_service.dart';
+import 'package:tracklist_app/features/auth/services/auth_service.dart';
 import 'package:tracklist_app/core/widgets/stars_widget.dart';
-import 'package:tracklist_app/data/sources/review_service.dart';
+import 'package:tracklist_app/features/review/services/review_service.dart';
 
 class ReviewCardWidget extends StatefulWidget {
   const ReviewCardWidget({super.key, required this.review, required this.onOpenReview});

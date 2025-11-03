@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tracklist_app/data/models/auth_user_class.dart';
+import 'package:tracklist_app/features/auth/models/auth_user_class.dart';
 
 class UserAppBar extends StatelessWidget implements PreferredSizeWidget {
   const UserAppBar({super.key, required this.user, required this.onLogoutPressed});

@@ -1,4 +1,4 @@
-import 'package:tracklist_app/data/models/media_class.dart';
+import 'package:tracklist_app/features/media/models/media_class.dart';
 
 class Artist extends Media {
   Artist({required super.name, required super.id, super.image, required super.spotify});

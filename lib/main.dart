@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
-import 'package:tracklist_app/data/sources/firebase_options.dart';
+import 'package:tracklist_app/app/config/firebase_options.dart';
 import 'package:tracklist_app/features/welcome/pages/welcome_page.dart';
 
 void main() async {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/core/utils/notifiers.dart';
-import 'package:tracklist_app/data/models/review_class.dart';
+import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/features/review/pages/review_page.dart';
 import 'package:tracklist_app/features/media/widgets/media_review_widget.dart';
 

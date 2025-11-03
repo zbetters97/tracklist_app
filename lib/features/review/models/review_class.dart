@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:tracklist_app/data/models/auth_user_class.dart';
-import 'package:tracklist_app/data/models/media_class.dart';
+import 'package:tracklist_app/features/auth/models/auth_user_class.dart';
+import 'package:tracklist_app/features/media/models/media_class.dart';
 
 class Review {
   final String reviewId;

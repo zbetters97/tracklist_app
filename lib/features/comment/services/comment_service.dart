@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:tracklist_app/data/models/auth_user_class.dart';
-import 'package:tracklist_app/data/models/comment_class.dart';
-import 'package:tracklist_app/data/models/review_class.dart';
-import 'package:tracklist_app/data/sources/auth_service.dart';
-import 'package:tracklist_app/data/sources/review_service.dart';
+import 'package:tracklist_app/features/auth/models/auth_user_class.dart';
+import 'package:tracklist_app/features/comment/models/comment_class.dart';
+import 'package:tracklist_app/features/review/models/review_class.dart';
+import 'package:tracklist_app/features/auth/services/auth_service.dart';
+import 'package:tracklist_app/features/review/services/review_service.dart';
 
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 

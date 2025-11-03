@@ -2,7 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/core/widgets/alert_dialog.dart';
-import 'package:tracklist_app/data/sources/auth_service.dart';
+import 'package:tracklist_app/features/auth/services/auth_service.dart';
 
 class ResetPasswordWidget extends StatefulWidget {
   const ResetPasswordWidget({super.key});

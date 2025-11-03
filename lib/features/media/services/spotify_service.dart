@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:tracklist_app/data/models/album_class.dart';
-import 'package:tracklist_app/data/models/artist_class.dart';
-import 'package:tracklist_app/data/models/media_class.dart';
-import 'package:tracklist_app/data/models/track_class.dart';
+import 'package:tracklist_app/features/media/models/album_class.dart';
+import 'package:tracklist_app/features/media/models/artist_class.dart';
+import 'package:tracklist_app/features/media/models/media_class.dart';
+import 'package:tracklist_app/features/media/models/track_class.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
 import 'spotify_auth.dart';
 

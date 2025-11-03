@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:tracklist_app/data/models/auth_user_class.dart';
+import 'package:tracklist_app/features/auth/models/auth_user_class.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
 
 // Holds the instance of the current user and the auth service

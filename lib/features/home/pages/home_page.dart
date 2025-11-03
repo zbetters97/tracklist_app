@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:tracklist_app/data/models/review_class.dart';
+import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
-import 'package:tracklist_app/data/sources/review_service.dart';
+import 'package:tracklist_app/features/review/services/review_service.dart';
 import 'package:tracklist_app/features/home/widgets/review_card_widget.dart';
 
 class HomePage extends StatefulWidget {

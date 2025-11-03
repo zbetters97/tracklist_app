@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:tracklist_app/data/models/auth_user_class.dart';
-import 'package:tracklist_app/data/models/media_class.dart';
-import 'package:tracklist_app/data/models/review_class.dart';
+import 'package:tracklist_app/features/auth/models/auth_user_class.dart';
+import 'package:tracklist_app/features/media/models/media_class.dart';
+import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
-import 'package:tracklist_app/data/sources/auth_service.dart';
-import 'package:tracklist_app/data/sources/spotify_service.dart';
+import 'package:tracklist_app/features/auth/services/auth_service.dart';
+import 'package:tracklist_app/features/media/services/spotify_service.dart';
 
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 

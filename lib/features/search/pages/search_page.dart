@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tracklist_app/data/models/media_class.dart';
-import 'package:tracklist_app/data/sources/spotify_service.dart';
+import 'package:tracklist_app/features/media/models/media_class.dart';
+import 'package:tracklist_app/features/media/services/spotify_service.dart';
 import 'package:tracklist_app/features/media/pages/media_page.dart';
 import 'package:tracklist_app/features/media/widgets/media_card_widget.dart';
 

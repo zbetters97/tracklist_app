@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:tracklist_app/data/models/album_class.dart';
-import 'package:tracklist_app/data/models/artist_class.dart';
-import 'package:tracklist_app/data/models/review_class.dart';
+import 'package:tracklist_app/features/media/models/album_class.dart';
+import 'package:tracklist_app/features/media/models/artist_class.dart';
+import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
-import 'package:tracklist_app/data/sources/review_service.dart';
-import 'package:tracklist_app/data/sources/spotify_service.dart';
+import 'package:tracklist_app/features/review/services/review_service.dart';
+import 'package:tracklist_app/features/media/services/spotify_service.dart';
 import 'package:tracklist_app/features/media/pages/media_page.dart';
 import 'package:tracklist_app/features/media/content/media_reviews_content.dart';
 import 'package:tracklist_app/features/media/widgets/media_card_widget.dart';

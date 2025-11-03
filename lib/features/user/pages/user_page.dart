@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:tracklist_app/data/models/auth_user_class.dart';
+import 'package:tracklist_app/features/auth/models/auth_user_class.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/core/utils/date.dart';
 import 'package:tracklist_app/core/utils/notifiers.dart';
-import 'package:tracklist_app/core/utils/string_extensions.dart';
-import 'package:tracklist_app/data/sources/auth_service.dart';
+import 'package:tracklist_app/core/extensions/string_extensions.dart';
+import 'package:tracklist_app/features/auth/services/auth_service.dart';
 import 'package:tracklist_app/features/welcome/pages/welcome_page.dart';
 import 'package:tracklist_app/core/widgets/my_app_bar.dart';
 import 'package:tracklist_app/features/user/widgets/user_app_bar.dart';

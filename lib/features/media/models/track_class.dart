@@ -1,27 +1,33 @@
-import 'package:tracklist_app/data/models/media_class.dart';
+import 'package:tracklist_app/features/media/models/media_class.dart';
 
-class Album extends Media {
+class Track extends Media {
   final String artist;
   final String artistId;
+  final String album;
+  final int trackNumber;
   final String releaseDate;
 
-  Album({
+  Track({
     required super.id,
     required super.name,
     required this.artist,
     required this.artistId,
+    required this.album,
     super.image,
+    required this.trackNumber,
     required this.releaseDate,
     required super.spotify,
   });
 
-  factory Album.fromJson(Map<String, dynamic> json) {
-    return Album(
+  factory Track.fromJson(Map<String, dynamic> json) {
+    return Track(
       id: json['id'],
       name: json['name'],
       artist: json['artist'],
-      artistId: json['artist_id'],
+      artistId: json['artist_id'] ?? 'test',
+      album: json['album'],
       image: json['image'],
+      trackNumber: json['track_number'],
       releaseDate: json['release_date'],
       spotify: json['spotify'],
     );

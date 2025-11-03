@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tracklist_app/data/models/media_class.dart';
+import 'package:tracklist_app/features/media/models/media_class.dart';
 import 'package:tracklist_app/features/media/pages/media_page.dart';
 import 'package:tracklist_app/features/search/pages/search_page.dart';
 import 'package:tracklist_app/navigation/nav_item_widget.dart';
