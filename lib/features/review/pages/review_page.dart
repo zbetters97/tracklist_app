@@ -8,6 +8,7 @@ import 'package:tracklist_app/core/utils/date.dart';
 import 'package:tracklist_app/data/sources/auth_service.dart';
 import 'package:tracklist_app/data/sources/review_service.dart';
 import 'package:tracklist_app/features/media/pages/media_page.dart';
+import 'package:tracklist_app/features/review/widgets/review_comments_section.dart';
 import 'package:tracklist_app/features/user/pages/user_page.dart';
 import 'package:tracklist_app/core/widgets/my_app_bar.dart';
 import 'package:tracklist_app/core/widgets/stars_widget.dart';
@@ -29,9 +30,6 @@ class _ReviewPageState extends State<ReviewPage> {
 
   TextEditingController commentController = TextEditingController();
 
-  final List<String> commentFilters = ["Newest", "Oldest", "Best", "Worst"];
-  int selectedFilter = 0;
-
   void sendToMediaPage(BuildContext context) {
     Navigator.push(
       context,
@@ -43,8 +41,8 @@ class _ReviewPageState extends State<ReviewPage> {
     );
   }
 
-  void sendToUserPage(BuildContext context) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => UserPage(uid: user.uid)));
+  void sendToUserPage(BuildContext context, String userId) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => UserPage(uid: userId)));
   }
 
   @override
@@ -71,7 +69,7 @@ class _ReviewPageState extends State<ReviewPage> {
               ),
             ),
             const Divider(color: Colors.white, thickness: 1, height: 0),
-            buildCommentsSection(review),
+            ReviewCommentsSection(review: review),
           ],
         ),
       ),
@@ -123,7 +121,7 @@ class _ReviewPageState extends State<ReviewPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        GestureDetector(onTap: () => sendToUserPage(context), child: profileImage),
+        GestureDetector(onTap: () => sendToUserPage(context, user.uid), child: profileImage),
         const SizedBox(width: 8),
         Expanded(
           child: Column(
@@ -137,7 +135,7 @@ class _ReviewPageState extends State<ReviewPage> {
                     TextSpan(
                       text: username,
                       style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                      recognizer: TapGestureRecognizer()..onTap = () => sendToUserPage(context),
+                      recognizer: TapGestureRecognizer()..onTap = () => sendToUserPage(context, user.uid),
                     ),
                   ],
                 ),
@@ -173,7 +171,7 @@ class _ReviewPageState extends State<ReviewPage> {
   }
 
   Widget buildLikeButton(Review review, String userId) {
-    bool isLiked = widget.review.likes.contains(user.uid);
+    bool isLiked = review.likes.contains(user.uid);
 
     return GestureDetector(
       onTap: () async {
@@ -198,78 +196,5 @@ class _ReviewPageState extends State<ReviewPage> {
 
   Widget buildDeleteButton() {
     return Icon(Icons.delete, size: 30);
-  }
-
-  Widget buildCommentsSection(Review review) {
-    String profileUrl = authUser.value?.profileUrl ?? "";
-    CircleAvatar profileImage = profileUrl.startsWith("https")
-        ? CircleAvatar(radius: 20.0, backgroundImage: NetworkImage(profileUrl))
-        : CircleAvatar(radius: 20.0, backgroundImage: AssetImage(DEFAULT_PROFILE_IMG));
-
-    return Container(
-      decoration: BoxDecoration(color: TERTIARY_COLOR),
-      width: double.infinity,
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "${review.comments.length} Comments",
-              style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8.0),
-            ToggleButtons(
-              isSelected: List.generate(commentFilters.length, (index) => index == selectedFilter),
-              onPressed: (index) => setState(() => selectedFilter = index),
-              color: Colors.white,
-              selectedColor: Colors.black,
-              selectedBorderColor: Colors.white,
-              fillColor: Colors.white,
-              borderColor: Colors.grey,
-              constraints: BoxConstraints(minHeight: 40),
-              borderRadius: BorderRadius.circular(8),
-              children: commentFilters.map((label) {
-                return Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Text(label, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 24.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              spacing: 8.0,
-              children: [
-                profileImage,
-                Expanded(
-                  child: TextField(
-                    style: TextStyle(fontSize: 20),
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                      border: OutlineInputBorder(),
-                      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-                      enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-                    ),
-                  ),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: Size(0.0, 40.0),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    backgroundColor: PRIMARY_COLOR_DARK,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
-                  ),
-                  onPressed: () {},
-                  child: Text("Post", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                ),
-              ],
-            ),
-            Text("Comments List"),
-          ],
-        ),
-      ),
-    );
   }
 }

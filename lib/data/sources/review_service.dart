@@ -8,6 +8,26 @@ import 'package:tracklist_app/data/sources/spotify_service.dart';
 
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
+Future<Review> getReviewById(String reviewId) async {
+  try {
+    final reviewRef = firestore.collection("reviews").doc(reviewId);
+    final reviewDoc = await reviewRef.get();
+
+    if (!reviewDoc.exists) throw Exception("Review does not exist in database");
+
+    final data = reviewDoc.data() as Map<String, dynamic>;
+
+    AuthUser user = await authService.value.getUserById(userId: data["userId"]);
+    Media media = await getMediaById(data["mediaId"], data["category"]);
+
+    // Create Review object
+    final reviewJson = {...data, "reviewId": reviewDoc.id};
+    return Review.fromJson(reviewJson, user: user, media: media, doc: reviewDoc);
+  } catch (error) {
+    throw Exception("Error getting review by id: $error");
+  }
+}
+
 Future<List<Review>> getPopularReviews({DocumentSnapshot? lastDoc, int limit = MAX_REVIEWS}) async {
   try {
     // Retrieve Reviews from Firestore
