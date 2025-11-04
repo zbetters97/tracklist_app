@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/features/auth/models/auth_user_class.dart';
+import 'package:tracklist_app/features/media/models/album_class.dart';
 import 'package:tracklist_app/features/media/models/media_class.dart';
+import 'package:tracklist_app/features/media/models/track_class.dart';
 import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/core/utils/date.dart';
@@ -103,17 +105,29 @@ class _HomeReviewWidgetState extends State<HomeReviewWidget> {
         ? Icon(Icons.album, color: Colors.grey, size: 24)
         : Icon(Icons.music_note, color: Colors.grey, size: 24);
 
-    return Row(
+    String artist = category == "album"
+        ? (media as Album).artist
+        : category == "track"
+        ? (media as Track).artist
+        : "";
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        mediaIcon,
-        Flexible(
-          child: Text(
-            name,
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
-          ),
+        Row(
+          children: [
+            mediaIcon,
+            Flexible(
+              child: Text(
+                name,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+            ),
+          ],
         ),
+        if (artist != "") Text(artist, style: TextStyle(color: Colors.grey, fontSize: 18)),
       ],
     );
   }

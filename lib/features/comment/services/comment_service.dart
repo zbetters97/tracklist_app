@@ -39,9 +39,6 @@ Future<List<Comment>> getCommentsByReviewId(Review review) async {
       comments.add(comment);
     }
 
-    // Only show top-level comments
-    // List<Comment> filteredComments = comments.where((comment) => comment.replyingTo == "").toList();
-
     return comments;
   } catch (error) {
     throw Exception("Error getting comments by review id: $error");
@@ -57,12 +54,9 @@ Future<List<Comment>> getRepliesByComment(Comment comment) async {
       replies.add(reply);
     }
 
-    // Only show top-level comments
-    // List<Comment> filteredComments = comments.where((comment) => comment.replyingTo == "").toList();
-
     return replies;
   } catch (error) {
-    throw Exception("Error getting comments by review id: $error");
+    throw Exception("Error getting replies by comment id: $error");
   }
 }
 

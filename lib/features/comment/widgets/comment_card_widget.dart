@@ -109,9 +109,7 @@ class _CommentCardWidgetState extends State<CommentCardWidget> {
 
     return GestureDetector(
       onTap: () async {
-        setState(() {
-          isLiked ? comment.likes.remove(authUser.value!.uid) : comment.likes.add(authUser.value!.uid);
-        });
+        setState(() => isLiked ? comment.likes.remove(authUser.value!.uid) : comment.likes.add(authUser.value!.uid));
         await likeComment(comment.commentId, authUser.value!.uid);
       },
       child: Row(

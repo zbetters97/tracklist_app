@@ -1,7 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/features/auth/models/auth_user_class.dart';
+import 'package:tracklist_app/features/media/models/album_class.dart';
 import 'package:tracklist_app/features/media/models/media_class.dart';
+import 'package:tracklist_app/features/media/models/track_class.dart';
 import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/core/utils/date.dart';
@@ -26,7 +28,6 @@ class _ReviewPageState extends State<ReviewPage> {
   late Review review;
   late Media media;
   late AuthUser user;
-  late int likes;
 
   bool isLoading = true;
 
@@ -45,7 +46,6 @@ class _ReviewPageState extends State<ReviewPage> {
       review = fetchedReview;
       media = fetchedReview.media;
       user = fetchedReview.user;
-      likes = fetchedReview.likes.length;
       isLoading = false;
     });
   }
@@ -83,9 +83,9 @@ class _ReviewPageState extends State<ReviewPage> {
                         buildMediaBanner(media.image, review.category, media.name),
                         const SizedBox(height: 24.0),
                         buildReviewHeader(user.username, user.profileUrl, review.createdAt, review.rating),
-                        const SizedBox(height: 8.0),
+                        const SizedBox(height: 4.0),
                         buildReviewContent(review.content),
-                        const SizedBox(height: 12.0),
+                        const SizedBox(height: 24.0),
                         buildReviewButtons(user.uid, review),
                       ],
                     ),
@@ -104,6 +104,12 @@ class _ReviewPageState extends State<ReviewPage> {
         : category == "album"
         ? Icon(Icons.album, color: Colors.grey, size: 28)
         : Icon(Icons.music_note, color: Colors.grey, size: 28);
+
+    String artist = category == "album"
+        ? (media as Album).artist
+        : category == "track"
+        ? (media as Track).artist
+        : "";
 
     return GestureDetector(
       onTap: () => sendToMediaPage(context),
@@ -130,6 +136,12 @@ class _ReviewPageState extends State<ReviewPage> {
               ),
             ],
           ),
+          if (artist != "")
+            Text(
+              artist,
+              style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
         ],
       ),
     );
@@ -197,16 +209,17 @@ class _ReviewPageState extends State<ReviewPage> {
 
     return GestureDetector(
       onTap: () async {
-        setState(() {
-          isLiked ? review.likes.remove(userId) : review.likes.add(userId);
-        });
+        setState(() => isLiked ? review.likes.remove(userId) : review.likes.add(userId));
         await likeReview(review.reviewId, userId);
       },
       child: Row(
         children: [
           Icon(Icons.favorite, size: 30, color: isLiked ? PRIMARY_COLOR_LIGHT : Colors.white),
           const SizedBox(width: 3),
-          Text("$likes", style: TextStyle(color: isLiked ? PRIMARY_COLOR_LIGHT : Colors.white, fontSize: 24)),
+          Text(
+            "${review.likes.length}",
+            style: TextStyle(color: isLiked ? PRIMARY_COLOR_LIGHT : Colors.white, fontSize: 24),
+          ),
         ],
       ),
     );
