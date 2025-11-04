@@ -152,6 +152,7 @@ class _ReviewCommentsSectionState extends State<ReviewCommentsSection> {
     return Column(
       spacing: 12.0,
       children: comments
+          .where((comment) => comment.replyingTo == "") // Only show top-level comments
           .map(
             (comment) => CommentCardWidget(
               key: ValueKey(comment.commentId),

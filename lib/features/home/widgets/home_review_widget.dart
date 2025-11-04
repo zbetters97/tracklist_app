@@ -8,8 +8,8 @@ import 'package:tracklist_app/features/auth/services/auth_service.dart';
 import 'package:tracklist_app/core/widgets/stars_widget.dart';
 import 'package:tracklist_app/features/review/services/review_service.dart';
 
-class ReviewCardWidget extends StatefulWidget {
-  const ReviewCardWidget({super.key, required this.review, required this.onOpenReview});
+class HomeReviewWidget extends StatefulWidget {
+  const HomeReviewWidget({super.key, required this.review, required this.onOpenReview});
 
   final Review review;
 
@@ -17,10 +17,10 @@ class ReviewCardWidget extends StatefulWidget {
   final void Function(Review review) onOpenReview;
 
   @override
-  State<ReviewCardWidget> createState() => _ReviewCardWidgetState();
+  State<HomeReviewWidget> createState() => _HomeReviewWidgetState();
 }
 
-class _ReviewCardWidgetState extends State<ReviewCardWidget> {
+class _HomeReviewWidgetState extends State<HomeReviewWidget> {
   Review get review => widget.review;
   Media get media => widget.review.media;
   AuthUser get user => widget.review.user;

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/features/review/services/review_service.dart';
-import 'package:tracklist_app/features/home/widgets/review_card_widget.dart';
+import 'package:tracklist_app/features/home/widgets/home_review_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.onOpenReview});
@@ -250,7 +250,7 @@ class _HomePageState extends State<HomePage> {
             }
 
             // Route to Review Page on tap using callback
-            return ReviewCardWidget(review: reviews[index], onOpenReview: widget.onOpenReview);
+            return HomeReviewWidget(review: reviews[index], onOpenReview: widget.onOpenReview);
           },
           separatorBuilder: (context, index) => const Divider(color: Colors.grey),
         ),

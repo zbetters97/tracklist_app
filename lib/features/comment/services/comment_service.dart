@@ -40,9 +40,9 @@ Future<List<Comment>> getCommentsByReviewId(Review review) async {
     }
 
     // Only show top-level comments
-    List<Comment> filteredComments = comments.where((comment) => comment.replyingTo == "").toList();
+    // List<Comment> filteredComments = comments.where((comment) => comment.replyingTo == "").toList();
 
-    return filteredComments;
+    return comments;
   } catch (error) {
     throw Exception("Error getting comments by review id: $error");
   }
@@ -58,7 +58,7 @@ Future<List<Comment>> getRepliesByComment(Comment comment) async {
     }
 
     // Only show top-level comments
-    //   List<Comment> filteredComments = comments.where((comment) => comment.replyingTo == "").toList();
+    // List<Comment> filteredComments = comments.where((comment) => comment.replyingTo == "").toList();
 
     return replies;
   } catch (error) {
@@ -119,6 +119,29 @@ Future<void> deleteComment(String commentId) async {
 
     // Delete comment doc
     await commentRef.delete();
+
+    // If comment has replies, delete them
+    final List<dynamic> replies = commentDoc["replies"];
+    if (replies.isNotEmpty) {
+      for (String replyId in replies) {
+        await deleteComment(replyId);
+      }
+    }
+
+    // Comment is a reply
+    final String replyingTo = commentDoc["replyingTo"];
+    if (replyingTo != "") {
+      // Fetch replyingTo doc
+      final replyingToRef = firestore.collection("comments").doc(replyingTo);
+      final replyingToDoc = await replyingToRef.get();
+
+      // Check if replyingTo doc exists and remove comment ID from replies
+      if (replyingToDoc.exists) {
+        await replyingToRef.update({
+          "replies": FieldValue.arrayRemove([commentId]),
+        });
+      }
+    }
 
     // Remove comment ID from review doc
     final reviewRef = firestore.collection("reviews").doc(commentDoc["reviewId"]);
