@@ -238,3 +238,38 @@ Future<int> likeReview(String reviewId, String userId) async {
     throw Exception("Error liking review: $error");
   }
 }
+
+Future<List<Review>> getReviewsByUserId(String userId) async {
+  try {
+    // Retrieve Reviews from Firestore
+    final reviewsRef = firestore.collection("reviews");
+
+    // Filter by reviews whose mediaId matches
+    QuerySnapshot reviewsSnapshot = await reviewsRef.where("userId", isEqualTo: userId).get();
+
+    if (reviewsSnapshot.docs.isEmpty) return [];
+
+    // Map each review to a Review object
+    final List<Review> reviews = await Future.wait(
+      reviewsSnapshot.docs.map((doc) async {
+        final data = doc.data() as Map<String, dynamic>;
+
+        String userId = data["userId"];
+
+        AuthUser user = await authService.value.getUserById(userId: userId);
+
+        String mediaId = data["mediaId"];
+        String category = data["category"];
+
+        Media media = await getMediaById(mediaId, category);
+
+        final reviewJson = {...data, "reviewId": doc.id};
+        return Review.fromJson(reviewJson, user: user, media: media, doc: doc);
+      }),
+    );
+
+    return reviews;
+  } catch (error) {
+    throw Exception("Error getting reviews by user id: $error");
+  }
+}

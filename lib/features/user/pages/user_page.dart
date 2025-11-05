@@ -5,6 +5,7 @@ import 'package:tracklist_app/core/utils/date.dart';
 import 'package:tracklist_app/core/utils/notifiers.dart';
 import 'package:tracklist_app/core/extensions/string_extensions.dart';
 import 'package:tracklist_app/features/auth/services/auth_service.dart';
+import 'package:tracklist_app/features/user/widgets/user_reviews_section.dart';
 import 'package:tracklist_app/features/welcome/pages/welcome_page.dart';
 import 'package:tracklist_app/core/widgets/my_app_bar.dart';
 import 'package:tracklist_app/features/user/widgets/user_app_bar.dart';
@@ -99,24 +100,27 @@ class _UserPageState extends State<UserPage> {
       appBar: isLoggedInUser ? UserAppBar(user: user, onLogoutPressed: onLogoutPressed) : MyAppBar(title: ""),
       backgroundColor: BACKGROUND_COLOR,
       extendBodyBehindAppBar: true,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              buildProfile(user.profileUrl),
-              const SizedBox(height: 4),
-              buildBio(user.bio),
-              const SizedBox(height: 4),
-              buildDate(user.createdAt),
-              const SizedBox(height: 4),
-              buildFriends(followers, following),
-              const SizedBox(height: 4),
-              buildFollowButton(),
-            ],
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                buildProfile(user.profileUrl),
+                const SizedBox(height: 4),
+                buildBio(user.bio),
+                const SizedBox(height: 4),
+                buildDate(user.createdAt),
+                const SizedBox(height: 4),
+                buildFriends(followers, following),
+                const SizedBox(height: 4),
+                buildFollowButton(),
+              ],
+            ),
           ),
-        ),
+          UserReviewsSection(user: user),
+        ],
       ),
     );
   }
