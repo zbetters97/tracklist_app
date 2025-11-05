@@ -256,7 +256,7 @@ class AuthService {
       if (!userDoc.exists) return;
 
       await userRef.update({
-        "followers": FieldValue.arrayUnion([userId]),
+        "followers": FieldValue.arrayUnion([authUser.value!.uid]),
       });
 
       final authUserRef = firestore.collection("users").doc(authUser.value!.uid);
@@ -265,7 +265,7 @@ class AuthService {
       if (!authUserDoc.exists) return;
 
       await authUserRef.update({
-        "following": FieldValue.arrayUnion([userId]),
+        "following": FieldValue.arrayUnion([authUser.value!.uid]),
       });
 
       authUser.value!.following.add(userId);
@@ -284,7 +284,7 @@ class AuthService {
       if (!userDoc.exists) return;
 
       await userRef.update({
-        "followers": FieldValue.arrayRemove([userId]),
+        "followers": FieldValue.arrayRemove([authUser.value!.uid]),
       });
 
       final authUserRef = firestore.collection("users").doc(authUser.value!.uid);
@@ -293,7 +293,7 @@ class AuthService {
       if (!authUserDoc.exists) return;
 
       await authUserRef.update({
-        "following": FieldValue.arrayRemove([userId]),
+        "following": FieldValue.arrayRemove([authUser.value!.uid]),
       });
 
       authUser.value!.following.remove(userId);

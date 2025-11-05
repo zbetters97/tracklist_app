@@ -12,7 +12,7 @@ import 'package:tracklist_app/features/media/services/spotify_service.dart';
 import 'package:tracklist_app/features/media/content/album_content.dart';
 import 'package:tracklist_app/features/media/content/artist_content.dart';
 import 'package:tracklist_app/features/media/content/track_content.dart';
-import 'package:tracklist_app/core/widgets/my_app_bar.dart';
+import 'package:tracklist_app/core/widgets/default_app_bar.dart';
 import 'package:tracklist_app/features/media/widgets/ratings_bar_widget.dart';
 import 'package:tracklist_app/core/widgets/stars_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -92,7 +92,7 @@ class _MediaPageState extends State<MediaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(title: media.name),
+      appBar: DefaultAppBar(title: media.name),
       backgroundColor: BACKGROUND_COLOR,
       body: isLoading
           ? Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))

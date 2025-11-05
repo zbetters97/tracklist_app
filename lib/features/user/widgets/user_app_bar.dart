@@ -12,7 +12,7 @@ class UserAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
-      foregroundColor: Colors.white,
+      foregroundColor: Colors.white,      
       leading: IconButton(onPressed: () {}, icon: Icon(Icons.settings), padding: EdgeInsets.all(20.0)),
       actions: [
         IconButton(onPressed: () => onLogoutPressed(), icon: Icon(Icons.logout), padding: EdgeInsets.all(20.0)),

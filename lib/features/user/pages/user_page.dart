@@ -9,7 +9,7 @@ import 'package:tracklist_app/features/user/widgets/user_follow_button.dart';
 import 'package:tracklist_app/features/user/widgets/user_friends_section.dart';
 import 'package:tracklist_app/features/user/widgets/user_reviews_section.dart';
 import 'package:tracklist_app/features/welcome/pages/welcome_page.dart';
-import 'package:tracklist_app/core/widgets/my_app_bar.dart';
+import 'package:tracklist_app/core/widgets/default_app_bar.dart';
 import 'package:tracklist_app/features/user/widgets/user_app_bar.dart';
 
 class UserPage extends StatefulWidget {
@@ -71,15 +71,7 @@ class _UserPageState extends State<UserPage> {
 
   void onLogoutPressed() {
     selectedPageNotifier.value = 0;
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          return WelcomePage();
-        },
-      ),
-    );
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => WelcomePage()));
   }
 
   @override
@@ -90,36 +82,54 @@ class _UserPageState extends State<UserPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return const Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK));
-    }
-
-    return Scaffold(
-      appBar: isLoggedInUser ? UserAppBar(user: user, onLogoutPressed: onLogoutPressed) : MyAppBar(title: ""),
-      backgroundColor: BACKGROUND_COLOR,
-      extendBodyBehindAppBar: true,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
+    return isLoading
+        ? const Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))
+        : Scaffold(
+            appBar: isLoggedInUser
+                ? UserAppBar(user: user, onLogoutPressed: onLogoutPressed)
+                : DefaultAppBar(title: ""),
+            backgroundColor: BACKGROUND_COLOR,
+            extendBodyBehindAppBar: true,
+            body: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                buildProfile(user.profileUrl),
-                const SizedBox(height: 4),
-                buildBio(user.bio),
-                const SizedBox(height: 4),
-                buildDate(user.createdAt),
-                const SizedBox(height: 4),
-                buildFriends(user.followers.length, user.following.length),
-                const SizedBox(height: 4),
-                if (!isLoggedInUser) UserFollowButton(user: user, onFollowChanged: onFollowChanged),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      buildProfile(user.profileUrl),
+                      const SizedBox(height: 4),
+                      buildBio(user.bio),
+                      const SizedBox(height: 4),
+                      buildDate(user.createdAt),
+                      const SizedBox(height: 4),
+                      buildFriends(user.followers.length, user.following.length),
+                      const SizedBox(height: 4),
+                      if (!isLoggedInUser) UserFollowButton(user: user, onFollowChanged: onFollowChanged),
+                    ],
+                  ),
+                ),
+                buildUserTabs(),
+                buildSelectedTab(),
               ],
             ),
-          ),
-          buildUserTabs(),
-          buildSelectedTab(),
-        ],
+          );
+  }
+
+  Widget buildSelectedTab() {
+    Widget currentSection = selectedTab == 0
+        ? UserReviewsSection(user: user)
+        : selectedTab == 1
+        ? Container()
+        : selectedTab == 2
+        ? Container()
+        : UserFriendsSection(user: user);
+
+    return Expanded(
+      child: Container(
+        decoration: BoxDecoration(color: TERTIARY_COLOR),
+        width: double.infinity,
+        child: currentSection,
       ),
     );
   }
@@ -223,24 +233,6 @@ class _UserPageState extends State<UserPage> {
             child: Text(tab, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           );
         }).toList(),
-      ),
-    );
-  }
-
-  Widget buildSelectedTab() {
-    Widget currentSection = selectedTab == 0
-        ? UserReviewsSection(user: user)
-        : selectedTab == 1
-        ? Container()
-        : selectedTab == 2
-        ? Container()
-        : UserFriendsSection(user: user);
-
-    return Expanded(
-      child: Container(
-        decoration: BoxDecoration(color: TERTIARY_COLOR),
-        width: double.infinity,
-        child: currentSection,
       ),
     );
   }

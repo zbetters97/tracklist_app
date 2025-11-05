@@ -12,7 +12,7 @@ import 'package:tracklist_app/features/review/services/review_service.dart';
 import 'package:tracklist_app/features/media/pages/media_page.dart';
 import 'package:tracklist_app/features/review/widgets/review_comments_section.dart';
 import 'package:tracklist_app/features/user/pages/user_page.dart';
-import 'package:tracklist_app/core/widgets/my_app_bar.dart';
+import 'package:tracklist_app/core/widgets/default_app_bar.dart';
 import 'package:tracklist_app/core/widgets/stars_widget.dart';
 
 class ReviewPage extends StatefulWidget {
@@ -51,14 +51,7 @@ class _ReviewPageState extends State<ReviewPage> {
   }
 
   void sendToMediaPage(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          return MediaPage(media: media);
-        },
-      ),
-    );
+    Navigator.push(context, MaterialPageRoute(builder: (context) => MediaPage(media: media)));
   }
 
   void sendToUserPage(BuildContext context, String userId) {
@@ -68,7 +61,7 @@ class _ReviewPageState extends State<ReviewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(title: "Review"),
+      appBar: DefaultAppBar(title: "Review"),
       backgroundColor: BACKGROUND_COLOR,
       body: SingleChildScrollView(
         child: isLoading
