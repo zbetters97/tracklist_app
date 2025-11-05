@@ -8,8 +8,8 @@ class AuthUser {
   final DateTime createdAt;
   final String bio;
   final String profileUrl;
-  final List<String> followers;
-  final List<String> following;
+  List<String> followers;
+  List<String> following;
 
   AuthUser({
     required this.uid,

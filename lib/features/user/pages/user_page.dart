@@ -22,6 +22,9 @@ class _UserPageState extends State<UserPage> {
   bool isLoading = true;
   late AuthUser user;
   bool isLoggedInUser = false;
+  bool isFollowing = false;
+  int followers = 0;
+  int following = 0;
 
   @override
   void initState() {
@@ -38,20 +41,39 @@ class _UserPageState extends State<UserPage> {
     // User is on their own profile, highlight Profile tab
     if (uid == authUser.value!.uid) {
       selectedPageNotifier.value = 4;
-      isLoggedInUser = true;
 
       setState(() {
         user = authUser.value!;
-        isLoading = false;
+        isLoggedInUser = true;
       });
     } else {
       AuthUser fetchedUser = await authService.value.getUserById(userId: uid);
 
       setState(() {
         user = fetchedUser;
-        isLoading = false;
+        isLoggedInUser = false;
+        isFollowing = fetchedUser.followers.contains(authUser.value!.uid);
       });
     }
+
+    setState(() {
+      followers = user.followers.length;
+      following = user.following.length;
+      isLoading = false;
+    });
+  }
+
+  void onFollowPressed() async {
+    if (isFollowing) {
+      await authService.value.unfollowUser(userId: user.uid);
+    } else {
+      await authService.value.followUser(userId: user.uid);
+    }
+
+    setState(() {
+      isFollowing = !isFollowing;
+      followers = isFollowing ? followers + 1 : followers - 1;
+    });
   }
 
   void onLogoutPressed() {
@@ -89,7 +111,9 @@ class _UserPageState extends State<UserPage> {
               const SizedBox(height: 4),
               buildDate(user.createdAt),
               const SizedBox(height: 4),
-              buildFriends(user.followers.length, user.following.length),
+              buildFriends(followers, following),
+              const SizedBox(height: 4),
+              buildFollowButton(),
             ],
           ),
         ),
@@ -164,6 +188,26 @@ class _UserPageState extends State<UserPage> {
               ),
               TextSpan(text: " following"),
             ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildFollowButton() {
+    if (isLoggedInUser) return Container();
+
+    String buttonText = isFollowing ? "Following" : "Follow";
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton(
+          onPressed: () => onFollowPressed(),
+          style: ElevatedButton.styleFrom(backgroundColor: PRIMARY_COLOR_DARK, shape: RoundedRectangleBorder()),
+          child: Text(
+            buttonText,
+            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
           ),
         ),
       ],

@@ -56,7 +56,7 @@ class _PostCommentWidgetState extends State<PostCommentWidget> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             backgroundColor: PRIMARY_COLOR_DARK,
             foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 18),
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           ),
           onPressed: () {
             if (commentController.text.isEmpty) return;
@@ -65,7 +65,7 @@ class _PostCommentWidgetState extends State<PostCommentWidget> {
             widget.onPostComment(commentController.text, widget.replyingToId);
             commentController.clear();
           },
-          child: Text("Post", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+          child: Text("Post", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         ),
       ],
     );

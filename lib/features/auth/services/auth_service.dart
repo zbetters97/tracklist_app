@@ -206,4 +206,60 @@ class AuthService {
     List<String> following = authUser.value!.following.map((e) => e).toList();
     return following;
   }
+
+  Future<void> followUser({required String userId}) async {
+    try {
+      if (authUser.value == null) return;
+
+      final userRef = firestore.collection("users").doc(userId);
+      final userDoc = await userRef.get();
+
+      if (!userDoc.exists) return;
+
+      await userRef.update({
+        "followers": FieldValue.arrayUnion([userId]),
+      });
+
+      final authUserRef = firestore.collection("users").doc(authUser.value!.uid);
+      final authUserDoc = await authUserRef.get();
+
+      if (!authUserDoc.exists) return;
+
+      await authUserRef.update({
+        "following": FieldValue.arrayUnion([userId]),
+      });
+
+      authUser.value!.following.add(userId);
+    } catch (error) {
+      throw Exception("Error following user: $error");
+    }
+  }
+
+  Future<void> unfollowUser({required String userId}) async {
+    try {
+      if (authUser.value == null) return;
+
+      final userRef = firestore.collection("users").doc(userId);
+      final userDoc = await userRef.get();
+
+      if (!userDoc.exists) return;
+
+      await userRef.update({
+        "followers": FieldValue.arrayRemove([userId]),
+      });
+
+      final authUserRef = firestore.collection("users").doc(authUser.value!.uid);
+      final authUserDoc = await authUserRef.get();
+
+      if (!authUserDoc.exists) return;
+
+      await authUserRef.update({
+        "following": FieldValue.arrayRemove([userId]),
+      });
+
+      authUser.value!.following.remove(userId);
+    } catch (error) {
+      throw Exception("Error unfollowing user: $error");
+    }
+  }
 }
