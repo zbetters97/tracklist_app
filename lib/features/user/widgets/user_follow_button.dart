@@ -58,7 +58,7 @@ class _UserFollowButtonState extends State<UserFollowButton> {
           style: ElevatedButton.styleFrom(backgroundColor: PRIMARY_COLOR_DARK, shape: RoundedRectangleBorder()),
           child: Text(
             buttonText,
-            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(color: Colors.white, fontSize: 16.0, fontWeight: FontWeight.bold),
           ),
         ),
       ],

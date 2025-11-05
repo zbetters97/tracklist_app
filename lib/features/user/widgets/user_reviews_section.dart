@@ -51,15 +51,7 @@ class _UserReviewsSectionState extends State<UserReviewsSection> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        decoration: BoxDecoration(color: TERTIARY_COLOR),
-        width: double.infinity,
-        child: isLoading
-            ? const Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))
-            : buildUserReviews(),
-      ),
-    );
+    return isLoading ? const Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK)) : buildUserReviews();
   }
 
   Widget buildUserReviews() {

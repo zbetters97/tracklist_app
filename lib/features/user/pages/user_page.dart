@@ -26,6 +26,9 @@ class _UserPageState extends State<UserPage> {
   late AppUser user;
   bool isLoggedInUser = false;
 
+  final List<String> tabs = ["Reviews", "Lists", "Likes", "Friends"];
+  int selectedTab = 0;
+
   @override
   void initState() {
     super.initState();
@@ -114,8 +117,8 @@ class _UserPageState extends State<UserPage> {
               ],
             ),
           ),
-          // UserReviewsSection(user: user),
-          UserFriendsSection(user: user),
+          buildUserTabs(),
+          buildSelectedTab(),
         ],
       ),
     );
@@ -130,7 +133,10 @@ class _UserPageState extends State<UserPage> {
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(user.displayname.capitalizeEachWord(), style: const TextStyle(color: Colors.white, fontSize: 20)),
+            Text(
+              user.displayname.capitalizeEachWord(),
+              style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(width: 5),
             Text("@${user.username}", style: const TextStyle(color: Colors.grey, fontSize: 16)),
           ],
@@ -191,6 +197,51 @@ class _UserPageState extends State<UserPage> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget buildUserTabs() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: ToggleButtons(
+        isSelected: List.generate(tabs.length, (index) => index == selectedTab),
+        onPressed: (index) => setState(() {
+          selectedTab = index;
+        }),
+        color: Colors.white,
+        fillColor: PRIMARY_COLOR,
+        selectedColor: Colors.white,
+        selectedBorderColor: PRIMARY_COLOR,
+        borderColor: PRIMARY_COLOR_DARK,
+        borderWidth: 1,
+        constraints: BoxConstraints(maxHeight: 40),
+        children: tabs.map((tab) {
+          return Container(
+            color: tabs.indexOf(tab) == selectedTab ? PRIMARY_COLOR : PRIMARY_COLOR_DARK,
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+            alignment: Alignment.center,
+            child: Text(tab, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget buildSelectedTab() {
+    Widget currentSection = selectedTab == 0
+        ? UserReviewsSection(user: user)
+        : selectedTab == 1
+        ? Container()
+        : selectedTab == 2
+        ? Container()
+        : UserFriendsSection(user: user);
+
+    return Expanded(
+      child: Container(
+        decoration: BoxDecoration(color: TERTIARY_COLOR),
+        width: double.infinity,
+        child: currentSection,
+      ),
     );
   }
 }

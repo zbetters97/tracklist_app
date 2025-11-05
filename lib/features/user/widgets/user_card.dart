@@ -3,6 +3,7 @@ import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/core/extensions/string_extensions.dart';
 import 'package:tracklist_app/features/auth/models/app_user_class.dart';
 import 'package:tracklist_app/features/auth/services/auth_service.dart';
+import 'package:tracklist_app/features/user/pages/user_page.dart';
 import 'package:tracklist_app/features/user/widgets/user_follow_button.dart';
 
 class UserCard extends StatefulWidget {
@@ -16,6 +17,10 @@ class UserCard extends StatefulWidget {
 
 class _UserCardState extends State<UserCard> {
   AppUser get user => widget.user;
+
+  void sendToUserPage() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => UserPage(uid: user.uid)));
+  }
 
   void onFollowChanged(bool isFollowing) {
     setState(() {
@@ -33,7 +38,10 @@ class _UserCardState extends State<UserCard> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Row(spacing: 8.0, children: [buildProfileImage(user.profileUrl), buildUserInfo(user)]),
+        GestureDetector(
+          onTap: () => sendToUserPage(),
+          child: Row(spacing: 8.0, children: [buildProfileImage(user.profileUrl), buildUserInfo(user)]),
+        ),
         if (authUser.value!.uid != user.uid) UserFollowButton(user: user, onFollowChanged: onFollowChanged),
       ],
     );

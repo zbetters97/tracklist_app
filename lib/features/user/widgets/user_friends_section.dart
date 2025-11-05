@@ -46,20 +46,15 @@ class _UserFriendsSectionState extends State<UserFriendsSection> {
 
   @override
   void dispose() {
+    friendsController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        decoration: BoxDecoration(color: TERTIARY_COLOR),
-        width: double.infinity,
-        child: isLoading
-            ? const Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))
-            : Column(children: [buildTopBar(), currentTab == 0 ? buildUserFollowers() : buildUserFollowing()]),
-      ),
-    );
+    return isLoading
+        ? const Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))
+        : Column(children: [buildTopBar(), currentTab == 0 ? buildUserFollowers() : buildUserFollowing()]);
   }
 
   Widget buildTopBar() {
@@ -90,33 +85,37 @@ class _UserFriendsSectionState extends State<UserFriendsSection> {
   }
 
   Widget buildUserFollowing() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ListView.separated(
-        controller: friendsController,
-        shrinkWrap: true,
-        padding: const EdgeInsets.all(0.0),
-        itemCount: following.length,
-        itemBuilder: (context, index) {
-          return UserCard(user: following[index]);
-        },
-        separatorBuilder: (context, index) => const SizedBox(height: 16.0),
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListView.separated(
+          controller: friendsController,
+          shrinkWrap: true,
+          padding: const EdgeInsets.all(0.0),
+          itemCount: following.length,
+          itemBuilder: (context, index) {
+            return UserCard(user: following[index]);
+          },
+          separatorBuilder: (context, index) => const SizedBox(height: 16.0),
+        ),
       ),
     );
   }
 
   Widget buildUserFollowers() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: ListView.separated(
-        controller: friendsController,
-        shrinkWrap: true,
-        padding: const EdgeInsets.all(0.0),
-        itemCount: followers.length,
-        itemBuilder: (context, index) {
-          return UserCard(user: followers[index]);
-        },
-        separatorBuilder: (context, index) => const SizedBox(height: 16.0),
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListView.separated(
+          controller: friendsController,
+          shrinkWrap: true,
+          padding: const EdgeInsets.all(0.0),
+          itemCount: followers.length,
+          itemBuilder: (context, index) {
+            return UserCard(user: followers[index]);
+          },
+          separatorBuilder: (context, index) => const SizedBox(height: 16.0),
+        ),
       ),
     );
   }
