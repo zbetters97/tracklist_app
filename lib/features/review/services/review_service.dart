@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:tracklist_app/features/auth/models/auth_user_class.dart';
+import 'package:tracklist_app/features/auth/models/app_user_class.dart';
 import 'package:tracklist_app/features/media/models/media_class.dart';
 import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
@@ -17,7 +17,7 @@ Future<Review> getReviewById(String reviewId) async {
 
     final data = reviewDoc.data() as Map<String, dynamic>;
 
-    AuthUser user = await authService.value.getUserById(userId: data["userId"]);
+    AppUser user = await authService.value.getUserById(userId: data["userId"]);
     Media media = await getMediaById(data["mediaId"], data["category"]);
 
     // Create Review object
@@ -62,7 +62,7 @@ Future<List<Review>> getPopularReviews({DocumentSnapshot? lastDoc, int limit = M
         final data = doc.data() as Map<String, dynamic>;
 
         String userId = data["userId"];
-        AuthUser user = await authService.value.getUserById(userId: userId);
+        AppUser user = await authService.value.getUserById(userId: userId);
 
         String mediaId = data["mediaId"];
         String category = data["category"];
@@ -86,7 +86,7 @@ Future<List<Review>> getFollowingReviews({DocumentSnapshot? lastDoc, int limit =
     if (authUser.value == null) return [];
 
     // Get list of users that the current user is following
-    List<String> following = authService.value.getFollowingByUserId();
+    List<String> following = authService.value.getAppUserFollowingUserIds();
 
     // Include current user's reviews
     following.add(authUser.value!.uid);
@@ -116,7 +116,7 @@ Future<List<Review>> getFollowingReviews({DocumentSnapshot? lastDoc, int limit =
         final data = doc.data() as Map<String, dynamic>;
 
         String userId = data["userId"];
-        AuthUser user = await authService.value.getUserById(userId: userId);
+        AppUser user = await authService.value.getUserById(userId: userId);
 
         String mediaId = data["mediaId"];
         String category = data["category"];
@@ -166,7 +166,7 @@ Future<List<Review>> getReviewsByMediaId(String mediaId) async {
 
         String userId = data["userId"];
 
-        AuthUser user = await authService.value.getUserById(userId: userId);
+        AppUser user = await authService.value.getUserById(userId: userId);
 
         String mediaId = data["mediaId"];
         String category = data["category"];
@@ -256,7 +256,7 @@ Future<List<Review>> getReviewsByUserId(String userId) async {
 
         String userId = data["userId"];
 
-        AuthUser user = await authService.value.getUserById(userId: userId);
+        AppUser user = await authService.value.getUserById(userId: userId);
 
         String mediaId = data["mediaId"];
         String category = data["category"];

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tracklist_app/features/auth/models/auth_user_class.dart';
+import 'package:tracklist_app/features/auth/models/app_user_class.dart';
 import 'package:tracklist_app/features/media/models/album_class.dart';
 import 'package:tracklist_app/features/media/models/media_class.dart';
 import 'package:tracklist_app/features/media/models/track_class.dart';
@@ -25,7 +25,7 @@ class HomeReviewWidget extends StatefulWidget {
 class _HomeReviewWidgetState extends State<HomeReviewWidget> {
   Review get review => widget.review;
   Media get media => widget.review.media;
-  AuthUser get user => widget.review.user;
+  AppUser get user => widget.review.user;
   int get likes => widget.review.likes.length;
 
   @override

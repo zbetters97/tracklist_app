@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:tracklist_app/features/auth/models/auth_user_class.dart';
+import 'package:tracklist_app/features/auth/models/app_user_class.dart';
 import 'package:tracklist_app/features/review/models/review_class.dart';
 
 class Comment {
   final String commentId;
   final DateTime createdAt;
   final String content;
-  final AuthUser user;
+  final AppUser user;
   final Review review;
   final List<String> likes;
   final List<String> dislikes;
@@ -25,7 +25,7 @@ class Comment {
     required this.replyingTo,
   });
 
-  factory Comment.fromJson(Map<String, dynamic> json, {required AuthUser user, required Review review}) {
+  factory Comment.fromJson(Map<String, dynamic> json, {required AppUser user, required Review review}) {
     return Comment(
       commentId: json['commentId'],
       createdAt: (json['createdAt'] as Timestamp).toDate(),

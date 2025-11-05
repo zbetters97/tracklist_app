@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
-import 'package:tracklist_app/features/auth/models/auth_user_class.dart';
+import 'package:tracklist_app/features/auth/models/app_user_class.dart';
 import 'package:tracklist_app/features/home/widgets/home_review_widget.dart';
 import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/features/review/pages/review_page.dart';
@@ -9,14 +9,14 @@ import 'package:tracklist_app/features/review/services/review_service.dart';
 class UserReviewsSection extends StatefulWidget {
   const UserReviewsSection({super.key, required this.user});
 
-  final AuthUser user;
+  final AppUser user;
 
   @override
   State<UserReviewsSection> createState() => _UserReviewsSectionState();
 }
 
 class _UserReviewsSectionState extends State<UserReviewsSection> {
-  AuthUser get user => widget.user;
+  AppUser get user => widget.user;
   List<Review> reviews = [];
   bool isLoading = true;
 

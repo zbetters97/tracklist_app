@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:tracklist_app/features/auth/models/auth_user_class.dart';
+import 'package:tracklist_app/features/auth/models/app_user_class.dart';
 import 'package:tracklist_app/features/media/models/album_class.dart';
 import 'package:tracklist_app/features/media/models/media_class.dart';
 import 'package:tracklist_app/features/media/models/track_class.dart';
@@ -27,7 +27,7 @@ class ReviewPage extends StatefulWidget {
 class _ReviewPageState extends State<ReviewPage> {
   late Review review;
   late Media media;
-  late AuthUser user;
+  late AppUser user;
 
   bool isLoading = true;
 

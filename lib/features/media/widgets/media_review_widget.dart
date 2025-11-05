@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tracklist_app/features/auth/models/auth_user_class.dart';
+import 'package:tracklist_app/features/auth/models/app_user_class.dart';
 import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/core/utils/date.dart';
@@ -33,7 +33,7 @@ class MediaReviewWidget extends StatelessWidget {
         : CircleAvatar(radius: 24.0, backgroundImage: AssetImage(DEFAULT_PROFILE_IMG));
   }
 
-  Widget buildReviewHeader(Review review, AuthUser user) {
+  Widget buildReviewHeader(Review review, AppUser user) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

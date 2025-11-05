@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:tracklist_app/features/auth/models/auth_user_class.dart';
+import 'package:tracklist_app/features/auth/models/app_user_class.dart';
 import 'package:tracklist_app/features/media/models/media_class.dart';
 
 class Review {
@@ -11,7 +11,7 @@ class Review {
   final List<String> likes;
   final List<String> dislikes;
   final List<String> comments;
-  final AuthUser user;
+  final AppUser user;
   final Media media;
   final DocumentSnapshot doc;
 
@@ -31,7 +31,7 @@ class Review {
 
   factory Review.fromJson(
     Map<String, dynamic> json, {
-    required AuthUser user,
+    required AppUser user,
     required Media media,
     required DocumentSnapshot doc,
   }) {

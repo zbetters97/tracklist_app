@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class AuthUser {
+class AppUser {
   final String uid;
   final String email;
   final String username;
@@ -11,7 +11,7 @@ class AuthUser {
   List<String> followers;
   List<String> following;
 
-  AuthUser({
+  AppUser({
     required this.uid,
     required this.email,
     required this.username,
@@ -23,8 +23,8 @@ class AuthUser {
     required this.following,
   });
 
-  factory AuthUser.fromJson(Map<String, dynamic> json) {
-    return AuthUser(
+  factory AppUser.fromJson(Map<String, dynamic> json) {
+    return AppUser(
       uid: json['uid'],
       email: json['email'],
       username: json['username'],
