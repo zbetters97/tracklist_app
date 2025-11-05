@@ -14,9 +14,7 @@ class HomeReviewWidget extends StatefulWidget {
   const HomeReviewWidget({super.key, required this.review, required this.onOpenReview});
 
   final Review review;
-
-  // Callback to open the review page
-  final void Function(Review review) onOpenReview;
+  final VoidCallback onOpenReview;
 
   @override
   State<HomeReviewWidget> createState() => _HomeReviewWidgetState();
@@ -37,7 +35,7 @@ class _HomeReviewWidgetState extends State<HomeReviewWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           GestureDetector(
-            onTap: () => widget.onOpenReview(review),
+            onTap: () => widget.onOpenReview(),
             child: Column(
               children: [
                 IntrinsicHeight(

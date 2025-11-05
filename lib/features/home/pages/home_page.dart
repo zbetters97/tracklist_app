@@ -4,13 +4,10 @@ import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/features/review/services/review_service.dart';
 import 'package:tracklist_app/features/home/widgets/home_review_widget.dart';
+import 'package:tracklist_app/navigation/navigator.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.onOpenReview});
-
-  // Callback to open the review page
-  final void Function(Review review) onOpenReview;
-
+  const HomePage({super.key});
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -250,7 +247,10 @@ class _HomePageState extends State<HomePage> {
             }
 
             // Route to Review Page on tap using callback
-            return HomeReviewWidget(review: reviews[index], onOpenReview: widget.onOpenReview);
+            return HomeReviewWidget(
+              review: reviews[index],
+              onOpenReview: () => NavigationService().homeOpenReview(reviews[index].reviewId),
+            );
           },
           separatorBuilder: (context, index) => const Divider(color: Colors.grey),
         ),

@@ -70,8 +70,19 @@ class _UserPageState extends State<UserPage> {
   }
 
   void onLogoutPressed() {
+    authService.value.signOut();
+
+    // Reset selected page
     selectedPageNotifier.value = 0;
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => WelcomePage()));
+
+    Navigator.of(
+      context,
+      rootNavigator: true, // Top-level navigator is used
+    ).pushAndRemoveUntil(
+      // Removes all previous pages in the stack
+      MaterialPageRoute(builder: (context) => const WelcomePage()),
+      (route) => false,
+    );
   }
 
   @override

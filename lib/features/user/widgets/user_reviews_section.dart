@@ -3,8 +3,8 @@ import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/features/auth/models/app_user_class.dart';
 import 'package:tracklist_app/features/home/widgets/home_review_widget.dart';
 import 'package:tracklist_app/features/review/models/review_class.dart';
-import 'package:tracklist_app/features/review/pages/review_page.dart';
 import 'package:tracklist_app/features/review/services/review_service.dart';
+import 'package:tracklist_app/navigation/navigator.dart';
 
 class UserReviewsSection extends StatefulWidget {
   const UserReviewsSection({super.key, required this.user});
@@ -39,10 +39,6 @@ class _UserReviewsSectionState extends State<UserReviewsSection> {
     });
   }
 
-  void sendToReviewPage(Review review) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => ReviewPage(reviewId: review.reviewId)));
-  }
-
   @override
   void dispose() {
     reviewsController.dispose();
@@ -64,7 +60,10 @@ class _UserReviewsSectionState extends State<UserReviewsSection> {
         itemCount: reviews.length,
         itemBuilder: (context, index) {
           // Route to Review Page on tap using callback
-          return HomeReviewWidget(review: reviews[index], onOpenReview: sendToReviewPage);
+          return HomeReviewWidget(
+            review: reviews[index],
+            onOpenReview: () => NavigationService().userOpenReview(reviews[index].reviewId),
+          );
         },
         separatorBuilder: (context, index) => const Divider(color: Colors.grey),
       ),

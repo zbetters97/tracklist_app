@@ -3,12 +3,10 @@ import 'package:tracklist_app/features/media/models/media_class.dart';
 import 'package:tracklist_app/features/media/services/spotify_service.dart';
 import 'package:tracklist_app/features/media/pages/media_page.dart';
 import 'package:tracklist_app/features/media/widgets/media_card_widget.dart';
+import 'package:tracklist_app/navigation/navigator.dart';
 
 class SearchPage extends StatefulWidget {
-  const SearchPage({super.key, required this.onOpenMedia});
-
-  // Callback to open the media page
-  final void Function(Media media) onOpenMedia;
+  const SearchPage({super.key});
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -18,7 +16,7 @@ class _SearchPageState extends State<SearchPage> {
   final _formKey = GlobalKey<FormState>();
 
   String selectedCategory = "artist";
-  TextEditingController searchController = TextEditingController(text: "Hippo Campus");
+  TextEditingController searchController = TextEditingController();
 
   List<Media> results = [];
 
@@ -125,7 +123,7 @@ class _SearchPageState extends State<SearchPage> {
               final result = searchList[index];
               return Center(
                 child: GestureDetector(
-                  onTap: () => widget.onOpenMedia(result),
+                  onTap: () => NavigationService().searchOpenMedia(result),
                   child: MediaCardWidget(media: result),
                 ),
               );

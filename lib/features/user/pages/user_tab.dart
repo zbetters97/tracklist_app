@@ -1,31 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:tracklist_app/features/home/pages/home_page.dart';
+import 'package:tracklist_app/features/auth/services/auth_service.dart';
 import 'package:tracklist_app/features/review/pages/review_page.dart';
+import 'package:tracklist_app/features/user/pages/user_page.dart';
 import 'package:tracklist_app/navigation/navigator.dart';
 
-class HomeTab extends StatelessWidget {
-  const HomeTab({super.key});
+class UserTab extends StatelessWidget {
+  const UserTab({super.key});
 
   @override
   Widget build(BuildContext context) {
     final navigationService = NavigationService();
 
     return Navigator(
-      key: navigationService.homeNavigatorKey,
-      initialRoute: "/", // Default route to Home Page
+      key: navigationService.userNavigatorKey,
+      initialRoute: "/",
       onGenerateRoute: (settings) {
         Widget page;
 
         switch (settings.name) {
-          // Open Home Page when routed
           case "/":
-            page = HomePage();
+            page = UserPage(uid: authUser.value!.uid);
             break;
-          // Open Review Page when a review is clicked
+          case "/user":
+            page = UserPage(uid: settings.arguments as String);
+            break;
           case "/review":
             page = ReviewPage(reviewId: settings.arguments as String);
             break;
-          // Default case
           // TODO: Add default route to Errror Page
           default:
             page = Container();

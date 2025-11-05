@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:tracklist_app/features/media/models/media_class.dart';
 import 'package:tracklist_app/features/media/pages/media_page.dart';
 import 'package:tracklist_app/features/search/pages/search_page.dart';
-import 'package:tracklist_app/navigation/nav_item_widget.dart';
+import 'package:tracklist_app/navigation/navigator.dart';
 
 class SearchTab extends StatelessWidget {
   const SearchTab({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final navigationService = NavigationService();
+
     return Navigator(
-      key: searchNavigatorKey,
+      key: navigationService.searchNavigatorKey,
       initialRoute: "/", // Default route to Search Page
       onGenerateRoute: (settings) {
         Widget page;
@@ -18,11 +20,7 @@ class SearchTab extends StatelessWidget {
         switch (settings.name) {
           // Open Search Page when routed
           case "/":
-            page = SearchPage(
-              onOpenMedia: (media) {
-                searchNavigatorKey.currentState!.pushNamed("/media", arguments: media);
-              },
-            );
+            page = SearchPage();
             break;
           // Open Review Page when a review is clicked
           case "/media":
