@@ -5,6 +5,14 @@ import 'package:tracklist_app/features/auth/pages/auth_page.dart';
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
 
+  void sendToSignupPage(BuildContext context) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => const AuthPage(isRegistration: true)));
+  }
+
+  void sendToLoginPage(BuildContext context) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => AuthPage(isRegistration: false)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,56 +23,55 @@ class WelcomePage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Hero(
-                      tag: "tracklist logo",
-                      child: ClipRRect(
-                        child: Center(child: Image.asset(LOGO_IMG_LG, height: 300, width: 300, fit: BoxFit.cover)),
-                      ),
-                    ),
-                  ],
-                ),
+                buildLogo(),
                 const SizedBox(height: 40),
-                FilledButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const AuthPage(isRegistration: true)),
-                    );
-                  },
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50),
-                    backgroundColor: PRIMARY_COLOR,
-                    foregroundColor: Colors.white,
-                    shape: LinearBorder(),
-                    textStyle: const TextStyle(fontSize: 20),
-                  ),
-                  child: Text("Get Started"),
-                ),
+                buildGetStartedButton(context),
                 const SizedBox(height: 10),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return AuthPage(isRegistration: false);
-                        },
-                      ),
-                    );
-                  },
-                  style: FilledButton.styleFrom(minimumSize: Size(double.infinity, 40.0)),
-                  child: Text(
-                    "Login",
-                    style: TextStyle(color: PRIMARY_COLOR, fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                ),
+                buildLoginButton(context),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget buildLogo() {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Hero(
+          tag: "TrackList logo",
+          child: ClipRRect(
+            child: Center(child: Image.asset(LOGO_IMG_LG, height: 300, width: 300, fit: BoxFit.cover)),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildGetStartedButton(BuildContext context) {
+    return FilledButton(
+      onPressed: () => sendToSignupPage(context),
+
+      style: FilledButton.styleFrom(
+        minimumSize: const Size(double.infinity, 50),
+        backgroundColor: PRIMARY_COLOR,
+        foregroundColor: Colors.white,
+        shape: const LinearBorder(),
+        textStyle: const TextStyle(fontSize: 20),
+      ),
+      child: Text("Get Started"),
+    );
+  }
+
+  Widget buildLoginButton(BuildContext context) {
+    return TextButton(
+      onPressed: () => sendToLoginPage(context),
+      style: FilledButton.styleFrom(minimumSize: Size(double.infinity, 40.0)),
+      child: Text(
+        "Login",
+        style: TextStyle(color: PRIMARY_COLOR, fontSize: 20, fontWeight: FontWeight.bold),
       ),
     );
   }

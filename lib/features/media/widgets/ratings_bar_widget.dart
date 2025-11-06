@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:tracklist_app/core/utils/notifiers.dart';
 
 class RatingsBar extends StatefulWidget {
-  const RatingsBar({super.key, required this.reviews});
-
   final QuerySnapshot reviews;
+
+  const RatingsBar({super.key, required this.reviews});
 
   @override
   State<RatingsBar> createState() => _RatingsBarState();

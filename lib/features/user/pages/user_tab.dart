@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/core/utils/notifiers.dart';
+import 'package:tracklist_app/features/error/pages/error_page.dart';
 import 'package:tracklist_app/features/review/pages/review_page.dart';
 import 'package:tracklist_app/features/user/pages/user_page.dart';
 import 'package:tracklist_app/navigation/navigator.dart';
@@ -16,7 +17,6 @@ class UserTab extends StatelessWidget {
       initialRoute: "/",
       onGenerateRoute: (settings) {
         Widget page;
-        print(settings.name);
 
         switch (settings.name) {
           case "/":
@@ -28,9 +28,8 @@ class UserTab extends StatelessWidget {
           case "/review":
             page = ReviewPage(reviewId: settings.arguments as String);
             break;
-          // TODO: Add default route to Errror Page
           default:
-            page = Container();
+            page = ErrorPage();
             break;
         }
 

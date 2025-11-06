@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/core/widgets/loading_icon.dart';
 import 'package:tracklist_app/features/auth/models/app_user_class.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/core/utils/date.dart';
@@ -13,9 +14,9 @@ import 'package:tracklist_app/core/widgets/default_app_bar.dart';
 import 'package:tracklist_app/features/user/widgets/user_app_bar.dart';
 
 class UserPage extends StatefulWidget {
-  const UserPage({super.key, this.uid = ""});
-
   final String uid;
+
+  const UserPage({super.key, this.uid = ""});
 
   @override
   State<UserPage> createState() => _UserPageState();
@@ -97,7 +98,7 @@ class _UserPageState extends State<UserPage> {
   @override
   Widget build(BuildContext context) {
     return isLoading
-        ? const Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))
+        ? LoadingIcon()
         : Scaffold(
             appBar: isLoggedInUser
                 ? UserAppBar(user: user, onLogoutPressed: onLogoutPressed)

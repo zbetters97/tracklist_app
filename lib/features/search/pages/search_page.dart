@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/core/widgets/empty_text.dart';
 import 'package:tracklist_app/features/auth/models/app_user_class.dart';
 import 'package:tracklist_app/features/media/models/media_class.dart';
 import 'package:tracklist_app/features/media/services/spotify_service.dart';
@@ -29,21 +30,17 @@ class _SearchPageState extends State<SearchPage> {
 
     if (selectedCategory == "user") {
       final List<AppUser> users = await searchUsers(searchController.text);
-
       if (users.isEmpty) return;
 
       userResults.clear();
-
       for (final AppUser user in users) {
         setState(() => userResults.add(user));
       }
     } else {
       final List<Media> media = await searchByCategory(selectedCategory, searchController.text);
-
       if (media.isEmpty) return;
 
       mediaResults.clear();
-
       for (final Media item in media) {
         setState(() => mediaResults.add(item));
       }
@@ -51,19 +48,14 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void sendToMediaPage(BuildContext context, Media media) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          return MediaPage(media: media);
-        },
-      ),
-    );
+    Navigator.push(context, MaterialPageRoute(builder: (context) => MediaPage(media: media)));
   }
 
   @override
   void dispose() {
     searchController.dispose();
+    mediaResults.clear();
+    userResults.clear();
     super.dispose();
   }
 
@@ -80,8 +72,9 @@ class _SearchPageState extends State<SearchPage> {
             const SizedBox(height: 10),
             buildCategoryDropdown(),
             const SizedBox(height: 10),
-            if (selectedCategory != "user") Expanded(child: buildMediaResults(mediaResults)),
-            if (selectedCategory == "user") Expanded(child: buildUserResults(userResults)),
+            Expanded(
+              child: selectedCategory == "user" ? buildUserResults(userResults) : buildMediaResults(mediaResults),
+            ),
           ],
         ),
       ),
@@ -128,35 +121,35 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget buildMediaResults(List<Media> results) {
-    return results.isEmpty
-        ? searchController.text == ""
-              ? Center(child: Text(""))
-              : Center(child: Text("No results"))
-        : ListView.builder(
-            itemCount: results.length,
-            itemBuilder: (context, index) {
-              final result = results[index];
-              return Center(
-                child: GestureDetector(
-                  onTap: () => NavigationService().openMedia(result),
-                  child: MediaCardWidget(media: result),
-                ),
-              );
-            },
-          );
+    if (results.isEmpty) {
+      return searchController.text == "" ? Container() : EmptyText(message: "No media found!");
+    }
+
+    return ListView.builder(
+      itemCount: results.length,
+      itemBuilder: (context, index) {
+        final result = results[index];
+        return Center(
+          child: GestureDetector(
+            onTap: () => NavigationService().openMedia(result),
+            child: MediaCardWidget(media: result),
+          ),
+        );
+      },
+    );
   }
 
   Widget buildUserResults(List<AppUser> results) {
-    return results.isEmpty
-        ? searchController.text == ""
-              ? Center(child: Text(""))
-              : Center(child: Text("No results"))
-        : ListView.builder(
-            itemCount: results.length,
-            itemBuilder: (context, index) {
-              final result = results[index];
-              return Center(child: UserCardWidget(user: result));
-            },
-          );
+    if (results.isEmpty) {
+      return searchController.text == "" ? Container() : EmptyText(message: "No users found!");
+    }
+
+    return ListView.builder(
+      itemCount: results.length,
+      itemBuilder: (context, index) {
+        final result = results[index];
+        return Center(child: UserCardWidget(user: result));
+      },
+    );
   }
 }

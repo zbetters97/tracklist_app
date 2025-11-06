@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/core/utils/notifiers.dart';
+import 'package:tracklist_app/core/widgets/loading_icon.dart';
 import 'package:tracklist_app/features/auth/models/app_user_class.dart';
 import 'package:tracklist_app/features/media/models/album_class.dart';
 import 'package:tracklist_app/features/media/models/media_class.dart';
@@ -16,9 +17,9 @@ import 'package:tracklist_app/core/widgets/default_app_bar.dart';
 import 'package:tracklist_app/core/widgets/stars_widget.dart';
 
 class ReviewPage extends StatefulWidget {
-  const ReviewPage({super.key, required this.reviewId});
-
   final String reviewId;
+
+  const ReviewPage({super.key, required this.reviewId});
 
   @override
   State<ReviewPage> createState() => _ReviewPageState();
@@ -65,7 +66,7 @@ class _ReviewPageState extends State<ReviewPage> {
       backgroundColor: BACKGROUND_COLOR,
       body: SingleChildScrollView(
         child: isLoading
-            ? const Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))
+            ? LoadingIcon()
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -219,10 +220,12 @@ class _ReviewPageState extends State<ReviewPage> {
   }
 
   Widget buildShareButton() {
+    // TODO: Implement share review functionality
     return Icon(Icons.send, size: 30);
   }
 
   Widget buildDeleteButton() {
+    // TODO: Implement delete review functionality
     return Icon(Icons.delete, size: 30);
   }
 }

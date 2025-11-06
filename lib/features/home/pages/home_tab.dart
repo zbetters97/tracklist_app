@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/features/error/pages/error_page.dart';
 import 'package:tracklist_app/features/home/pages/home_page.dart';
 import 'package:tracklist_app/features/review/pages/review_page.dart';
 import 'package:tracklist_app/navigation/navigator.dart';
@@ -26,9 +27,8 @@ class HomeTab extends StatelessWidget {
             page = ReviewPage(reviewId: settings.arguments as String);
             break;
           // Default case
-          // TODO: Add default route to Errror Page
           default:
-            page = Container();
+            page = ErrorPage();
             break;
         }
 

@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
+import 'package:tracklist_app/core/widgets/empty_text.dart';
+import 'package:tracklist_app/core/widgets/loading_icon.dart';
 import 'package:tracklist_app/features/auth/models/app_user_class.dart';
 import 'package:tracklist_app/features/user/services/user_service.dart';
 import 'package:tracklist_app/features/user/widgets/user_card_widget.dart';
 
 class UserFriendsSection extends StatefulWidget {
-  const UserFriendsSection({super.key, required this.user});
-
   final AppUser user;
+
+  const UserFriendsSection({super.key, required this.user});
 
   @override
   State<UserFriendsSection> createState() => _UserFriendsSectionState();
@@ -53,7 +55,7 @@ class _UserFriendsSectionState extends State<UserFriendsSection> {
   @override
   Widget build(BuildContext context) {
     return isLoading
-        ? const Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))
+        ? LoadingIcon()
         : Column(children: [buildTopBar(), buildUsersList(currentTab == 0 ? followers : following)]);
   }
 
@@ -70,9 +72,7 @@ class _UserFriendsSectionState extends State<UserFriendsSection> {
 
   Widget buildFriendTab(int index, String title) {
     return GestureDetector(
-      onTap: () {
-        setState(() => currentTab = index);
-      },
+      onTap: () => setState(() => currentTab = index),
       child: Text(
         title,
         style: TextStyle(
@@ -88,16 +88,16 @@ class _UserFriendsSectionState extends State<UserFriendsSection> {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: ListView.separated(
-          controller: friendsController,
-          shrinkWrap: true,
-          padding: const EdgeInsets.all(0.0),
-          itemCount: users.length,
-          itemBuilder: (context, index) {
-            return UserCardWidget(user: users[index]);
-          },
-          separatorBuilder: (context, index) => const SizedBox(height: 16.0),
-        ),
+        child: users.isEmpty
+            ? EmptyText(message: currentTab == 0 ? "No followers yet!" : "No one followed yet!")
+            : ListView.separated(
+                controller: friendsController,
+                shrinkWrap: true,
+                padding: const EdgeInsets.all(0.0),
+                itemCount: users.length,
+                itemBuilder: (context, index) => UserCardWidget(user: users[index]),
+                separatorBuilder: (context, index) => const SizedBox(height: 16.0),
+              ),
       ),
     );
   }

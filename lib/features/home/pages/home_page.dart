@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/core/widgets/empty_text.dart';
+import 'package:tracklist_app/core/widgets/loading_icon.dart';
 import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/features/review/services/review_service.dart';
@@ -8,6 +10,7 @@ import 'package:tracklist_app/navigation/navigator.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -32,7 +35,10 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     getReviews();
+    attachListeners();
+  }
 
+  void attachListeners() {
     newReviewsController.addListener(() {
       if (newReviewsController.position.pixels >= newReviewsController.position.maxScrollExtent - 200 &&
           !isLoadingNew) {
@@ -133,27 +139,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Column(
-          children: [
-            buildHero(),
-            buildTopBar(),
-            Expanded(
-              child: isLoading
-                  ? Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))
-                  : IndexedStack(
-                      index: currentTab,
-                      children: [
-                        newReviews.isEmpty
-                            ? buildEmptyReviewsMessage()
-                            : buildReviewsList(newReviews, isLoadingNew, newReviewsController),
-                        popularReviews.isEmpty
-                            ? buildEmptyReviewsMessage()
-                            : buildReviewsList(popularReviews, isLoadingPopular, popularReviewsController),
-                      ],
-                    ),
-            ),
-          ],
-        ),
+        Column(children: [buildHero(), buildTopBar(), buildReviews()]),
         buildPostReviewButton(),
       ],
     );
@@ -164,7 +150,7 @@ class _HomePageState extends State<HomePage> {
       alignment: Alignment.center,
       children: [
         Hero(
-          tag: "tracklist logo",
+          tag: "TrackList logo",
           child: ClipRRect(
             child: Center(child: Image.asset(LOGO_IMG_LG, height: 50, width: 50, fit: BoxFit.cover)),
           ),
@@ -217,11 +203,22 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget buildEmptyReviewsMessage() {
-    return Center(
-      child: Text(
-        "No reviews found!",
-        style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic, fontSize: 24),
+  Widget buildReviews() {
+    if (isLoading) {
+      return const Expanded(child: LoadingIcon());
+    }
+
+    return Expanded(
+      child: IndexedStack(
+        index: currentTab,
+        children: [
+          newReviews.isEmpty
+              ? EmptyText(message: "No reviews found!")
+              : buildReviewsList(newReviews, isLoadingNew, newReviewsController),
+          popularReviews.isEmpty
+              ? EmptyText(message: "No reviews found!")
+              : buildReviewsList(popularReviews, isLoadingPopular, popularReviewsController),
+        ],
       ),
     );
   }

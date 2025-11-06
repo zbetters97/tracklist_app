@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/core/utils/notifiers.dart';
+import 'package:tracklist_app/core/widgets/empty_text.dart';
 import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/features/review/pages/review_page.dart';
 import 'package:tracklist_app/features/media/widgets/media_review_widget.dart';
 
 class MediaReviews extends StatefulWidget {
-  const MediaReviews({super.key, required this.reviews});
-
   final List<Review> reviews;
+
+  const MediaReviews({super.key, required this.reviews});
 
   @override
   State<MediaReviews> createState() => _MediaReviewsState();
@@ -70,13 +71,7 @@ class _MediaReviewsState extends State<MediaReviews> {
             ],
           ),
           const Divider(color: Colors.grey),
-          if (reviews.isEmpty) Text("No reviews found"),
-          ...reviews.map((review) {
-            return GestureDetector(
-              onTap: () => sendToReviewPage(context, review),
-              child: MediaReviewWidget(review: review),
-            );
-          }),
+          buildReviews(reviews),
         ],
       ),
     );
@@ -108,6 +103,23 @@ class _MediaReviewsState extends State<MediaReviews> {
           ),
         );
       },
+    );
+  }
+
+  Widget buildReviews(List<Review> reviews) {
+    if (reviews.isEmpty) {
+      return EmptyText(message: "No reviews found!");
+    }
+
+    return Column(
+      children: [
+        ...reviews.map((review) {
+          return GestureDetector(
+            onTap: () => sendToReviewPage(context, review),
+            child: MediaReviewWidget(review: review),
+          );
+        }),
+      ],
     );
   }
 }

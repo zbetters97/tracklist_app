@@ -5,6 +5,11 @@ import 'package:tracklist_app/features/comment/services/comment_service.dart';
 import 'package:tracklist_app/features/comment/widgets/comment_card_widget.dart';
 
 class RepliesWidget extends StatefulWidget {
+  final Comment comment;
+  final String reviewId;
+  final void Function(String content, String replyingToId) onPostComment;
+  final void Function(String commentId) onDeleteComment;
+
   const RepliesWidget({
     super.key,
     required this.comment,
@@ -12,11 +17,6 @@ class RepliesWidget extends StatefulWidget {
     required this.onPostComment,
     required this.onDeleteComment,
   });
-
-  final Comment comment;
-  final String reviewId;
-  final void Function(String content, String replyingToId) onPostComment;
-  final void Function(String commentId) onDeleteComment;
 
   @override
   State<RepliesWidget> createState() => _RepliesWidgetState();
@@ -50,30 +50,15 @@ class _RepliesWidgetState extends State<RepliesWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (replies.isEmpty) return Container();
+    if (replies.isEmpty) {
+      return Container();
+    }
 
-    if (isRepliesExpanded) {
-      return Column(
-        spacing: 12.0,
-        children: [
-          buildExpandRepliesButton(),
-          ...replies.map(
-            (reply) => Padding(
-              padding: const EdgeInsets.only(left: 12.0),
-              child: CommentCardWidget(
-                key: ValueKey(reply.commentId),
-                comment: reply,
-                reviewId: widget.reviewId,
-                onPostComment: widget.onPostComment,
-                onDeleteComment: widget.onDeleteComment,
-              ),
-            ),
-          ),
-        ],
-      );
-    } else {
+    if (!isRepliesExpanded) {
       return buildExpandRepliesButton();
     }
+
+    return Column(spacing: 12.0, children: [buildExpandRepliesButton(), buildReplies()]);
   }
 
   Widget buildExpandRepliesButton() {
@@ -99,6 +84,25 @@ class _RepliesWidgetState extends State<RepliesWidget> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget buildReplies() {
+    return Column(
+      children: [
+        ...replies.map(
+          (reply) => Padding(
+            padding: const EdgeInsets.only(left: 12.0),
+            child: CommentCardWidget(
+              key: ValueKey(reply.commentId),
+              comment: reply,
+              reviewId: widget.reviewId,
+              onPostComment: widget.onPostComment,
+              onDeleteComment: widget.onDeleteComment,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

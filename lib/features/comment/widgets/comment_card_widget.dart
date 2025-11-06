@@ -9,6 +9,11 @@ import 'package:tracklist_app/features/comment/widgets/replies_widget.dart';
 import 'package:tracklist_app/features/user/pages/user_page.dart';
 
 class CommentCardWidget extends StatefulWidget {
+  final Comment comment;
+  final String reviewId;
+  final void Function(String content, String replyingToId) onPostComment;
+  final void Function(String commentId) onDeleteComment;
+
   const CommentCardWidget({
     super.key,
     required this.comment,
@@ -16,11 +21,6 @@ class CommentCardWidget extends StatefulWidget {
     required this.onPostComment,
     required this.onDeleteComment,
   });
-
-  final Comment comment;
-  final String reviewId;
-  final void Function(String content, String replyingToId) onPostComment;
-  final void Function(String commentId) onDeleteComment;
 
   @override
   State<CommentCardWidget> createState() => _CommentCardWidgetState();
@@ -49,10 +49,6 @@ class _CommentCardWidgetState extends State<CommentCardWidget> {
 
   @override
   Widget build(BuildContext context) {
-    CircleAvatar profileImage = comment.user.profileUrl.startsWith("https")
-        ? CircleAvatar(radius: 20.0, backgroundImage: NetworkImage(comment.user.profileUrl))
-        : CircleAvatar(radius: 20.0, backgroundImage: AssetImage(DEFAULT_PROFILE_IMG));
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -61,19 +57,7 @@ class _CommentCardWidgetState extends State<CommentCardWidget> {
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            GestureDetector(
-              onTap: () => sendToUserPage(context, comment.user.uid),
-              child: Row(
-                children: [
-                  profileImage,
-                  const SizedBox(width: 2.0),
-                  Text(
-                    "@${comment.user.username}",
-                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ),
+            buildUserProfile(),
             const SizedBox(width: 8.0),
             Text(getTimeSinceShort(comment.createdAt), style: TextStyle(color: Colors.grey)),
           ],
@@ -93,6 +77,26 @@ class _CommentCardWidgetState extends State<CommentCardWidget> {
           onDeleteComment: widget.onDeleteComment,
         ),
       ],
+    );
+  }
+
+  Widget buildUserProfile() {
+    CircleAvatar profileImage = comment.user.profileUrl.startsWith("https")
+        ? CircleAvatar(radius: 20.0, backgroundImage: NetworkImage(comment.user.profileUrl))
+        : CircleAvatar(radius: 20.0, backgroundImage: AssetImage(DEFAULT_PROFILE_IMG));
+
+    return GestureDetector(
+      onTap: () => sendToUserPage(context, comment.user.uid),
+      child: Row(
+        children: [
+          profileImage,
+          const SizedBox(width: 2.0),
+          Text(
+            "@${comment.user.username}",
+            style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
     );
   }
 
@@ -160,13 +164,10 @@ class _CommentCardWidgetState extends State<CommentCardWidget> {
   }
 
   Widget buildDeleteButton() {
-    if (authUser.value?.uid == comment.user.uid) {
-      return GestureDetector(
-        onTap: () => widget.onDeleteComment(comment.commentId),
-        child: Icon(Icons.delete, size: 20),
-      );
+    if (authUser.value?.uid != comment.user.uid) {
+      return Container();
     }
 
-    return Container();
+    return GestureDetector(onTap: () => widget.onDeleteComment(comment.commentId), child: Icon(Icons.delete, size: 20));
   }
 }

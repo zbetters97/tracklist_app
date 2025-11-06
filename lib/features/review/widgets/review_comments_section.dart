@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/core/utils/notifiers.dart';
+import 'package:tracklist_app/core/widgets/empty_text.dart';
+import 'package:tracklist_app/core/widgets/loading_icon.dart';
 import 'package:tracklist_app/features/comment/models/comment_class.dart';
 import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/features/comment/services/comment_service.dart';
@@ -9,9 +11,9 @@ import 'package:tracklist_app/features/comment/widgets/post_comment_widget.dart'
 import 'package:tracklist_app/features/review/pages/review_page.dart';
 
 class ReviewCommentsSection extends StatefulWidget {
-  const ReviewCommentsSection({super.key, required this.review});
-
   final Review review;
+
+  const ReviewCommentsSection({super.key, required this.review});
 
   @override
   State<ReviewCommentsSection> createState() => _ReviewCommentsSectionState();
@@ -101,7 +103,7 @@ class _ReviewCommentsSectionState extends State<ReviewCommentsSection> {
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: isLoading
-            ? Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))
+            ? LoadingIcon()
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -149,6 +151,10 @@ class _ReviewCommentsSectionState extends State<ReviewCommentsSection> {
   }
 
   Widget buildCommentsList() {
+    if (comments.isEmpty) {
+      return EmptyText(message: "No comments yet!");
+    }
+
     return Column(
       spacing: 12.0,
       children: comments

@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 
 class StarRating extends StatelessWidget {
-  StarRating({super.key, required this.rating, this.isCentered = false});
-
   final double rating;
   final bool isCentered;
 
-  late final double roundedRating = (rating * 2).round() / 2;
+  const StarRating({super.key, required this.rating, this.isCentered = false});
 
-  Color getStarColor(double ratingValue) {
-    return ratingValue <= roundedRating ? Colors.amber : Colors.grey;
-  }
+  double get roundedRating => (rating * 2).round() / 2;
 
   @override
   Widget build(BuildContext context) {
@@ -19,12 +15,9 @@ class StarRating extends StatelessWidget {
       children: List.generate(5, (i) {
         double ratingValue = i + 1;
         bool isHalf = roundedRating == ratingValue - 0.5;
+        Color starColor = ratingValue <= roundedRating ? Colors.amber : Colors.grey;
 
-        return Icon(
-          isHalf ? Icons.star_half : Icons.star,
-          color: isHalf ? Colors.amber : getStarColor(ratingValue),
-          size: 30,
-        );
+        return Icon(isHalf ? Icons.star_half : Icons.star, color: isHalf ? Colors.amber : starColor, size: 30);
       }),
     );
   }

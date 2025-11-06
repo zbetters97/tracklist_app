@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tracklist_app/core/constants/constants.dart';
+import 'package:tracklist_app/core/widgets/loading_icon.dart';
 import 'package:tracklist_app/features/auth/models/app_user_class.dart';
 import 'package:tracklist_app/features/home/widgets/home_review_widget.dart';
 import 'package:tracklist_app/features/review/models/review_class.dart';
@@ -7,9 +7,9 @@ import 'package:tracklist_app/features/review/services/review_service.dart';
 import 'package:tracklist_app/navigation/navigator.dart';
 
 class UserReviewsSection extends StatefulWidget {
-  const UserReviewsSection({super.key, required this.user});
-
   final AppUser user;
+
+  const UserReviewsSection({super.key, required this.user});
 
   @override
   State<UserReviewsSection> createState() => _UserReviewsSectionState();
@@ -47,7 +47,7 @@ class _UserReviewsSectionState extends State<UserReviewsSection> {
 
   @override
   Widget build(BuildContext context) {
-    return isLoading ? const Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK)) : buildUserReviews();
+    return isLoading ? LoadingIcon() : buildUserReviews();
   }
 
   Widget buildUserReviews() {

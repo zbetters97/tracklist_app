@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/features/error/pages/error_page.dart';
 import 'package:tracklist_app/features/media/models/media_class.dart';
 import 'package:tracklist_app/features/media/pages/media_page.dart';
 import 'package:tracklist_app/features/search/pages/search_page.dart';
@@ -31,9 +32,8 @@ class SearchTab extends StatelessWidget {
             page = UserPage(uid: settings.arguments as String);
             break;
           // Default case
-          // TODO: Add default route to Errror Page
           default:
-            page = Container();
+            page = ErrorPage();
             break;
         }
 

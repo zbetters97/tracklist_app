@@ -5,10 +5,10 @@ import 'package:tracklist_app/features/auth/models/app_user_class.dart';
 import 'package:tracklist_app/features/user/services/user_service.dart';
 
 class UserFollowButton extends StatefulWidget {
-  const UserFollowButton({super.key, required this.user, required this.onFollowChanged});
-
   final AppUser user;
   final void Function(bool isFollowing) onFollowChanged;
+
+  const UserFollowButton({super.key, required this.user, required this.onFollowChanged});
 
   @override
   State<UserFollowButton> createState() => _UserFollowButtonState();
@@ -21,10 +21,7 @@ class _UserFollowButtonState extends State<UserFollowButton> {
   @override
   void initState() {
     super.initState();
-
-    setState(() {
-      isFollowing = user.followers.contains(authUser.value!.uid);
-    });
+    setState(() => isFollowing = user.followers.contains(authUser.value!.uid));
   }
 
   void onFollowPressed() async {
@@ -49,16 +46,18 @@ class _UserFollowButtonState extends State<UserFollowButton> {
 
   @override
   Widget build(BuildContext context) {
-    String buttonText = isFollowing ? "Following" : "Follow";
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         ElevatedButton(
           onPressed: () => onFollowPressed(),
-          style: ElevatedButton.styleFrom(backgroundColor: PRIMARY_COLOR_DARK, shape: RoundedRectangleBorder()),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: PRIMARY_COLOR_DARK,
+            shape: RoundedRectangleBorder(),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          ),
           child: Text(
-            buttonText,
+            isFollowing ? "Following" : "Follow",
             style: TextStyle(color: Colors.white, fontSize: 16.0, fontWeight: FontWeight.bold),
           ),
         ),

@@ -7,9 +7,9 @@ import 'package:tracklist_app/features/user/widgets/user_follow_button.dart';
 import 'package:tracklist_app/navigation/navigator.dart';
 
 class UserCardWidget extends StatefulWidget {
-  const UserCardWidget({super.key, required this.user});
-
   final AppUser user;
+
+  const UserCardWidget({super.key, required this.user});
 
   @override
   State<UserCardWidget> createState() => _UserCardWidgetState();

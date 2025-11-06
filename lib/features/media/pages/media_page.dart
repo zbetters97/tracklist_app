@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/core/utils/color.dart';
+import 'package:tracklist_app/core/widgets/loading_icon.dart';
 import 'package:tracklist_app/features/media/models/album_class.dart';
 import 'package:tracklist_app/features/media/models/artist_class.dart';
 import 'package:tracklist_app/features/media/models/media_class.dart';
@@ -18,9 +19,9 @@ import 'package:tracklist_app/core/widgets/stars_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MediaPage extends StatefulWidget {
-  const MediaPage({super.key, required this.media});
-
   final Media media;
+
+  const MediaPage({super.key, required this.media});
 
   @override
   State<MediaPage> createState() => _MediaPageState();
@@ -95,7 +96,7 @@ class _MediaPageState extends State<MediaPage> {
       appBar: DefaultAppBar(title: media.name),
       backgroundColor: BACKGROUND_COLOR,
       body: isLoading
-          ? Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))
+          ? LoadingIcon()
           : SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -106,22 +107,7 @@ class _MediaPageState extends State<MediaPage> {
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
                         children: [
-                          SizedBox(
-                            height: 275 + 75 + 75, // Image height + Ratings Bar height + gap height
-                            child: Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                buildMediaImage(media),
-                                Positioned(
-                                  top: 275 + 75, // Image height + Ratings Bar height
-                                  left: 0,
-                                  right: 0,
-                                  height: 75, // Fixed height of 75
-                                  child: RatingsBar(reviews: reviewDocs),
-                                ),
-                              ],
-                            ),
-                          ),
+                          buildMediaHeader(media),
                           const SizedBox(height: 12),
                           buildMediaReviews(avgRating, reviews.length),
                           const SizedBox(height: 20),
@@ -130,9 +116,7 @@ class _MediaPageState extends State<MediaPage> {
                       ),
                     ),
                   ),
-                  if (media is Artist) ArtistContent(artist: media as Artist),
-                  if (media is Album) AlbumContent(album: media as Album),
-                  if (media is Track) TrackContent(track: media as Track),
+                  buildMediaContent(media),
                 ],
               ),
             ),
@@ -142,6 +126,25 @@ class _MediaPageState extends State<MediaPage> {
   BoxDecoration buildMediaGradient() {
     return BoxDecoration(
       gradient: LinearGradient(colors: [bgColorA, bgColorB], begin: Alignment.topLeft, end: Alignment.bottomRight),
+    );
+  }
+
+  Widget buildMediaHeader(Media media) {
+    return SizedBox(
+      height: 275 + 75 + 75, // Image height + Ratings Bar height + gap height
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          buildMediaImage(media),
+          Positioned(
+            top: 275 + 75, // Image height + Ratings Bar height
+            left: 0,
+            right: 0,
+            height: 75, // Fixed height of 75
+            child: RatingsBar(reviews: reviewDocs),
+          ),
+        ],
+      ),
     );
   }
 
@@ -205,5 +208,13 @@ class _MediaPageState extends State<MediaPage> {
         Icon(Icons.send, color: Colors.white, size: 30),
       ],
     );
+  }
+
+  Widget buildMediaContent(Media media) {
+    if (media is Artist) return ArtistContent(artist: media);
+    if (media is Album) return AlbumContent(album: media);
+    if (media is Track) return TrackContent(track: media);
+
+    return Container();
   }
 }

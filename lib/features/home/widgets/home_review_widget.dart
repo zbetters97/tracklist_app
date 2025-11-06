@@ -11,10 +11,10 @@ import 'package:tracklist_app/core/widgets/stars_widget.dart';
 import 'package:tracklist_app/features/review/services/review_service.dart';
 
 class HomeReviewWidget extends StatefulWidget {
-  const HomeReviewWidget({super.key, required this.review, required this.onOpenReview});
-
   final Review review;
   final VoidCallback onOpenReview;
+
+  const HomeReviewWidget({super.key, required this.review, required this.onOpenReview});
 
   @override
   State<HomeReviewWidget> createState() => _HomeReviewWidgetState();
@@ -29,7 +29,7 @@ class _HomeReviewWidgetState extends State<HomeReviewWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
+      padding: const EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
       width: double.infinity,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,18 +44,7 @@ class _HomeReviewWidgetState extends State<HomeReviewWidget> {
                     children: [
                       buildMediaImage(media.image),
                       const SizedBox(width: 10),
-                      Flexible(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            buildUserInfo(user.username, user.profileUrl),
-                            buildReviewDate(review.createdAt),
-                            buildMediaName(review.category, media.name),
-                            StarRating(rating: review.rating),
-                          ],
-                        ),
-                      ),
+                      buildReviewInfo(user, review, media),
                     ],
                   ),
                 ),
@@ -73,6 +62,21 @@ class _HomeReviewWidgetState extends State<HomeReviewWidget> {
 
   Widget buildMediaImage(String imageUrl) {
     return Image.network(imageUrl, width: 125, height: 125, fit: BoxFit.cover);
+  }
+
+  Widget buildReviewInfo(AppUser user, Review review, Media media) {
+    return Flexible(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          buildUserInfo(user.username, user.profileUrl),
+          buildReviewDate(review.createdAt),
+          buildMediaName(review.category, media.name),
+          StarRating(rating: review.rating),
+        ],
+      ),
+    );
   }
 
   Widget buildUserInfo(String username, String profileUrl) {

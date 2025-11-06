@@ -4,9 +4,9 @@ import 'package:tracklist_app/features/review/services/review_service.dart';
 import 'package:tracklist_app/core/widgets/stars_widget.dart';
 
 class MediaCardWidget extends StatefulWidget {
-  const MediaCardWidget({super.key, required this.media});
-
   final Media media;
+
+  const MediaCardWidget({super.key, required this.media});
 
   @override
   State<MediaCardWidget> createState() => _MediaCardWidgetState();

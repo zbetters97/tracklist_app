@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/core/widgets/loading_icon.dart';
 import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/features/media/models/track_class.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
@@ -6,9 +7,9 @@ import 'package:tracklist_app/features/review/services/review_service.dart';
 import 'package:tracklist_app/features/media/content/media_reviews_content.dart';
 
 class TrackContent extends StatefulWidget {
-  const TrackContent({super.key, required this.track});
-
   final Track track;
+
+  const TrackContent({super.key, required this.track});
 
   @override
   State<TrackContent> createState() => _TrackContentState();
@@ -35,6 +36,10 @@ class _TrackContentState extends State<TrackContent> {
     });
   }
 
+  void switchTab(int index) {
+    setState(() => fetchReviews());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [buildTabs()]);
@@ -50,9 +55,7 @@ class _TrackContentState extends State<TrackContent> {
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [buildTab(0, "Reviews")]),
           ),
-          isLoading
-              ? Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))
-              : MediaReviews(reviews: reviews),
+          isLoading ? LoadingIcon() : MediaReviews(reviews: reviews),
         ],
       ),
     );
@@ -76,9 +79,5 @@ class _TrackContentState extends State<TrackContent> {
         ],
       ),
     );
-  }
-
-  void switchTab(int index) {
-    setState(() => fetchReviews());
   }
 }

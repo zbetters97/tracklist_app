@@ -6,9 +6,9 @@ import 'package:tracklist_app/core/utils/date.dart';
 import 'package:tracklist_app/core/widgets/stars_widget.dart';
 
 class MediaReviewWidget extends StatelessWidget {
-  const MediaReviewWidget({super.key, required this.review});
-
   final Review review;
+
+  const MediaReviewWidget({super.key, required this.review});
 
   @override
   Widget build(BuildContext context) {

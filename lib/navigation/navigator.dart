@@ -7,7 +7,6 @@ class NavigationService {
   static final NavigationService _instance = NavigationService._privateConstructor();
   factory NavigationService() => _instance;
 
-  // Navigator keys
   final GlobalKey<NavigatorState> homeNavigatorKey = GlobalKey<NavigatorState>();
   final GlobalKey<NavigatorState> searchNavigatorKey = GlobalKey<NavigatorState>();
   final GlobalKey<NavigatorState> userNavigatorKey = GlobalKey<NavigatorState>();

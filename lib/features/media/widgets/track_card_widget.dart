@@ -4,9 +4,9 @@ import 'package:tracklist_app/features/review/services/review_service.dart';
 import 'package:tracklist_app/core/widgets/stars_widget.dart';
 
 class TrackCardWidget extends StatefulWidget {
-  const TrackCardWidget({super.key, required this.track});
-
   final Track track;
+
+  const TrackCardWidget({super.key, required this.track});
 
   @override
   State<TrackCardWidget> createState() => _TrackCardWidgetState();
@@ -25,9 +25,7 @@ class _TrackCardWidgetState extends State<TrackCardWidget> {
   void fetchRating() async {
     double fetchedRating = await getAvgRating(media.id);
 
-    setState(() {
-      rating = fetchedRating;
-    });
+    setState(() => rating = fetchedRating);
   }
 
   @override

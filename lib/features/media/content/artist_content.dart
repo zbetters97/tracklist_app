@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/core/widgets/empty_text.dart';
+import 'package:tracklist_app/core/widgets/loading_icon.dart';
 import 'package:tracklist_app/features/media/models/album_class.dart';
 import 'package:tracklist_app/features/media/models/artist_class.dart';
 import 'package:tracklist_app/features/review/models/review_class.dart';
@@ -10,9 +12,9 @@ import 'package:tracklist_app/features/media/content/media_reviews_content.dart'
 import 'package:tracklist_app/features/media/widgets/media_card_widget.dart';
 
 class ArtistContent extends StatefulWidget {
-  const ArtistContent({super.key, required this.artist});
-
   final Artist artist;
+
+  const ArtistContent({super.key, required this.artist});
 
   @override
   State<ArtistContent> createState() => _ArtistContentState();
@@ -65,6 +67,24 @@ class _ArtistContentState extends State<ArtistContent> {
     });
   }
 
+  void switchTab(int index) {
+    if (currentTab == index) return;
+
+    setState(() {
+      currentTab = index;
+
+      currentTab == 0
+          ? fetchAlbums()
+          : currentTab == 1
+          ? fetchSingles()
+          : fetchReviews();
+    });
+  }
+
+  void sendToMediaPage(Album album) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => MediaPage(media: album)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [buildTabs()]);
@@ -84,7 +104,7 @@ class _ArtistContentState extends State<ArtistContent> {
             ),
           ),
           isLoading
-              ? Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))
+              ? LoadingIcon()
               : currentTab == 0
               ? buildAlbumsList()
               : currentTab == 1
@@ -122,26 +142,12 @@ class _ArtistContentState extends State<ArtistContent> {
     );
   }
 
-  void switchTab(int index) {
-    setState(() {
-      if (currentTab == index) return;
-
-      currentTab = index;
-
-      currentTab == 0
-          ? fetchAlbums()
-          : currentTab == 1
-          ? fetchSingles()
-          : fetchReviews();
-    });
-  }
-
   Widget buildAlbumsList() {
     if (isLoading) {
       return Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK));
     }
     if (albums.isEmpty) {
-      return Text("No albums found");
+      return EmptyText(message: "No albums found!");
     }
 
     return Padding(
@@ -151,9 +157,7 @@ class _ArtistContentState extends State<ArtistContent> {
         children: [
           ...albums.map(
             (album) => GestureDetector(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => MediaPage(media: album)));
-              },
+              onTap: () => sendToMediaPage(album),
               child: MediaCardWidget(media: album),
             ),
           ),
@@ -167,7 +171,7 @@ class _ArtistContentState extends State<ArtistContent> {
       return Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK));
     }
     if (singles.isEmpty) {
-      return Text("No singles found");
+      return EmptyText(message: "No singles found!");
     }
 
     return Padding(
@@ -177,9 +181,7 @@ class _ArtistContentState extends State<ArtistContent> {
         children: [
           ...singles.map(
             (single) => GestureDetector(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => MediaPage(media: single)));
-              },
+              onTap: () => sendToMediaPage(single),
               child: MediaCardWidget(media: single),
             ),
           ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/core/widgets/empty_text.dart';
+import 'package:tracklist_app/core/widgets/loading_icon.dart';
 import 'package:tracklist_app/features/media/models/album_class.dart';
 import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/features/media/models/track_class.dart';
@@ -10,9 +12,9 @@ import 'package:tracklist_app/features/media/pages/media_page.dart';
 import 'package:tracklist_app/features/media/widgets/track_card_widget.dart';
 
 class AlbumContent extends StatefulWidget {
-  const AlbumContent({super.key, required this.album});
-
   final Album album;
+
+  const AlbumContent({super.key, required this.album});
 
   @override
   State<AlbumContent> createState() => _AlbumContentState();
@@ -53,6 +55,19 @@ class _AlbumContentState extends State<AlbumContent> {
     });
   }
 
+  void switchTab(int index) {
+    if (currentTab == index) return;
+
+    setState(() {
+      currentTab = index;
+      currentTab == 0 ? fetchTracks() : fetchReviews();
+    });
+  }
+
+  void sendToMediaPage(Track track) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => MediaPage(media: track)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [buildTabs()]);
@@ -72,7 +87,7 @@ class _AlbumContentState extends State<AlbumContent> {
             ),
           ),
           isLoading
-              ? Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))
+              ? LoadingIcon()
               : currentTab == 0
               ? buildTracksList()
               : MediaReviews(reviews: reviews),
@@ -108,22 +123,12 @@ class _AlbumContentState extends State<AlbumContent> {
     );
   }
 
-  void switchTab(int index) {
-    setState(() {
-      if (currentTab == index) return;
-
-      currentTab = index;
-
-      currentTab == 0 ? fetchTracks() : fetchReviews();
-    });
-  }
-
   Widget buildTracksList() {
     if (isLoading) {
       return Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK));
     }
     if (tracks.isEmpty) {
-      return Text("No tracks found");
+      return EmptyText(message: "No tracks found!");
     }
 
     return Padding(
@@ -133,9 +138,7 @@ class _AlbumContentState extends State<AlbumContent> {
         children: [
           ...tracks.map(
             (track) => GestureDetector(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => MediaPage(media: track)));
-              },
+              onTap: () => sendToMediaPage(track),
               child: TrackCardWidget(track: track),
             ),
           ),
