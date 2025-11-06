@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/core/utils/notifiers.dart';
 import 'package:tracklist_app/features/media/models/media_class.dart';
 
 class NavigationService {
@@ -11,27 +12,30 @@ class NavigationService {
   final GlobalKey<NavigatorState> searchNavigatorKey = GlobalKey<NavigatorState>();
   final GlobalKey<NavigatorState> userNavigatorKey = GlobalKey<NavigatorState>();
 
-  // Tab control
-  final ValueNotifier<int> selectedTab = ValueNotifier<int>(0);
-
   static const int homeTabIndex = 0;
   static const int searchTabIndex = 1;
-  static const int userTabIndex = 2;
+  static const int userTabIndex = 4;
 
-  // Navigation helpers
-  void homeOpenReview(String reviewId) {
-    homeNavigatorKey.currentState?.pushNamed("/review", arguments: reviewId);
+  GlobalKey<NavigatorState>? _getNavigatorKey(int tabIndex) {
+    if (tabIndex == homeTabIndex) return homeNavigatorKey;
+    if (tabIndex == searchTabIndex) return searchNavigatorKey;
+    if (tabIndex == userTabIndex) return userNavigatorKey;
+
+    return null;
   }
 
-  void searchOpenMedia(Media media) {
-    searchNavigatorKey.currentState?.pushNamed("/media", arguments: media);
+  void openReview(String reviewId) {
+    final navigatorKey = _getNavigatorKey(selectedPageNotifier.value);
+    navigatorKey?.currentState?.pushNamed("/review", arguments: reviewId);
   }
 
-  void userOpenUser(String userId) {
-    userNavigatorKey.currentState?.pushNamed("/user", arguments: userId);
+  void openUser(String userId) {
+    final navigatorKey = _getNavigatorKey(selectedPageNotifier.value);
+    navigatorKey?.currentState?.pushNamed("/user", arguments: userId);
   }
 
-  void userOpenReview(String reviewId) {
-    userNavigatorKey.currentState?.pushNamed("/review", arguments: reviewId);
+  void openMedia(Media media) {
+    final navigatorKey = _getNavigatorKey(selectedPageNotifier.value);
+    navigatorKey?.currentState?.pushNamed("/media", arguments: media);
   }
 }

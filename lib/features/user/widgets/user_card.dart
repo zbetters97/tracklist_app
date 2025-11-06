@@ -35,7 +35,7 @@ class _UserCardState extends State<UserCard> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         GestureDetector(
-          onTap: () => NavigationService().userOpenUser(user.uid),
+          onTap: () => NavigationService().openUser(user.uid),
           child: Row(spacing: 8.0, children: [buildProfileImage(user.profileUrl), buildUserInfo(user)]),
         ),
         if (authUser.value!.uid != user.uid) UserFollowButton(user: user, onFollowChanged: onFollowChanged),

@@ -62,7 +62,7 @@ class _UserReviewsSectionState extends State<UserReviewsSection> {
           // Route to Review Page on tap using callback
           return HomeReviewWidget(
             review: reviews[index],
-            onOpenReview: () => NavigationService().userOpenReview(reviews[index].reviewId),
+            onOpenReview: () => NavigationService().openReview(reviews[index].reviewId),
           );
         },
         separatorBuilder: (context, index) => const Divider(color: Colors.grey),

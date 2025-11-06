@@ -123,7 +123,7 @@ class _SearchPageState extends State<SearchPage> {
               final result = searchList[index];
               return Center(
                 child: GestureDetector(
-                  onTap: () => NavigationService().searchOpenMedia(result),
+                  onTap: () => NavigationService().openMedia(result),
                   child: MediaCardWidget(media: result),
                 ),
               );

@@ -249,7 +249,7 @@ class _HomePageState extends State<HomePage> {
             // Route to Review Page on tap using callback
             return HomeReviewWidget(
               review: reviews[index],
-              onOpenReview: () => NavigationService().homeOpenReview(reviews[index].reviewId),
+              onOpenReview: () => NavigationService().openReview(reviews[index].reviewId),
             );
           },
           separatorBuilder: (context, index) => const Divider(color: Colors.grey),

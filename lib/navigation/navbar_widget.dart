@@ -23,7 +23,7 @@ class _NavbarWidgetState extends State<NavbarWidget> {
             NavitemWidget(icon: Icons.notifications, index: 3, selectedPage: selectedPage),
             NavitemWidget(icon: Icons.person, index: 4, selectedPage: selectedPage),
           ],
-          onDestinationSelected: (int value) => {selectedPageNotifier.value = value},
+          onDestinationSelected: (int value) => selectedPageNotifier.value = value,
           selectedIndex: selectedPage,
           backgroundColor: Colors.black,
         );
