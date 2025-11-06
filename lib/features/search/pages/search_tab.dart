@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tracklist_app/features/media/models/media_class.dart';
 import 'package:tracklist_app/features/media/pages/media_page.dart';
 import 'package:tracklist_app/features/search/pages/search_page.dart';
+import 'package:tracklist_app/features/user/pages/user_page.dart';
 import 'package:tracklist_app/navigation/navigator.dart';
 
 class SearchTab extends StatelessWidget {
@@ -25,6 +26,9 @@ class SearchTab extends StatelessWidget {
           // Open Review Page when a review is clicked
           case "/media":
             page = MediaPage(media: settings.arguments as Media);
+            break;
+          case "/user":
+            page = UserPage(uid: settings.arguments as String);
             break;
           // Default case
           // TODO: Add default route to Errror Page

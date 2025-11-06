@@ -36,4 +36,12 @@ class AppUser {
       following: List<String>.from(json['following']),
     );
   }
+
+  // Overrides default .toSet() to use the uid as the unique key
+  @override
+  bool operator ==(Object other) => identical(this, other) || other is AppUser && uid == other.uid;
+
+  // Use uid as the unique key
+  @override
+  int get hashCode => uid.hashCode;
 }

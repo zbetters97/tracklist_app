@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/features/auth/models/app_user_class.dart';
-import 'package:tracklist_app/features/auth/services/auth_service.dart';
-import 'package:tracklist_app/features/user/widgets/user_card.dart';
+import 'package:tracklist_app/features/user/services/user_service.dart';
+import 'package:tracklist_app/features/user/widgets/user_card_widget.dart';
 
 class UserFriendsSection extends StatefulWidget {
   const UserFriendsSection({super.key, required this.user});
@@ -32,8 +32,8 @@ class _UserFriendsSectionState extends State<UserFriendsSection> {
   void fetchFriends() async {
     setState(() => isLoading = true);
 
-    List<AppUser> fetchedFollowing = await authService.value.getFollowingByUserId(user.uid);
-    List<AppUser> fetchedFollowers = await authService.value.getFollowersByUserId(user.uid);
+    List<AppUser> fetchedFollowing = await getFollowingByUserId(user.uid);
+    List<AppUser> fetchedFollowers = await getFollowersByUserId(user.uid);
 
     if (!mounted) return;
 
@@ -54,7 +54,7 @@ class _UserFriendsSectionState extends State<UserFriendsSection> {
   Widget build(BuildContext context) {
     return isLoading
         ? const Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK))
-        : Column(children: [buildTopBar(), currentTab == 0 ? buildUserFollowers() : buildUserFollowing()]);
+        : Column(children: [buildTopBar(), buildUsersList(currentTab == 0 ? followers : following)]);
   }
 
   Widget buildTopBar() {
@@ -84,7 +84,7 @@ class _UserFriendsSectionState extends State<UserFriendsSection> {
     );
   }
 
-  Widget buildUserFollowing() {
+  Widget buildUsersList(List<AppUser> users) {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -92,27 +92,9 @@ class _UserFriendsSectionState extends State<UserFriendsSection> {
           controller: friendsController,
           shrinkWrap: true,
           padding: const EdgeInsets.all(0.0),
-          itemCount: following.length,
+          itemCount: users.length,
           itemBuilder: (context, index) {
-            return UserCard(user: following[index]);
-          },
-          separatorBuilder: (context, index) => const SizedBox(height: 16.0),
-        ),
-      ),
-    );
-  }
-
-  Widget buildUserFollowers() {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView.separated(
-          controller: friendsController,
-          shrinkWrap: true,
-          padding: const EdgeInsets.all(0.0),
-          itemCount: followers.length,
-          itemBuilder: (context, index) {
-            return UserCard(user: followers[index]);
+            return UserCardWidget(user: users[index]);
           },
           separatorBuilder: (context, index) => const SizedBox(height: 16.0),
         ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/core/utils/date.dart';
+import 'package:tracklist_app/core/utils/notifiers.dart';
 import 'package:tracklist_app/features/comment/models/comment_class.dart';
-import 'package:tracklist_app/features/auth/services/auth_service.dart';
 import 'package:tracklist_app/features/comment/services/comment_service.dart';
 import 'package:tracklist_app/features/comment/widgets/post_comment_widget.dart';
 import 'package:tracklist_app/features/comment/widgets/replies_widget.dart';

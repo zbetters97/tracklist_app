@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
+import 'package:tracklist_app/core/utils/notifiers.dart';
 import 'package:tracklist_app/features/auth/models/app_user_class.dart';
-import 'package:tracklist_app/features/auth/services/auth_service.dart';
+import 'package:tracklist_app/features/user/services/user_service.dart';
 
 class UserFollowButton extends StatefulWidget {
   const UserFollowButton({super.key, required this.user, required this.onFollowChanged});
@@ -28,9 +29,9 @@ class _UserFollowButtonState extends State<UserFollowButton> {
 
   void onFollowPressed() async {
     if (isFollowing) {
-      await authService.value.unfollowUser(userId: user.uid);
+      await unfollowUser(userId: user.uid);
     } else {
-      await authService.value.followUser(userId: user.uid);
+      await followUser(userId: user.uid);
     }
 
     widget.onFollowChanged(isFollowing);

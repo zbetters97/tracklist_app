@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/core/utils/notifiers.dart';
 import 'package:tracklist_app/features/auth/models/app_user_class.dart';
 import 'package:tracklist_app/features/media/models/album_class.dart';
 import 'package:tracklist_app/features/media/models/media_class.dart';
@@ -7,7 +8,6 @@ import 'package:tracklist_app/features/media/models/track_class.dart';
 import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/core/utils/date.dart';
-import 'package:tracklist_app/features/auth/services/auth_service.dart';
 import 'package:tracklist_app/features/review/services/review_service.dart';
 import 'package:tracklist_app/features/media/pages/media_page.dart';
 import 'package:tracklist_app/features/review/widgets/review_comments_section.dart';

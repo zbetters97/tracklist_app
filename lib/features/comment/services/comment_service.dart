@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tracklist_app/features/auth/models/app_user_class.dart';
 import 'package:tracklist_app/features/comment/models/comment_class.dart';
 import 'package:tracklist_app/features/review/models/review_class.dart';
-import 'package:tracklist_app/features/auth/services/auth_service.dart';
 import 'package:tracklist_app/features/review/services/review_service.dart';
+import 'package:tracklist_app/features/user/services/user_service.dart';
 
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -20,7 +20,7 @@ Future<Comment> getCommentById(String commentId) async {
 
     // Get Review and User objects
     Review review = await getReviewById(data["reviewId"]);
-    AppUser user = await authService.value.getUserById(userId: data["userId"]);
+    AppUser user = await getUserById(userId: data["userId"]);
 
     // Create Comment object
     Comment comment = Comment.fromJson({"commentId": commentDoc.id, ...data}, user: user, review: review);

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/features/auth/models/app_user_class.dart';
 import 'package:tracklist_app/features/media/models/media_class.dart';
 import 'package:tracklist_app/features/media/services/spotify_service.dart';
 import 'package:tracklist_app/features/media/pages/media_page.dart';
 import 'package:tracklist_app/features/media/widgets/media_card_widget.dart';
+import 'package:tracklist_app/features/user/services/user_service.dart';
+import 'package:tracklist_app/features/user/widgets/user_card_widget.dart';
 import 'package:tracklist_app/navigation/navigator.dart';
 
 class SearchPage extends StatefulWidget {
@@ -18,22 +21,32 @@ class _SearchPageState extends State<SearchPage> {
   String selectedCategory = "artist";
   TextEditingController searchController = TextEditingController();
 
-  List<Media> results = [];
+  List<Media> mediaResults = [];
+  List<AppUser> userResults = [];
 
   Future<void> onSearchPressed() async {
     if (searchController.text.isEmpty) return;
 
-    results.clear();
+    if (selectedCategory == "user") {
+      final List<AppUser> users = await searchUsers(searchController.text);
 
-    String categoryQuery = selectedCategory;
-    String mediaQuery = searchController.text;
+      if (users.isEmpty) return;
 
-    final List<Media> media = await searchByCategory(categoryQuery, mediaQuery);
+      userResults.clear();
 
-    if (media.isEmpty) return;
+      for (final AppUser user in users) {
+        setState(() => userResults.add(user));
+      }
+    } else {
+      final List<Media> media = await searchByCategory(selectedCategory, searchController.text);
 
-    for (final Media item in media) {
-      setState(() => results.add(item));
+      if (media.isEmpty) return;
+
+      mediaResults.clear();
+
+      for (final Media item in media) {
+        setState(() => mediaResults.add(item));
+      }
     }
   }
 
@@ -67,7 +80,8 @@ class _SearchPageState extends State<SearchPage> {
             const SizedBox(height: 10),
             buildCategoryDropdown(),
             const SizedBox(height: 10),
-            Expanded(child: buildSearchResults(results)),
+            if (selectedCategory != "user") Expanded(child: buildMediaResults(mediaResults)),
+            if (selectedCategory == "user") Expanded(child: buildUserResults(userResults)),
           ],
         ),
       ),
@@ -98,6 +112,7 @@ class _SearchPageState extends State<SearchPage> {
           DropdownMenuItem(value: "artist", child: Text("Artist")),
           DropdownMenuItem(value: "album", child: Text("Album")),
           DropdownMenuItem(value: "track", child: Text("Track")),
+          DropdownMenuItem(value: "user", child: Text("User")),
         ],
         underline: SizedBox(),
         style: TextStyle(fontSize: 20),
@@ -112,21 +127,35 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  Widget buildSearchResults(List<Media> searchList) {
-    return searchList.isEmpty
+  Widget buildMediaResults(List<Media> results) {
+    return results.isEmpty
         ? searchController.text == ""
               ? Center(child: Text(""))
               : Center(child: Text("No results"))
         : ListView.builder(
-            itemCount: searchList.length,
+            itemCount: results.length,
             itemBuilder: (context, index) {
-              final result = searchList[index];
+              final result = results[index];
               return Center(
                 child: GestureDetector(
                   onTap: () => NavigationService().openMedia(result),
                   child: MediaCardWidget(media: result),
                 ),
               );
+            },
+          );
+  }
+
+  Widget buildUserResults(List<AppUser> results) {
+    return results.isEmpty
+        ? searchController.text == ""
+              ? Center(child: Text(""))
+              : Center(child: Text("No results"))
+        : ListView.builder(
+            itemCount: results.length,
+            itemBuilder: (context, index) {
+              final result = results[index];
+              return Center(child: UserCardWidget(user: result));
             },
           );
   }

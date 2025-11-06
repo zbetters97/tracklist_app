@@ -4,7 +4,7 @@ import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/core/utils/date.dart';
 import 'package:tracklist_app/core/utils/notifiers.dart';
 import 'package:tracklist_app/core/extensions/string_extensions.dart';
-import 'package:tracklist_app/features/auth/services/auth_service.dart';
+import 'package:tracklist_app/features/user/services/user_service.dart';
 import 'package:tracklist_app/features/user/widgets/user_follow_button.dart';
 import 'package:tracklist_app/features/user/widgets/user_friends_section.dart';
 import 'package:tracklist_app/features/user/widgets/user_reviews_section.dart';
@@ -47,10 +47,13 @@ class _UserPageState extends State<UserPage> {
 
     // User is on their own profile, highlight Profile tab
     if (isLoggedInUser) {
-      selectedPageNotifier.value = 4;
+      // Wait for build to finish
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        selectedPageNotifier.value = 4;
+      });
       setState(() => user = authUser.value!);
     } else {
-      AppUser fetchedUser = await authService.value.getUserById(userId: uid);
+      AppUser fetchedUser = await getUserById(userId: uid);
       setState(() => user = fetchedUser);
     }
 

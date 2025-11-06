@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tracklist_app/features/auth/services/auth_service.dart';
+import 'package:tracklist_app/core/utils/notifiers.dart';
 import 'package:tracklist_app/features/review/pages/review_page.dart';
 import 'package:tracklist_app/features/user/pages/user_page.dart';
 import 'package:tracklist_app/navigation/navigator.dart';
@@ -16,6 +16,7 @@ class UserTab extends StatelessWidget {
       initialRoute: "/",
       onGenerateRoute: (settings) {
         Widget page;
+        print(settings.name);
 
         switch (settings.name) {
           case "/":

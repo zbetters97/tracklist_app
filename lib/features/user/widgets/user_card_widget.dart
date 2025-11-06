@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/core/extensions/string_extensions.dart';
+import 'package:tracklist_app/core/utils/notifiers.dart';
 import 'package:tracklist_app/features/auth/models/app_user_class.dart';
-import 'package:tracklist_app/features/auth/services/auth_service.dart';
 import 'package:tracklist_app/features/user/widgets/user_follow_button.dart';
 import 'package:tracklist_app/navigation/navigator.dart';
 
-class UserCard extends StatefulWidget {
-  const UserCard({super.key, required this.user});
+class UserCardWidget extends StatefulWidget {
+  const UserCardWidget({super.key, required this.user});
 
   final AppUser user;
 
   @override
-  State<UserCard> createState() => _UserCardState();
+  State<UserCardWidget> createState() => _UserCardWidgetState();
 }
 
-class _UserCardState extends State<UserCard> {
+class _UserCardWidgetState extends State<UserCardWidget> {
   AppUser get user => widget.user;
 
   void onFollowChanged(bool isFollowing) {
