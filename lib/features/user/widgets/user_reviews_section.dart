@@ -33,6 +33,8 @@ class _UserReviewsSectionState extends State<UserReviewsSection> {
 
     List<Review> fetchedReviews = await getReviewsByUserId(user.uid);
 
+    if (!mounted) return;
+
     setState(() {
       reviews = fetchedReviews;
       isLoading = false;

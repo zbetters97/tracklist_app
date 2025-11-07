@@ -232,6 +232,7 @@ class _ReviewPageState extends State<ReviewPage> {
 
   Widget buildLikeButton(Review review, String userId) {
     bool isLiked = review.likes.contains(user.uid);
+    String likesWord = review.likes.length == 1 ? "like" : "likes";
 
     return Row(
       spacing: 5.0,
@@ -246,7 +247,7 @@ class _ReviewPageState extends State<ReviewPage> {
         GestureDetector(
           onTap: () => sendToLikesPage(context, review),
           child: Text(
-            "${review.likes.length} likes",
+            "${review.likes.length} $likesWord",
             style: TextStyle(color: isLiked ? PRIMARY_COLOR_LIGHT : Colors.white, fontSize: 24),
           ),
         ),
