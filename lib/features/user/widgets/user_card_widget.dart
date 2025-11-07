@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/core/extensions/string_extensions.dart';
 import 'package:tracklist_app/core/utils/notifiers.dart';
-import 'package:tracklist_app/features/auth/models/app_user_class.dart';
+import 'package:tracklist_app/features/user/models/app_user_class.dart';
 import 'package:tracklist_app/features/user/widgets/user_follow_button.dart';
 import 'package:tracklist_app/navigation/navigator.dart';
 

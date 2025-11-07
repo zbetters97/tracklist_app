@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tracklist_app/core/utils/notifiers.dart';
-import 'package:tracklist_app/features/auth/models/app_user_class.dart';
+import 'package:tracklist_app/features/user/models/app_user_class.dart';
 import 'package:tracklist_app/features/comment/services/comment_service.dart';
 import 'package:tracklist_app/features/media/models/media_class.dart';
 import 'package:tracklist_app/features/review/models/review_class.dart';

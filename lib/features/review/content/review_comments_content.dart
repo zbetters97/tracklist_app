@@ -10,16 +10,16 @@ import 'package:tracklist_app/features/comment/widgets/comment_card_widget.dart'
 import 'package:tracklist_app/features/comment/widgets/post_comment_widget.dart';
 import 'package:tracklist_app/features/review/pages/review_page.dart';
 
-class ReviewCommentsSection extends StatefulWidget {
+class ReviewCommentsContent extends StatefulWidget {
   final Review review;
 
-  const ReviewCommentsSection({super.key, required this.review});
+  const ReviewCommentsContent({super.key, required this.review});
 
   @override
-  State<ReviewCommentsSection> createState() => _ReviewCommentsSectionState();
+  State<ReviewCommentsContent> createState() => _ReviewCommentsContentState();
 }
 
-class _ReviewCommentsSectionState extends State<ReviewCommentsSection> {
+class _ReviewCommentsContentState extends State<ReviewCommentsContent> {
   Review get review => widget.review;
 
   final List<String> commentFilters = ["Newest", "Oldest", "Best", "Worst"];

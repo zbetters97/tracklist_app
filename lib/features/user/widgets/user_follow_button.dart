@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/core/utils/notifiers.dart';
-import 'package:tracklist_app/features/auth/models/app_user_class.dart';
+import 'package:tracklist_app/features/user/models/app_user_class.dart';
 import 'package:tracklist_app/features/user/services/user_service.dart';
 
 class UserFollowButton extends StatefulWidget {

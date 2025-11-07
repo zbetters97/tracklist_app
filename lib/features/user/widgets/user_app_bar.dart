@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tracklist_app/features/auth/models/app_user_class.dart';
+import 'package:tracklist_app/features/user/models/app_user_class.dart';
 
 class UserAppBar extends StatelessWidget implements PreferredSizeWidget {
   final AppUser user;

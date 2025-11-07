@@ -3,7 +3,7 @@ import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/core/widgets/default_app_bar.dart';
 import 'package:tracklist_app/core/widgets/empty_text.dart';
 import 'package:tracklist_app/core/widgets/loading_icon.dart';
-import 'package:tracklist_app/features/auth/models/app_user_class.dart';
+import 'package:tracklist_app/features/user/models/app_user_class.dart';
 import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/features/review/services/review_service.dart';
 import 'package:tracklist_app/features/user/widgets/user_card_widget.dart';

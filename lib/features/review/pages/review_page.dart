@@ -2,20 +2,16 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/core/utils/notifiers.dart';
 import 'package:tracklist_app/core/widgets/loading_icon.dart';
-import 'package:tracklist_app/features/auth/models/app_user_class.dart';
-import 'package:tracklist_app/features/media/models/album_class.dart';
+import 'package:tracklist_app/features/user/models/app_user_class.dart';
 import 'package:tracklist_app/features/media/models/media_class.dart';
-import 'package:tracklist_app/features/media/models/track_class.dart';
 import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
-import 'package:tracklist_app/core/utils/date.dart';
 import 'package:tracklist_app/features/review/pages/review_likes_page.dart';
 import 'package:tracklist_app/features/review/services/review_service.dart';
 import 'package:tracklist_app/features/media/pages/media_page.dart';
-import 'package:tracklist_app/features/review/widgets/review_comments_section.dart';
+import 'package:tracklist_app/features/review/content/review_comments_content.dart';
 import 'package:tracklist_app/features/user/pages/user_page.dart';
 import 'package:tracklist_app/core/widgets/default_app_bar.dart';
-import 'package:tracklist_app/core/widgets/stars_widget.dart';
 
 class ReviewPage extends StatefulWidget {
   final String reviewId;
@@ -52,6 +48,11 @@ class _ReviewPageState extends State<ReviewPage> {
     });
   }
 
+  void onVoteReview(bool isLiked) async {
+    setState(() => isLiked ? review.likes.remove(authUser.value!.uid) : review.likes.add(authUser.value!.uid));
+    await voteReview(review.reviewId);
+  }
+
   void onDeleteReview() async {
     bool? confirm = await showDialog<bool>(
       context: context,
@@ -78,15 +79,15 @@ class _ReviewPageState extends State<ReviewPage> {
     Navigator.pop(context);
   }
 
-  void sendToMediaPage(BuildContext context) {
+  void sendToMediaPage() {
     Navigator.push(context, MaterialPageRoute(builder: (context) => MediaPage(media: media)));
   }
 
-  void sendToUserPage(BuildContext context, String userId) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => UserPage(uid: userId)));
+  void sendToUserPage() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => UserPage(uid: user.uid)));
   }
 
-  void sendToLikesPage(BuildContext context, Review review) {
+  void sendToLikesPage() {
     Navigator.push(context, MaterialPageRoute(builder: (context) => ReviewLikesPage(review: review)));
   }
 
@@ -106,83 +107,48 @@ class _ReviewPageState extends State<ReviewPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        buildMediaBanner(media.image, review.category, media.name),
+                        buildMediaBanner(),
                         const SizedBox(height: 24.0),
-                        buildReviewHeader(user.username, user.profileUrl, review.createdAt, review.rating),
+                        buildReviewHeader(),
                         const SizedBox(height: 4.0),
-                        buildReviewContent(review.content),
+                        review.buildContent(20.0),
                         const SizedBox(height: 24.0),
-                        buildReviewButtons(user.uid, review),
+                        buildReviewButtons(),
                       ],
                     ),
                   ),
                   const Divider(color: Colors.white, thickness: 1, height: 0),
-                  ReviewCommentsSection(review: review),
+                  ReviewCommentsContent(review: review),
                 ],
               ),
       ),
     );
   }
 
-  Widget buildMediaBanner(String imageUrl, String category, String name) {
-    Icon mediaIcon = category == "artist"
-        ? Icon(Icons.person, color: Colors.grey, size: 28)
-        : category == "album"
-        ? Icon(Icons.album, color: Colors.grey, size: 28)
-        : Icon(Icons.music_note, color: Colors.grey, size: 28);
-
-    String artist = category == "album"
-        ? (media as Album).artist
-        : category == "track"
-        ? (media as Track).artist
-        : "";
-
+  Widget buildMediaBanner() {
     return GestureDetector(
-      onTap: () => sendToMediaPage(context),
+      onTap: () => sendToMediaPage(),
       child: Column(
+        spacing: 8.0,
         children: [
           Container(
             decoration: BoxDecoration(
               boxShadow: [BoxShadow(color: Colors.black.withAlpha(75), blurRadius: 12, offset: Offset(0, 4))],
             ),
-            child: Image.network(imageUrl, width: 275, height: 275, fit: BoxFit.cover),
+            child: review.buildMediaImage(275),
           ),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              mediaIcon,
-              const SizedBox(width: 5),
-              Flexible(
-                child: Text(
-                  name,
-                  style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ],
-          ),
-          if (artist != "")
-            Text(
-              artist,
-              style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
+          review.buildMediaName(true),
         ],
       ),
     );
   }
 
-  Widget buildReviewHeader(String username, String profileUrl, DateTime date, double rating) {
-    CircleAvatar profileImage = profileUrl.startsWith("https")
-        ? CircleAvatar(radius: 30.0, backgroundImage: NetworkImage(profileUrl))
-        : CircleAvatar(radius: 30.0, backgroundImage: AssetImage(DEFAULT_PROFILE_IMG));
-
+  Widget buildReviewHeader() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
+      spacing: 8.0,
       children: [
-        GestureDetector(onTap: () => sendToUserPage(context, user.uid), child: profileImage),
-        const SizedBox(width: 8),
+        GestureDetector(onTap: () => sendToUserPage(), child: user.buildProfileImage(30.0)),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,15 +159,15 @@ class _ReviewPageState extends State<ReviewPage> {
                   children: [
                     TextSpan(text: "Review by "),
                     TextSpan(
-                      text: username,
+                      text: user.username,
                       style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                      recognizer: TapGestureRecognizer()..onTap = () => sendToUserPage(context, user.uid),
+                      recognizer: TapGestureRecognizer()..onTap = () => sendToUserPage(),
                     ),
                   ],
                 ),
               ),
-              Text(formatDateMDY(date), style: TextStyle(color: Colors.grey, fontSize: 18)),
-              StarRating(rating: rating),
+              review.buildDateLong(18.0),
+              review.buildStarRating(false),
             ],
           ),
         ),
@@ -209,48 +175,16 @@ class _ReviewPageState extends State<ReviewPage> {
     );
   }
 
-  Widget buildReviewContent(String content) {
-    return Padding(
-      padding: const EdgeInsets.all(4.0),
-      child: Text(content, style: TextStyle(color: Colors.white, fontSize: 20)),
-    );
-  }
-
-  Widget buildReviewButtons(String userId, Review review) {
-    bool isPoster = userId == authUser.value!.uid;
+  Widget buildReviewButtons() {
+    bool isPoster = review.user.uid == authUser.value!.uid;
 
     return Row(
+      spacing: 20.0,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        buildLikeButton(review, userId),
-        const SizedBox(width: 20),
+        review.buildLikeButtonDetailed(onVoteReview, sendToLikesPage),
         buildShareButton(),
-        const SizedBox(width: 20),
-        if (isPoster) buildDeleteButton(),
-      ],
-    );
-  }
-
-  Widget buildLikeButton(Review review, String userId) {
-    bool isLiked = review.likes.contains(user.uid);
-    String likesWord = review.likes.length == 1 ? "like" : "likes";
-
-    return Row(
-      spacing: 5.0,
-      children: [
-        GestureDetector(
-          onTap: () async {
-            setState(() => isLiked ? review.likes.remove(userId) : review.likes.add(userId));
-            await voteReview(review.reviewId);
-          },
-          child: Icon(Icons.favorite, size: 30, color: isLiked ? PRIMARY_COLOR_LIGHT : Colors.white),
-        ),
-        GestureDetector(
-          onTap: () => sendToLikesPage(context, review),
-          child: Text(
-            "${review.likes.length} $likesWord",
-            style: TextStyle(color: isLiked ? PRIMARY_COLOR_LIGHT : Colors.white, fontSize: 24),
-          ),
-        ),
+        if (isPoster) review.buildDeleteButton(onDeleteReview),
       ],
     );
   }
@@ -258,9 +192,5 @@ class _ReviewPageState extends State<ReviewPage> {
   Widget buildShareButton() {
     // TODO: Implement share review functionality
     return Icon(Icons.send, size: 30);
-  }
-
-  Widget buildDeleteButton() {
-    return GestureDetector(onTap: () => onDeleteReview(), child: Icon(Icons.delete, size: 30));
   }
 }

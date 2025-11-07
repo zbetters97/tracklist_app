@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tracklist_app/features/auth/models/app_user_class.dart';
+import 'package:tracklist_app/features/user/models/app_user_class.dart';
 import 'package:tracklist_app/features/auth/services/auth_service.dart';
 
 ValueNotifier<int> selectedPageNotifier = ValueNotifier(0);

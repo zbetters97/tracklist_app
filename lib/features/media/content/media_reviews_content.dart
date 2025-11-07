@@ -3,7 +3,7 @@ import 'package:tracklist_app/core/utils/notifiers.dart';
 import 'package:tracklist_app/core/widgets/empty_text.dart';
 import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/features/review/pages/review_page.dart';
-import 'package:tracklist_app/features/media/widgets/media_review_widget.dart';
+import 'package:tracklist_app/features/review/widgets/review_media_card_widget.dart';
 
 class MediaReviews extends StatefulWidget {
   final List<Review> reviews;
@@ -116,7 +116,7 @@ class _MediaReviewsState extends State<MediaReviews> {
         ...reviews.map((review) {
           return GestureDetector(
             onTap: () => sendToReviewPage(context, review),
-            child: MediaReviewWidget(review: review),
+            child: ReviewMediaCardWidget(review: review),
           );
         }),
       ],

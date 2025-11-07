@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/core/widgets/loading_icon.dart';
-import 'package:tracklist_app/features/auth/models/app_user_class.dart';
-import 'package:tracklist_app/features/home/widgets/home_review_widget.dart';
+import 'package:tracklist_app/features/review/widgets/review_card_widget.dart';
+import 'package:tracklist_app/features/user/models/app_user_class.dart';
 import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/features/review/services/review_service.dart';
 import 'package:tracklist_app/navigation/navigator.dart';
@@ -88,7 +88,7 @@ class _UserReviewsSectionState extends State<UserReviewsSection> {
         itemCount: reviews.length,
         itemBuilder: (context, index) {
           // Route to Review Page on tap using callback
-          return HomeReviewWidget(
+          return ReviewCardWidget(
             review: reviews[index],
             onOpenReview: () => onOpenReview(reviews[index].reviewId),
             onDeleteReview: () => onDeleteReview(reviews[index].reviewId),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/core/widgets/loading_icon.dart';
-import 'package:tracklist_app/features/auth/models/app_user_class.dart';
+import 'package:tracklist_app/features/user/models/app_user_class.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/core/utils/date.dart';
 import 'package:tracklist_app/core/utils/notifiers.dart';
@@ -111,15 +111,13 @@ class _UserPageState extends State<UserPage> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    spacing: 3.0,
                     children: [
-                      buildProfile(user.profileUrl),
-                      const SizedBox(height: 4),
-                      buildBio(user.bio),
-                      const SizedBox(height: 4),
-                      buildDate(user.createdAt),
-                      const SizedBox(height: 4),
-                      buildFriends(user.followers.length, user.following.length),
-                      const SizedBox(height: 4),
+                      buildProfile(),
+                      buildBio(),
+                      buildDate(),
+                      buildFriends(),
                       if (!isLoggedInUser) UserFollowButton(user: user, onFollowChanged: onFollowChanged),
                     ],
                   ),
@@ -149,12 +147,10 @@ class _UserPageState extends State<UserPage> {
     );
   }
 
-  Widget buildProfile(String profileUrl) {
-    Image profileImage = profileUrl.startsWith("https") ? Image.network(profileUrl) : Image.asset(DEFAULT_PROFILE_IMG);
-
+  Widget buildProfile() {
     return Column(
       children: [
-        CircleAvatar(radius: 50.0, backgroundImage: profileImage.image),
+        user.buildProfileImage(50.0),
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -170,29 +166,29 @@ class _UserPageState extends State<UserPage> {
     );
   }
 
-  Widget buildBio(String bio) {
-    if (bio == "") {
+  Widget buildBio() {
+    if (user.bio == "") {
       return Container();
     }
 
     return Text(
-      bio,
+      user.bio,
       style: const TextStyle(color: Colors.white, fontSize: 18, fontStyle: FontStyle.italic),
     );
   }
 
-  Widget buildDate(DateTime joinedOn) {
+  Widget buildDate() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(Icons.calendar_today, color: Colors.grey, size: 18),
         const SizedBox(width: 2),
-        Text("Joined on ${formatDateMDYLong(joinedOn)}", style: TextStyle(fontSize: 16)),
+        Text("Joined on ${formatDateMDYLong(user.createdAt)}", style: TextStyle(fontSize: 16)),
       ],
     );
   }
 
-  Widget buildFriends(int followers, int following) {
+  Widget buildFriends() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -201,7 +197,7 @@ class _UserPageState extends State<UserPage> {
             style: TextStyle(color: Colors.grey, fontSize: 16),
             children: [
               TextSpan(
-                text: followers.toString(),
+                text: user.followers.length.toString(),
                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
               TextSpan(text: " followers"),
@@ -214,7 +210,7 @@ class _UserPageState extends State<UserPage> {
             style: TextStyle(color: Colors.grey, fontSize: 16),
             children: [
               TextSpan(
-                text: following.toString(),
+                text: user.following.length.toString(),
                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
               TextSpan(text: " following"),

@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:tracklist_app/core/constants/constants.dart';
 
 class AppUser {
   final String uid;
@@ -44,4 +46,24 @@ class AppUser {
   // Use uid as the unique key
   @override
   int get hashCode => uid.hashCode;
+
+  Widget buildProfileAndUsername(double fontSize, double profileSize) {
+    return Row(
+      spacing: 5.0,
+      children: [
+        buildProfileImage(profileSize),
+        Text(
+          "@$username",
+          style: TextStyle(color: Colors.grey, fontSize: fontSize),
+        ),
+      ],
+    );
+  }
+
+  Widget buildProfileImage(double size) {
+    return CircleAvatar(
+      radius: size,
+      backgroundImage: profileUrl.startsWith("https") ? NetworkImage(profileUrl) : AssetImage(DEFAULT_PROFILE_IMG),
+    );
+  }
 }
