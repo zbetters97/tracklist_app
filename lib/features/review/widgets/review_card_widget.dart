@@ -48,7 +48,7 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
                   child: Row(
                     spacing: 10.0,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [review.buildMediaImage(125), buildReviewInfo()],
+                    children: [review.media.buildImage(125), buildReviewInfo()],
                   ),
                 ),
                 review.buildContent(20.0),
@@ -69,7 +69,7 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
         children: [
           user.buildProfileAndUsername(16.0, 12.0),
           review.buildDateShort(16.0),
-          review.buildMediaName(false),
+          review.media.buildName(review.category, false),
           review.buildStarRating(false),
         ],
       ),

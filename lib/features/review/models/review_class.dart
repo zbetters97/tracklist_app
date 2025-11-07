@@ -4,8 +4,6 @@ import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/core/utils/date.dart';
 import 'package:tracklist_app/core/utils/notifiers.dart';
 import 'package:tracklist_app/core/widgets/stars_widget.dart';
-import 'package:tracklist_app/features/media/models/album_class.dart';
-import 'package:tracklist_app/features/media/models/track_class.dart';
 import 'package:tracklist_app/features/user/models/app_user_class.dart';
 import 'package:tracklist_app/features/media/models/media_class.dart';
 
@@ -59,51 +57,6 @@ class Review {
 
   static int compareByDate(Review a, Review b) {
     return b.createdAt.compareTo(a.createdAt);
-  }
-
-  Widget buildMediaImage(double size) {
-    return Image.network(media.image, width: size, height: size, fit: BoxFit.cover);
-  }
-
-  Widget buildMediaName(bool isCentered) {
-    return Column(
-      crossAxisAlignment: isCentered ? CrossAxisAlignment.center : CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: isCentered ? MainAxisAlignment.center : MainAxisAlignment.start,
-          children: [
-            buildMediaIcon(),
-            Flexible(
-              child: Text(
-                media.name,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-            ),
-          ],
-        ),
-        Text(getMediaArtist(), style: TextStyle(color: Colors.grey, fontSize: 18)),
-      ],
-    );
-  }
-
-  Widget buildMediaIcon() {
-    Icon mediaIcon = category == "artist"
-        ? Icon(Icons.person, color: Colors.grey, size: 28)
-        : category == "album"
-        ? Icon(Icons.album, color: Colors.grey, size: 28)
-        : Icon(Icons.music_note, color: Colors.grey, size: 28);
-
-    return mediaIcon;
-  }
-
-  String getMediaArtist() {
-    return category == "album"
-        ? (media as Album).artist
-        : category == "track"
-        ? (media as Track).artist
-        : "";
   }
 
   Widget buildDateShort(double fontSize) {

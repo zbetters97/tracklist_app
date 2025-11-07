@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/core/widgets/loading_icon.dart';
+import 'package:tracklist_app/features/user/content/user_likes_content.dart';
 import 'package:tracklist_app/features/user/models/app_user_class.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/core/utils/date.dart';
@@ -7,8 +8,8 @@ import 'package:tracklist_app/core/utils/notifiers.dart';
 import 'package:tracklist_app/core/extensions/string_extensions.dart';
 import 'package:tracklist_app/features/user/services/user_service.dart';
 import 'package:tracklist_app/features/user/widgets/user_follow_button.dart';
-import 'package:tracklist_app/features/user/widgets/user_friends_section.dart';
-import 'package:tracklist_app/features/user/widgets/user_reviews_section.dart';
+import 'package:tracklist_app/features/user/content/user_friends_content.dart';
+import 'package:tracklist_app/features/user/content/user_reviews_content.dart';
 import 'package:tracklist_app/features/welcome/pages/welcome_page.dart';
 import 'package:tracklist_app/core/widgets/default_app_bar.dart';
 import 'package:tracklist_app/features/user/widgets/user_app_bar.dart';
@@ -131,12 +132,12 @@ class _UserPageState extends State<UserPage> {
 
   Widget buildSelectedTab() {
     Widget currentSection = selectedTab == 0
-        ? UserReviewsSection(user: user)
+        ? UserReviewsContent(user: user)
         : selectedTab == 1
         ? Container()
         : selectedTab == 2
-        ? Container()
-        : UserFriendsSection(user: user);
+        ? UserLikesContent(user: user)
+        : UserFriendsContent(user: user);
 
     return Expanded(
       child: Container(

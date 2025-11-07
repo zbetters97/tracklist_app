@@ -6,16 +6,16 @@ import 'package:tracklist_app/features/user/models/app_user_class.dart';
 import 'package:tracklist_app/features/user/services/user_service.dart';
 import 'package:tracklist_app/features/user/widgets/user_card_widget.dart';
 
-class UserFriendsSection extends StatefulWidget {
+class UserFriendsContent extends StatefulWidget {
   final AppUser user;
 
-  const UserFriendsSection({super.key, required this.user});
+  const UserFriendsContent({super.key, required this.user});
 
   @override
-  State<UserFriendsSection> createState() => _UserFriendsSectionState();
+  State<UserFriendsContent> createState() => _UserFriendsContentState();
 }
 
-class _UserFriendsSectionState extends State<UserFriendsSection> {
+class _UserFriendsContentState extends State<UserFriendsContent> {
   AppUser get user => widget.user;
   List<AppUser> following = [];
   List<AppUser> followers = [];

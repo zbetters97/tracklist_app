@@ -1,5 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tracklist_app/core/utils/notifiers.dart';
+import 'package:tracklist_app/features/media/models/album_class.dart';
+import 'package:tracklist_app/features/media/models/artist_class.dart';
+import 'package:tracklist_app/features/media/models/track_class.dart';
+import 'package:tracklist_app/features/media/services/spotify_service.dart';
+import 'package:tracklist_app/features/review/models/review_class.dart';
+import 'package:tracklist_app/features/review/services/review_service.dart';
 import 'package:tracklist_app/features/user/models/app_user_class.dart';
 
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -244,6 +250,90 @@ Future<void> unlikeContent(String contentId, String category, String userId) asy
     });
   } catch (error) {
     throw Exception("Error liking content: $error");
+  }
+}
+
+Future<List<Artist>> getLikedArtists(String userId) async {
+  try {
+    final userlikesRef = firestore.collection("userlikes").doc(userId);
+    final userlikesDoc = await userlikesRef.get();
+
+    if (!userlikesDoc.exists) return [];
+
+    List<dynamic> artistIds = userlikesDoc["artist"] ?? [];
+
+    List<Artist> likedArtists = await Future.wait(
+      artistIds.map((artistId) async {
+        return await getArtistById(artistId);
+      }),
+    );
+
+    return likedArtists;
+  } catch (error) {
+    throw Exception("Error getting liked artists: $error");
+  }
+}
+
+Future<List<Album>> getLikedAlbums(String userId) async {
+  try {
+    final userlikesRef = firestore.collection("userlikes").doc(userId);
+    final userlikesDoc = await userlikesRef.get();
+
+    if (!userlikesDoc.exists) return [];
+
+    List<dynamic> albumIds = userlikesDoc["album"] ?? [];
+
+    List<Album> likedAlbums = await Future.wait(
+      albumIds.map((albumId) async {
+        return await getAlbumById(albumId);
+      }),
+    );
+
+    return likedAlbums;
+  } catch (error) {
+    throw Exception("Error getting liked artists: $error");
+  }
+}
+
+Future<List<Track>> getLikedTracks(String userId) async {
+  try {
+    final userlikesRef = firestore.collection("userlikes").doc(userId);
+    final userlikesDoc = await userlikesRef.get();
+
+    if (!userlikesDoc.exists) return [];
+
+    List<dynamic> trackIds = userlikesDoc["track"] ?? [];
+
+    List<Track> likedTracks = await Future.wait(
+      trackIds.map((trackId) async {
+        return await getTrackById(trackId);
+      }),
+    );
+
+    return likedTracks;
+  } catch (error) {
+    throw Exception("Error getting liked artists: $error");
+  }
+}
+
+Future<List<Review>> getLikedReviews(String userId) async {
+  try {
+    final userlikesRef = firestore.collection("userlikes").doc(userId);
+    final userlikesDoc = await userlikesRef.get();
+
+    if (!userlikesDoc.exists) return [];
+
+    List<dynamic> reviewIds = userlikesDoc["review"] ?? [];
+
+    List<Review> likedReviews = await Future.wait(
+      reviewIds.map((reviewId) async {
+        return await getReviewById(reviewId);
+      }),
+    );
+
+    return likedReviews;
+  } catch (error) {
+    throw Exception("Error getting liked reviews: $error");
   }
 }
 

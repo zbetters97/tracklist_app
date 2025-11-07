@@ -9,7 +9,7 @@ import 'package:tracklist_app/features/review/services/review_service.dart';
 import 'package:tracklist_app/features/media/services/spotify_service.dart';
 import 'package:tracklist_app/features/media/pages/media_page.dart';
 import 'package:tracklist_app/features/media/content/media_reviews_content.dart';
-import 'package:tracklist_app/features/media/widgets/media_card_widget.dart';
+import 'package:tracklist_app/features/media/widgets/rated_media_card_widget.dart';
 
 class ArtistContent extends StatefulWidget {
   final Artist artist;
@@ -158,7 +158,7 @@ class _ArtistContentState extends State<ArtistContent> {
           ...albums.map(
             (album) => GestureDetector(
               onTap: () => sendToMediaPage(album),
-              child: MediaCardWidget(media: album),
+              child: RatedMediaCardWidget(media: album),
             ),
           ),
         ],
@@ -182,7 +182,7 @@ class _ArtistContentState extends State<ArtistContent> {
           ...singles.map(
             (single) => GestureDetector(
               onTap: () => sendToMediaPage(single),
-              child: MediaCardWidget(media: single),
+              child: RatedMediaCardWidget(media: single),
             ),
           ),
         ],

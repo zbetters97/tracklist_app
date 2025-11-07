@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/core/widgets/empty_text.dart';
 import 'package:tracklist_app/core/widgets/loading_icon.dart';
 import 'package:tracklist_app/features/review/widgets/review_card_widget.dart';
 import 'package:tracklist_app/features/user/models/app_user_class.dart';
@@ -6,16 +7,16 @@ import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/features/review/services/review_service.dart';
 import 'package:tracklist_app/navigation/navigator.dart';
 
-class UserReviewsSection extends StatefulWidget {
+class UserReviewsContent extends StatefulWidget {
   final AppUser user;
 
-  const UserReviewsSection({super.key, required this.user});
+  const UserReviewsContent({super.key, required this.user});
 
   @override
-  State<UserReviewsSection> createState() => _UserReviewsSectionState();
+  State<UserReviewsContent> createState() => _UserReviewsContentState();
 }
 
-class _UserReviewsSectionState extends State<UserReviewsSection> {
+class _UserReviewsContentState extends State<UserReviewsContent> {
   AppUser get user => widget.user;
   List<Review> reviews = [];
   bool isLoading = true;
@@ -81,21 +82,20 @@ class _UserReviewsSectionState extends State<UserReviewsSection> {
   Widget buildUserReviews() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: ListView.separated(
-        controller: reviewsController,
-        shrinkWrap: true,
-        padding: const EdgeInsets.all(0.0),
-        itemCount: reviews.length,
-        itemBuilder: (context, index) {
-          // Route to Review Page on tap using callback
-          return ReviewCardWidget(
-            review: reviews[index],
-            onOpenReview: () => onOpenReview(reviews[index].reviewId),
-            onDeleteReview: () => onDeleteReview(reviews[index].reviewId),
-          );
-        },
-        separatorBuilder: (context, index) => const Divider(color: Colors.grey),
-      ),
+      child: reviews.isEmpty
+          ? EmptyText(message: "No reviews yet!")
+          : ListView.separated(
+              controller: reviewsController,
+              shrinkWrap: true,
+              padding: const EdgeInsets.all(0.0),
+              itemCount: reviews.length,
+              itemBuilder: (context, index) => ReviewCardWidget(
+                review: reviews[index],
+                onOpenReview: () => onOpenReview(reviews[index].reviewId),
+                onDeleteReview: () => onDeleteReview(reviews[index].reviewId),
+              ),
+              separatorBuilder: (context, index) => const Divider(color: Colors.grey),
+            ),
     );
   }
 }

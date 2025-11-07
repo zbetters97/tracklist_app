@@ -135,9 +135,9 @@ class _ReviewPageState extends State<ReviewPage> {
             decoration: BoxDecoration(
               boxShadow: [BoxShadow(color: Colors.black.withAlpha(75), blurRadius: 12, offset: Offset(0, 4))],
             ),
-            child: review.buildMediaImage(275),
+            child: review.media.buildImage(275),
           ),
-          review.buildMediaName(true),
+          review.media.buildName(review.category, true),
         ],
       ),
     );

@@ -182,14 +182,13 @@ class _MediaPageState extends State<MediaPage> {
   Widget buildMediaReviews(double avgRating, int totalReviews) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
+      spacing: 5.0,
       children: [
         Text(
           avgRating.toString(),
           style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(width: 5),
         StarRating(rating: avgRating),
-        const SizedBox(width: 5),
         Text(
           "(${totalReviews.toString()})",
           style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
@@ -199,6 +198,8 @@ class _MediaPageState extends State<MediaPage> {
   }
 
   Widget buildMediaButtons() {
+    // TODO: Add functionality to media buttons
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [

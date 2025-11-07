@@ -4,7 +4,7 @@ import 'package:tracklist_app/features/user/models/app_user_class.dart';
 import 'package:tracklist_app/features/media/models/media_class.dart';
 import 'package:tracklist_app/features/media/services/spotify_service.dart';
 import 'package:tracklist_app/features/media/pages/media_page.dart';
-import 'package:tracklist_app/features/media/widgets/media_card_widget.dart';
+import 'package:tracklist_app/features/media/widgets/rated_media_card_widget.dart';
 import 'package:tracklist_app/features/user/services/user_service.dart';
 import 'package:tracklist_app/features/user/widgets/user_card_widget.dart';
 import 'package:tracklist_app/navigation/navigator.dart';
@@ -132,7 +132,7 @@ class _SearchPageState extends State<SearchPage> {
         return Center(
           child: GestureDetector(
             onTap: () => NavigationService().openMedia(result),
-            child: MediaCardWidget(media: result),
+            child: RatedMediaCardWidget(media: result),
           ),
         );
       },
