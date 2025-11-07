@@ -13,15 +13,10 @@ class MediaReviewWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 4.0,
       children: [
-        Row(
-          children: [
-            buildUserAvatar(review.user.profileUrl),
-            const SizedBox(width: 8.0),
-            buildReviewHeader(review, review.user),
-          ],
-        ),
-        const SizedBox(height: 4.0),
+        Row(spacing: 8.0, children: [buildUserAvatar(review.user.profileUrl), buildReviewHeader(review, review.user)]),
         buildReviewContent(review.content),
       ],
     );
@@ -63,6 +58,7 @@ class MediaReviewWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Text(
         content,
+        textAlign: TextAlign.left,
         style: TextStyle(color: Colors.white, fontSize: 18),
         overflow: TextOverflow.ellipsis,
         maxLines: 4,

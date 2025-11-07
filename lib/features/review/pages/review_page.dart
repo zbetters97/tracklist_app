@@ -51,6 +51,32 @@ class _ReviewPageState extends State<ReviewPage> {
     });
   }
 
+  void onDeleteReview() async {
+    bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Delete Review"),
+        content: const Text("Are you sure you want to delete this review?"),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancel")),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text("Delete")),
+        ],
+      ),
+    );
+
+    if (!confirm! || !mounted) return;
+
+    bool isReviewDeleted = await deleteReview(review.reviewId);
+
+    if (isReviewDeleted) {
+      popPage();
+    }
+  }
+
+  void popPage() {
+    Navigator.pop(context);
+  }
+
   void sendToMediaPage(BuildContext context) {
     Navigator.push(context, MaterialPageRoute(builder: (context) => MediaPage(media: media)));
   }
@@ -73,6 +99,7 @@ class _ReviewPageState extends State<ReviewPage> {
                   Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         buildMediaBanner(media.image, review.category, media.name),
                         const SizedBox(height: 24.0),
@@ -225,7 +252,6 @@ class _ReviewPageState extends State<ReviewPage> {
   }
 
   Widget buildDeleteButton() {
-    // TODO: Implement delete review functionality
-    return Icon(Icons.delete, size: 30);
+    return GestureDetector(onTap: () => onDeleteReview(), child: Icon(Icons.delete, size: 30));
   }
 }

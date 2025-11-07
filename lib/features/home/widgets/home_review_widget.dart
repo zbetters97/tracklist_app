@@ -33,28 +33,26 @@ class _HomeReviewWidgetState extends State<HomeReviewWidget> {
       padding: const EdgeInsets.only(top: 10, bottom: 10, left: 5, right: 5),
       width: double.infinity,
       child: Column(
+        spacing: 10.0,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           GestureDetector(
             onTap: () => widget.onOpenReview(),
             child: Column(
+              spacing: 10.0,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 IntrinsicHeight(
                   child: Row(
+                    spacing: 10.0,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      buildMediaImage(media.image),
-                      const SizedBox(width: 10),
-                      buildReviewInfo(user, review, media),
-                    ],
+                    children: [buildMediaImage(media.image), buildReviewInfo(user, review, media)],
                   ),
                 ),
-                const SizedBox(height: 10),
                 buildReviewContent(review.content),
               ],
             ),
           ),
-          const SizedBox(height: 10),
           buildReviewButtons(user.uid, review),
         ],
       ),
@@ -86,9 +84,9 @@ class _HomeReviewWidgetState extends State<HomeReviewWidget> {
         : CircleAvatar(radius: 12.0, backgroundImage: AssetImage(DEFAULT_PROFILE_IMG));
 
     return Row(
+      spacing: 5.0,
       children: [
         profileImage,
-        const SizedBox(width: 5),
         Text("@$username", style: TextStyle(color: Colors.grey, fontSize: 16)),
       ],
     );
@@ -149,11 +147,10 @@ class _HomeReviewWidgetState extends State<HomeReviewWidget> {
     bool isPoster = userId == authUser.value!.uid;
 
     return Row(
+      spacing: 20.0,
       children: [
         buildLikeButton(review, userId),
-        const SizedBox(width: 20),
         buildCommentButton(review.comments.length),
-        const SizedBox(width: 20),
         if (isPoster) buildDeleteButton(),
       ],
     );
@@ -170,9 +167,9 @@ class _HomeReviewWidgetState extends State<HomeReviewWidget> {
         await voteReview(review.reviewId, userId);
       },
       child: Row(
+        spacing: 5.0,
         children: [
           Icon(Icons.favorite, size: 30, color: isLiked ? PRIMARY_COLOR_LIGHT : Colors.white),
-          const SizedBox(width: 3),
           Text("$likes", style: TextStyle(color: isLiked ? PRIMARY_COLOR_LIGHT : Colors.white, fontSize: 24)),
         ],
       ),
@@ -183,9 +180,9 @@ class _HomeReviewWidgetState extends State<HomeReviewWidget> {
     return GestureDetector(
       onTap: () => widget.onOpenReview(),
       child: Row(
+        spacing: 5.0,
         children: [
           Icon(Icons.comment, size: 30),
-          const SizedBox(width: 3),
           Text("$comments", style: TextStyle(color: Colors.white, fontSize: 24)),
         ],
       ),
