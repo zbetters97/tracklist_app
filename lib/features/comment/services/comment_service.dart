@@ -109,7 +109,7 @@ Future<void> deleteComment(String commentId) async {
     final commentRef = firestore.collection("comments").doc(commentId);
     final commentDoc = await commentRef.get();
 
-    if (!commentDoc.exists) throw Exception("Comment does not exist in database");
+    if (!commentDoc.exists) return;
 
     // Delete comment doc
     await commentRef.delete();

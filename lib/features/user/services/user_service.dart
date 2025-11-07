@@ -188,6 +188,65 @@ Future<void> unfollowUser({required String userId}) async {
   }
 }
 
+Future<void> likeContent(String contentId, String category) async {
+  try {
+    final userlikesRef = firestore.collection("userlikes").doc(authUser.value!.uid);
+    final userlikesDoc = await userlikesRef.get();
+
+    // User does not have any likes, create new doc
+    if (!userlikesDoc.exists) {
+      await firestore.collection("userlikes").doc(authUser.value!.uid).set({
+        "review": [],
+        "artist": [],
+        "album": [],
+        "track": [],
+      });
+
+      // Add content to likes
+      await userlikesRef.update({
+        category: FieldValue.arrayUnion([contentId]),
+      });
+    } else {
+      bool isLiked = userlikesDoc[category].contains(contentId);
+
+      // User is unliking content, remove from likes
+      if (isLiked) {
+        await userlikesRef.update({
+          category: FieldValue.arrayRemove([contentId]),
+        });
+      } else {
+        await userlikesRef.update({
+          category: FieldValue.arrayUnion([contentId]),
+        });
+      }
+    }
+  } catch (error) {
+    throw Exception("Error liking content: $error");
+  }
+}
+
+Future<void> unlikeContent(String contentId, String category, String userId) async {
+  try {
+    final userlikesRef = firestore.collection("userlikes").doc(userId);
+    final userlikesDoc = await userlikesRef.get();
+
+    // User does not have any likes, exit
+    if (!userlikesDoc.exists) return;
+
+    bool isLiked = userlikesDoc[category].contains(contentId);
+
+    // User didn't already like content, exit
+    if (!isLiked) return;
+
+    // Remove content from likes
+    await userlikesRef.update({
+      category: FieldValue.arrayRemove([contentId]),
+    });
+  } catch (error) {
+    throw Exception("Error liking content: $error");
+  }
+}
+
 AppUser parseAppUser(String uid, Map<String, dynamic> user) {
   return AppUser.fromJson({
     'uid': uid,

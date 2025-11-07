@@ -128,6 +128,32 @@ class _HomePageState extends State<HomePage> {
     getReviews();
   }
 
+  void onOpenReview(String reviewId) {
+    NavigationService().openReview(reviewId);
+  }
+
+  void onDeleteReview(String reviewId) async {
+    bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Delete Review"),
+        content: const Text("Are you sure you want to delete this review?"),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancel")),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text("Delete")),
+        ],
+      ),
+    );
+
+    if (!confirm! || !mounted) return;
+
+    bool isReviewDeleted = await deleteReview(reviewId);
+
+    if (isReviewDeleted) {
+      refreshReviews();
+    }
+  }
+
   @override
   void dispose() {
     newReviewsController.dispose();
@@ -246,7 +272,8 @@ class _HomePageState extends State<HomePage> {
             // Route to Review Page on tap using callback
             return HomeReviewWidget(
               review: reviews[index],
-              onOpenReview: () => NavigationService().openReview(reviews[index].reviewId),
+              onOpenReview: () => onOpenReview(reviews[index].reviewId),
+              onDeleteReview: () => onDeleteReview(reviews[index].reviewId),
             );
           },
           separatorBuilder: (context, index) => const Divider(color: Colors.grey),

@@ -13,8 +13,9 @@ import 'package:tracklist_app/features/review/services/review_service.dart';
 class HomeReviewWidget extends StatefulWidget {
   final Review review;
   final VoidCallback onOpenReview;
+  final VoidCallback onDeleteReview;
 
-  const HomeReviewWidget({super.key, required this.review, required this.onOpenReview});
+  const HomeReviewWidget({super.key, required this.review, required this.onOpenReview, required this.onDeleteReview});
 
   @override
   State<HomeReviewWidget> createState() => _HomeReviewWidgetState();
@@ -166,7 +167,7 @@ class _HomeReviewWidgetState extends State<HomeReviewWidget> {
         setState(() {
           isLiked ? review.likes.remove(userId) : review.likes.add(userId);
         });
-        await likeReview(review.reviewId, userId);
+        await voteReview(review.reviewId, userId);
       },
       child: Row(
         children: [
@@ -179,16 +180,19 @@ class _HomeReviewWidgetState extends State<HomeReviewWidget> {
   }
 
   Widget buildCommentButton(int comments) {
-    return Row(
-      children: [
-        Icon(Icons.comment, size: 30),
-        const SizedBox(width: 3),
-        Text("$comments", style: TextStyle(color: Colors.white, fontSize: 24)),
-      ],
+    return GestureDetector(
+      onTap: () => widget.onOpenReview(),
+      child: Row(
+        children: [
+          Icon(Icons.comment, size: 30),
+          const SizedBox(width: 3),
+          Text("$comments", style: TextStyle(color: Colors.white, fontSize: 24)),
+        ],
+      ),
     );
   }
 
   Widget buildDeleteButton() {
-    return Icon(Icons.delete, size: 30);
+    return GestureDetector(onTap: () => widget.onDeleteReview(), child: Icon(Icons.delete, size: 30));
   }
 }

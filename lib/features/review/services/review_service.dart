@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tracklist_app/core/utils/notifiers.dart';
 import 'package:tracklist_app/features/auth/models/app_user_class.dart';
+import 'package:tracklist_app/features/comment/services/comment_service.dart';
 import 'package:tracklist_app/features/media/models/media_class.dart';
 import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
@@ -212,7 +213,7 @@ Future<double> getAvgRating(String mediaId) async {
   }
 }
 
-Future<int> likeReview(String reviewId, String userId) async {
+Future<int> voteReview(String reviewId, String userId) async {
   try {
     DocumentSnapshot reviewDoc = await firestore.collection("reviews").doc(reviewId).get();
 
@@ -231,6 +232,8 @@ Future<int> likeReview(String reviewId, String userId) async {
         "likes": FieldValue.arrayUnion([userId]),
       });
     }
+
+    await likeContent(reviewId, "review");
 
     int numLikes = reviewDoc["likes"].length;
 
@@ -272,5 +275,43 @@ Future<List<Review>> getReviewsByUserId(String userId) async {
     return reviews;
   } catch (error) {
     throw Exception("Error getting reviews by user id: $error");
+  }
+}
+
+Future<bool> deleteReview(String reviewId) async {
+  try {
+    // User is not logged in
+    if (authUser.value == null) return false;
+
+    final reviewRef = firestore.collection("reviews");
+    final reviewDoc = await reviewRef.doc(reviewId).get();
+
+    // Review doesn't exist or user is not the author
+    if (!reviewDoc.exists || reviewDoc["userId"] != authUser.value!.uid) return false;
+
+    List<dynamic> comments = reviewDoc["comments"] ?? [];
+
+    // Iterate through comments and delete
+    if (comments.isNotEmpty) {
+      for (String commentId in comments) {
+        await deleteComment(commentId);
+      }
+    }
+
+    List<dynamic> likes = reviewDoc["likes"] ?? [];
+
+    // Iterate through likes and remove the review from each user's likes from userlikes
+    if (likes.isNotEmpty) {
+      for (String userId in likes) {
+        await unlikeContent(reviewId, "review", userId);
+      }
+    }
+
+    // Delete review doc
+    await reviewRef.doc(reviewId).delete();
+
+    return true;
+  } catch (error) {
+    throw Exception("Error deleting review: $error");
   }
 }

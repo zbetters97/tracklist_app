@@ -204,7 +204,7 @@ class _ReviewPageState extends State<ReviewPage> {
     return GestureDetector(
       onTap: () async {
         setState(() => isLiked ? review.likes.remove(userId) : review.likes.add(userId));
-        await likeReview(review.reviewId, userId);
+        await voteReview(review.reviewId, userId);
       },
       child: Row(
         children: [
