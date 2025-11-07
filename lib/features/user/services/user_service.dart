@@ -151,7 +151,7 @@ Future<void> followUser({required String userId}) async {
     if (!authUserDoc.exists) return;
 
     await authUserRef.update({
-      "following": FieldValue.arrayUnion([authUser.value!.uid]),
+      "following": FieldValue.arrayUnion([userId]),
     });
 
     authUser.value!.following.add(userId);
@@ -179,7 +179,7 @@ Future<void> unfollowUser({required String userId}) async {
     if (!authUserDoc.exists) return;
 
     await authUserRef.update({
-      "following": FieldValue.arrayRemove([authUser.value!.uid]),
+      "following": FieldValue.arrayRemove([userId]),
     });
 
     authUser.value!.following.remove(userId);
