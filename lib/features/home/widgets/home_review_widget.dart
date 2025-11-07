@@ -164,7 +164,7 @@ class _HomeReviewWidgetState extends State<HomeReviewWidget> {
         setState(() {
           isLiked ? review.likes.remove(userId) : review.likes.add(userId);
         });
-        await voteReview(review.reviewId, userId);
+        await voteReview(review.reviewId);
       },
       child: Row(
         spacing: 5.0,

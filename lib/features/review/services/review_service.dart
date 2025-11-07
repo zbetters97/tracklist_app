@@ -213,23 +213,25 @@ Future<double> getAvgRating(String mediaId) async {
   }
 }
 
-Future<int> voteReview(String reviewId, String userId) async {
+Future<int> voteReview(String reviewId) async {
   try {
+    if (authUser.value == null) return 0;
+
     DocumentSnapshot reviewDoc = await firestore.collection("reviews").doc(reviewId).get();
 
     if (!reviewDoc.exists) return 0;
 
     List<dynamic> likes = reviewDoc["likes"];
 
-    if (likes.contains(userId)) {
+    if (likes.contains(authUser.value!.uid)) {
       // Remove userId from list of likes
       await reviewDoc.reference.update({
-        "likes": FieldValue.arrayRemove([userId]),
+        "likes": FieldValue.arrayRemove([authUser.value!.uid]),
       });
     } else {
       // Add userId to list of likes
       await reviewDoc.reference.update({
-        "likes": FieldValue.arrayUnion([userId]),
+        "likes": FieldValue.arrayUnion([authUser.value!.uid]),
       });
     }
 
@@ -313,5 +315,24 @@ Future<bool> deleteReview(String reviewId) async {
     return true;
   } catch (error) {
     throw Exception("Error deleting review: $error");
+  }
+}
+
+Future<List<AppUser>> getReviewLikeUsers(String reviewId) async {
+  try {
+    final reviewRef = firestore.collection("reviews");
+    final reviewDoc = await reviewRef.doc(reviewId).get();
+
+    if (!reviewDoc.exists) return [];
+
+    List<dynamic> likes = reviewDoc["likes"] ?? [];
+
+    return await Future.wait(
+      likes.map((userId) async {
+        return await getUserById(userId: userId);
+      }),
+    );
+  } catch (error) {
+    throw Exception("Error getting review like users: $error");
   }
 }

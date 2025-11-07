@@ -90,7 +90,7 @@ class _SearchPageState extends State<SearchPage> {
         border: OutlineInputBorder(),
         enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
         prefixIcon: Icon(Icons.search),
-        suffixIcon: IconButton(icon: Icon(Icons.arrow_forward), onPressed: () => {onSearchPressed()}),
+        suffixIcon: IconButton(icon: Icon(Icons.arrow_forward), onPressed: () => onSearchPressed()),
       ),
       onFieldSubmitted: (_) => onSearchPressed(),
     );

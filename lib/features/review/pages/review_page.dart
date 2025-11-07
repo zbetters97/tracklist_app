@@ -9,6 +9,7 @@ import 'package:tracklist_app/features/media/models/track_class.dart';
 import 'package:tracklist_app/features/review/models/review_class.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/core/utils/date.dart';
+import 'package:tracklist_app/features/review/pages/review_likes_page.dart';
 import 'package:tracklist_app/features/review/services/review_service.dart';
 import 'package:tracklist_app/features/media/pages/media_page.dart';
 import 'package:tracklist_app/features/review/widgets/review_comments_section.dart';
@@ -83,6 +84,10 @@ class _ReviewPageState extends State<ReviewPage> {
 
   void sendToUserPage(BuildContext context, String userId) {
     Navigator.push(context, MaterialPageRoute(builder: (context) => UserPage(uid: userId)));
+  }
+
+  void sendToLikesPage(BuildContext context, Review review) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ReviewLikesPage(review: review)));
   }
 
   @override
@@ -228,21 +233,24 @@ class _ReviewPageState extends State<ReviewPage> {
   Widget buildLikeButton(Review review, String userId) {
     bool isLiked = review.likes.contains(user.uid);
 
-    return GestureDetector(
-      onTap: () async {
-        setState(() => isLiked ? review.likes.remove(userId) : review.likes.add(userId));
-        await voteReview(review.reviewId, userId);
-      },
-      child: Row(
-        children: [
-          Icon(Icons.favorite, size: 30, color: isLiked ? PRIMARY_COLOR_LIGHT : Colors.white),
-          const SizedBox(width: 3),
-          Text(
-            "${review.likes.length}",
+    return Row(
+      spacing: 5.0,
+      children: [
+        GestureDetector(
+          onTap: () async {
+            setState(() => isLiked ? review.likes.remove(userId) : review.likes.add(userId));
+            await voteReview(review.reviewId);
+          },
+          child: Icon(Icons.favorite, size: 30, color: isLiked ? PRIMARY_COLOR_LIGHT : Colors.white),
+        ),
+        GestureDetector(
+          onTap: () => sendToLikesPage(context, review),
+          child: Text(
+            "${review.likes.length} likes",
             style: TextStyle(color: isLiked ? PRIMARY_COLOR_LIGHT : Colors.white, fontSize: 24),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
