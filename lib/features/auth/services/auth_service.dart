@@ -52,14 +52,22 @@ class AuthService {
     }
   }
 
-  Future<bool> signIn({required String email, required String password}) async {
+  Future<String> signIn({required String email, required String password}) async {
     try {
       // Try to sign in user
       UserCredential userCredential = await firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
 
-      return await getAuthUser(userCredential.user!);
+      if (await getAuthUser(userCredential.user!)) {
+        return "Success!";
+      } else {
+        return "Error!";
+      }
     } catch (error) {
-      throw Exception("Error signing in: $error");
+      if (error.toString().contains("user-not-found") || error.toString().contains("wrong-password")) {
+        return "Error: Incorrect email or password";
+      } else {
+        return "Error signing in: $error";
+      }
     }
   }
 

@@ -49,8 +49,8 @@ class _ReviewLikesPageState extends State<ReviewLikesPage> {
 
     setState(() {
       filteredUsers = users.where((user) {
-        final username = user.username.toLowerCase();
-        final displayName = user.displayname.toLowerCase();
+        final String username = user.username.toLowerCase();
+        final String displayName = user.displayname.toLowerCase();
 
         // Check if the username or display name contains the query
         return username.contains(query) || displayName.contains(query);
@@ -85,6 +85,7 @@ class _ReviewLikesPageState extends State<ReviewLikesPage> {
         prefixIcon: Icon(Icons.search),
         suffixIcon: IconButton(icon: Icon(Icons.arrow_forward), onPressed: () => onSearchPressed()),
       ),
+      onChanged: (_) => onSearchPressed(),
       onFieldSubmitted: (_) => onSearchPressed(),
     );
   }
@@ -96,6 +97,13 @@ class _ReviewLikesPageState extends State<ReviewLikesPage> {
 
     if (searchController.text.trim().isNotEmpty && filteredUsers.isEmpty) {
       return EmptyText(message: "No users found!");
+    }
+
+    if (filteredUsers.isNotEmpty) {
+      return Column(
+        spacing: 12.0,
+        children: filteredUsers.map((user) => UserCardWidget(key: ValueKey(user.uid), user: user)).toList(),
+      );
     }
 
     return Column(

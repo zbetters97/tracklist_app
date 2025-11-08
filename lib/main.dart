@@ -14,6 +14,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+  // Initialize Hive to store values
   await Hive.initFlutter();
   await Hive.openBox('user_settings');
 
@@ -47,6 +48,7 @@ class _TrackListState extends State<TrackList> {
     User? currentUser = FirebaseAuth.instance.currentUser;
 
     if (currentUser != null) {
+      // Create logged in user notifier
       bool fetchedSignIn = await authService.value.getAuthUser(currentUser);
       setState(() => isSignedIn = fetchedSignIn);
     }
@@ -67,6 +69,7 @@ class _TrackListState extends State<TrackList> {
         fontFamily: "Inter",
         colorScheme: ColorScheme.fromSeed(seedColor: PRIMARY_COLOR, brightness: Brightness.dark),
       ),
+      // If already signed in, send to WidgetTree
       home: isSignedIn ? WidgetTree() : WelcomePage(),
     );
   }

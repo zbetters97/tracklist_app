@@ -35,6 +35,7 @@ class _AuthPageState extends State<AuthPage> {
   bool rememberMe = false;
 
   String? emailError;
+  String? loginError;
 
   @override
   void initState() {
@@ -136,7 +137,13 @@ class _AuthPageState extends State<AuthPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       spacing: kFieldSpacing,
-      children: [buildEmailField(), buildPasswordField(), buildRememberCheckBox(), ResetPasswordWidget()],
+      children: [
+        buildEmailField(),
+        buildPasswordField(),
+        buildRememberCheckBox(),
+        if (loginError != null) Text(loginError ?? "", style: TextStyle(color: Colors.red)),
+        ResetPasswordWidget(),
+      ],
     );
   }
 
@@ -291,7 +298,9 @@ class _AuthPageState extends State<AuthPage> {
     controllerEmail.clear();
     controllerPw.clear();
     controllerRePw.clear();
+    rememberMe = false;
     emailError = null;
+    loginError = null;
   }
 
   void onSubmitPressed() async {
@@ -323,22 +332,26 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   void submitLogin() async {
-    bool isValid = await authService.value.signIn(email: controllerEmail.text, password: controllerPw.text);
+    String errorCode = await authService.value.signIn(email: controllerEmail.text, password: controllerPw.text);
 
-    if (isValid) {
-      final box = Hive.box('user_settings');
-
-      if (rememberMe) {
-        await box.put('remember_me', rememberMe);
-        await box.put('email', controllerEmail.text);
-      } else {
-        await box.clear();
-      }
-
-      redirectToWelcomePage();
-    } else {
-      setState(() => emailError = "Incorrect email or password.");
+    if (errorCode != "Success!") {
+      setState(() => loginError = errorCode);
+      return;
     }
+
+    final box = Hive.box('user_settings');
+
+    // Remember me box checked
+    if (rememberMe) {
+      // Store login details
+      await box.put('remember_me', rememberMe);
+      await box.put('email', controllerEmail.text);
+    } else {
+      // Clear stored values
+      await box.clear();
+    }
+
+    redirectToWelcomePage();
   }
 
   void redirectToWelcomePage() {
