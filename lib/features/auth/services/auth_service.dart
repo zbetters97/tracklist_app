@@ -57,8 +57,15 @@ class AuthService {
       // Try to sign in user
       UserCredential userCredential = await firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
 
-      // Get user document based on auth user uid
-      String uid = userCredential.user!.uid;
+      return await getAuthUser(userCredential.user!);
+    } catch (error) {
+      throw Exception("Error signing in: $error");
+    }
+  }
+
+  Future<bool> getAuthUser(User user) async {
+    try {
+      String uid = user.uid;
       DocumentSnapshot userDoc = await firestore.collection("users").doc(uid).get();
 
       // If user document exists
@@ -81,8 +88,7 @@ class AuthService {
 
         return true;
       } else {
-        firebaseAuth.signOut();
-        throw Exception("User does not exist in database");
+        return false;
       }
     } catch (error) {
       throw Exception("Error signing in: $error");

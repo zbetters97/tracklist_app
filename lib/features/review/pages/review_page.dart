@@ -190,7 +190,7 @@ class _ReviewPageState extends State<ReviewPage> {
   }
 
   Widget buildShareButton() {
-    // TODO: Implement share review functionality
+    // TODO: Add functionality to share button
     return Icon(Icons.send, size: 30);
   }
 }

@@ -70,7 +70,7 @@ class _UserLikesContentState extends State<UserLikesContent> {
   }
 
   void onDeleteReview(String reviewId) {
-    // TODO: Implement delete review from User Likes pages
+    // TODO: Add delete review functionality
   }
 
   @override

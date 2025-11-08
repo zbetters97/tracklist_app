@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/core/utils/notifiers.dart';
 import 'package:tracklist_app/app/widget_tree.dart';
@@ -25,11 +26,13 @@ class _AuthPageState extends State<AuthPage> {
   final double kSectionSpacing = 25.0;
 
   // Default values for debugging purposes
-  TextEditingController controllerDisplayName = TextEditingController(text: "Debug User");
-  TextEditingController controllerUsername = TextEditingController(text: "debuguser");
-  TextEditingController controllerEmail = TextEditingController(text: "debug@debug.com");
-  TextEditingController controllerPw = TextEditingController(text: "password");
-  TextEditingController controllerRePw = TextEditingController(text: "password");
+  TextEditingController controllerDisplayName = TextEditingController();
+  TextEditingController controllerUsername = TextEditingController();
+  TextEditingController controllerEmail = TextEditingController();
+  TextEditingController controllerPw = TextEditingController();
+  TextEditingController controllerRePw = TextEditingController();
+
+  bool rememberMe = false;
 
   String? emailError;
 
@@ -37,6 +40,21 @@ class _AuthPageState extends State<AuthPage> {
   void initState() {
     super.initState();
     isRegistration = widget.isRegistration;
+    initHive();
+  }
+
+  Future<void> initHive() async {
+    // Initialize Hive to store values
+    await Hive.initFlutter();
+
+    if (isRegistration) return;
+
+    final box = await Hive.openBox('user_settings');
+
+    setState(() {
+      rememberMe = box.get('remember_me', defaultValue: false) as bool;
+      controllerEmail.text = box.get('email', defaultValue: '') as String;
+    });
   }
 
   @override
@@ -55,6 +73,8 @@ class _AuthPageState extends State<AuthPage> {
 
   @override
   Widget build(BuildContext context) {
+    String switchAuthText = isRegistration ? "Already have an account with us?" : "Don't have an account with us?";
+
     return Scaffold(
       appBar: AppBar(),
       body: Center(
@@ -72,7 +92,7 @@ class _AuthPageState extends State<AuthPage> {
                   SizedBox(height: kSectionSpacing),
                   buildSubmitButton(),
                   SizedBox(height: kSectionSpacing),
-                  Text(isRegistration ? "Already have an account with us?" : "Don't have an account with us?"),
+                  Text(switchAuthText),
                   buildChangeAuthButton(),
                 ],
               ),
@@ -100,15 +120,13 @@ class _AuthPageState extends State<AuthPage> {
 
   Widget buildRegisterFields() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      spacing: kFieldSpacing,
       children: [
         buildDisplayNameField(),
-        SizedBox(height: kFieldSpacing),
         buildUsernameField(),
-        SizedBox(height: kFieldSpacing),
         buildEmailField(),
-        SizedBox(height: kFieldSpacing),
         buildPasswordField(),
-        SizedBox(height: kFieldSpacing),
         buildRePasswordField(),
       ],
     );
@@ -116,13 +134,9 @@ class _AuthPageState extends State<AuthPage> {
 
   Widget buildLoginFields() {
     return Column(
-      children: [
-        buildEmailField(),
-        SizedBox(height: kFieldSpacing),
-        buildPasswordField(),
-        SizedBox(height: kFieldSpacing),
-        ResetPasswordWidget(),
-      ],
+      crossAxisAlignment: CrossAxisAlignment.center,
+      spacing: kFieldSpacing,
+      children: [buildEmailField(), buildPasswordField(), buildRememberCheckBox(), ResetPasswordWidget()],
     );
   }
 
@@ -214,6 +228,23 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
+  Widget buildRememberCheckBox() {
+    return Row(
+      children: [
+        Checkbox(
+          value: rememberMe,
+          activeColor: PRIMARY_COLOR,
+          checkColor: Colors.white,
+          onChanged: (value) => setState(() => rememberMe = value!),
+        ),
+        Text(
+          "Remember me",
+          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+
   Widget buildSubmitButton() {
     return IntrinsicWidth(
       child: FilledButton(
@@ -295,6 +326,15 @@ class _AuthPageState extends State<AuthPage> {
     bool isValid = await authService.value.signIn(email: controllerEmail.text, password: controllerPw.text);
 
     if (isValid) {
+      final box = Hive.box('user_settings');
+
+      if (rememberMe) {
+        await box.put('remember_me', rememberMe);
+        await box.put('email', controllerEmail.text);
+      } else {
+        await box.clear();
+      }
+
       redirectToWelcomePage();
     } else {
       setState(() => emailError = "Incorrect email or password.");
@@ -304,11 +344,7 @@ class _AuthPageState extends State<AuthPage> {
   void redirectToWelcomePage() {
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(
-        builder: (context) {
-          return WidgetTree();
-        },
-      ),
+      MaterialPageRoute(builder: (context) => WidgetTree()),
       // Removes all previous pages in the stack
       (route) => false,
     );
