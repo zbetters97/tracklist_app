@@ -21,6 +21,7 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
   String selectedCategory = "artist";
   TextEditingController controllerName = TextEditingController();
   TextEditingController controllerContent = TextEditingController();
+  double rating = 0.0;
 
   @override
   void initState() {
@@ -30,13 +31,22 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
   void onSearchPressed() async {
     List<Media> fetchedMedia = await searchByCategory(selectedCategory, controllerName.text, limit: 5);
 
-    setState(() {
-      suggestions = fetchedMedia;
-    });
+    if (controllerName.text.isEmpty) {
+      setState(() => suggestions = []);
+      return;
+    }
+
+    setState(() => suggestions = fetchedMedia);
+  }
+
+  void submitForm() async {
+    if (!_formKey.currentState!.validate()) return;
   }
 
   @override
   void dispose() {
+    controllerName.dispose();
+    controllerContent.dispose();
     super.dispose();
   }
 
@@ -72,9 +82,10 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
   Widget buildSearchName() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Expanded(flex: 2, child: buildNameField()),
-        Expanded(flex: 1, child: buildCategoryDropdown()),
+        buildCategoryDropdown(),
       ],
     );
   }
@@ -91,7 +102,7 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
         focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
         hintText: "Search for $word $selectedCategory...",
       ),
-      onChanged: (value) => onSearchPressed(),
+      onChanged: (_) => onSearchPressed(),
       style: const TextStyle(color: Colors.white, fontSize: 20),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -104,8 +115,9 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
 
   Widget buildCategoryDropdown() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: EdgeInsets.symmetric(horizontal: 8.0),
       child: DropdownButton(
+        isExpanded: false,
         items: [
           DropdownMenuItem(value: "artist", child: Text("Artist")),
           DropdownMenuItem(value: "album", child: Text("Album")),
@@ -114,6 +126,7 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
         underline: SizedBox(),
         style: TextStyle(fontSize: 20),
         value: selectedCategory,
+        onTap: () => setState(() => suggestions = []),
         onChanged: (value) => setState(() => selectedCategory = value!),
       ),
     );
@@ -177,8 +190,37 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
       spacing: 4.0,
       children: [
         Text("Your rating", style: TextStyle(color: Colors.grey, fontSize: 20)),
-        Row(children: [...List.generate(5, (index) => Icon(Icons.star, color: Colors.grey, size: 40))]),
+        buildStars(),
       ],
+    );
+  }
+
+  Widget buildStars() {
+    double roundedRating = (rating * 2).round() / 2;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: List.generate(5, (i) {
+        double ratingValue = i + 1;
+
+        bool isHalf = roundedRating == ratingValue - 0.5;
+
+        Color starColor = ratingValue - 0.5 <= roundedRating ? Colors.amber : Colors.grey;
+        IconData starIcon = isHalf ? Icons.star_half : Icons.star;
+
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTapDown: (details) {
+            setState(() => details.localPosition.dx < 20 ? rating = ratingValue - 0.5 : rating = ratingValue);
+          },
+          child: Container(
+            width: 40,
+            height: 40,
+            alignment: Alignment.center,
+            child: Icon(starIcon, color: starColor, size: 40),
+          ),
+        );
+      }),
     );
   }
 
@@ -219,7 +261,7 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
       onChanged: (_) => setState(() {}),
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Please enter some text';
+          return 'Please write a review';
         }
         if (value.length > MAX_REVIEW_LENGTH) {
           return 'Review must be less than $MAX_REVIEW_LENGTH characters';
@@ -238,7 +280,7 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       ),
-      onPressed: () => {},
+      onPressed: () => submitForm(),
       child: Text("Post", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
     );
   }
