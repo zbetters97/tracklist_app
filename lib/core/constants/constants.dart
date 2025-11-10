@@ -27,3 +27,5 @@ const int EARLIEST_DATE = 1000;
 const int MAX_REVIEWS = 3;
 
 const int MAX_LIMIT = 15;
+
+const int MAX_REVIEW_LENGTH = 1000;

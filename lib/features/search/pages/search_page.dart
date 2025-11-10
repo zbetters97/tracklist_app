@@ -67,11 +67,10 @@ class _SearchPageState extends State<SearchPage> {
         key: _formKey,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 8.0,
           children: [
             buildSearchBar(),
-            const SizedBox(height: 10),
             buildCategoryDropdown(),
-            const SizedBox(height: 10),
             Expanded(
               child: selectedCategory == "user" ? buildUserResults(userResults) : buildMediaResults(mediaResults),
             ),

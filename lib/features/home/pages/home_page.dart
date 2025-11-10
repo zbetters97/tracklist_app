@@ -154,6 +154,10 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void sendToAddReviewPage() {
+    NavigationService().openAddReview();
+  }
+
   @override
   void dispose() {
     newReviewsController.dispose();
@@ -288,7 +292,7 @@ class _HomePageState extends State<HomePage> {
       child: Padding(
         padding: const EdgeInsets.all(15.0),
         child: RawMaterialButton(
-          onPressed: () {},
+          onPressed: () => sendToAddReviewPage(),
           fillColor: PRIMARY_COLOR_DARK,
           shape: CircleBorder(),
           constraints: BoxConstraints.tightFor(width: 65, height: 65),
