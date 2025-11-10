@@ -337,6 +337,23 @@ Future<List<Review>> getLikedReviews(String userId) async {
   }
 }
 
+Future<bool> getIsLikedContent(String contentId, String category) async {
+  try {
+    if (authUser.value == null) return false;
+
+    final userlikesRef = firestore.collection("userlikes").doc(authUser.value!.uid);
+    final userlikesDoc = await userlikesRef.get();
+
+    if (!userlikesDoc.exists) return false;
+
+    bool isLiked = userlikesDoc[category].contains(contentId);
+
+    return isLiked;
+  } catch (error) {
+    throw Exception("Error getting liked reviews: $error");
+  }
+}
+
 AppUser parseAppUser(String uid, Map<String, dynamic> user) {
   return AppUser.fromJson({
     'uid': uid,

@@ -16,6 +16,7 @@ import 'package:tracklist_app/features/media/content/track_content.dart';
 import 'package:tracklist_app/core/widgets/default_app_bar.dart';
 import 'package:tracklist_app/features/media/widgets/ratings_bar_widget.dart';
 import 'package:tracklist_app/core/widgets/stars_widget.dart';
+import 'package:tracklist_app/features/user/services/user_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MediaPage extends StatefulWidget {
@@ -33,10 +34,12 @@ class _MediaPageState extends State<MediaPage> {
   Color bgColorB = BACKGROUND_COLOR;
 
   bool isLoading = true;
+  String category = "";
   List<Review> reviews = [];
   double avgRating = 0.0;
   late QuerySnapshot reviewDocs;
   int totalReviews = 0;
+  bool isLiked = false;
 
   @override
   void initState() {
@@ -46,6 +49,14 @@ class _MediaPageState extends State<MediaPage> {
 
   void fetchReviews() async {
     setState(() => isLoading = true);
+
+    category = media is Artist
+        ? "artist"
+        : media is Album
+        ? "album"
+        : "track";
+
+    isLiked = await getIsLikedContent(media.id, category);
 
     List<Review> fetchedReviews = await getReviewsByMediaId(media.id);
     double fetchedAvgRating = await getAvgRating(media.id);
@@ -68,6 +79,11 @@ class _MediaPageState extends State<MediaPage> {
       bgColorA = palette.light;
       bgColorB = palette.dark;
     });
+  }
+
+  void likeMedia() async {
+    await likeContent(media.id, category);
+    setState(() => isLiked = !isLiked);
   }
 
   void launchSpotify(String spotifyUrl) async {
@@ -107,16 +123,16 @@ class _MediaPageState extends State<MediaPage> {
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
                         children: [
-                          buildMediaHeader(media),
+                          buildMediaHeader(),
                           const SizedBox(height: 12),
-                          buildMediaReviews(avgRating, reviews.length),
+                          buildMediaReviews(),
                           const SizedBox(height: 20),
                           buildMediaButtons(),
                         ],
                       ),
                     ),
                   ),
-                  buildMediaContent(media),
+                  buildMediaContent(),
                 ],
               ),
             ),
@@ -129,13 +145,13 @@ class _MediaPageState extends State<MediaPage> {
     );
   }
 
-  Widget buildMediaHeader(Media media) {
+  Widget buildMediaHeader() {
     return SizedBox(
       height: 275 + 75 + 75, // Image height + Ratings Bar height + gap height
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          buildMediaImage(media),
+          buildMediaImage(),
           Positioned(
             top: 275 + 75, // Image height + Ratings Bar height
             left: 0,
@@ -148,7 +164,7 @@ class _MediaPageState extends State<MediaPage> {
     );
   }
 
-  Widget buildMediaImage(Media media) {
+  Widget buildMediaImage() {
     return Column(
       children: [
         GestureDetector(
@@ -179,7 +195,7 @@ class _MediaPageState extends State<MediaPage> {
     );
   }
 
-  Widget buildMediaReviews(double avgRating, int totalReviews) {
+  Widget buildMediaReviews() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       spacing: 5.0,
@@ -190,7 +206,7 @@ class _MediaPageState extends State<MediaPage> {
         ),
         StarRating(rating: avgRating),
         Text(
-          "(${totalReviews.toString()})",
+          "(${reviews.length.toString()})",
           style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ],
@@ -203,7 +219,10 @@ class _MediaPageState extends State<MediaPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Icon(Icons.favorite, color: Colors.white, size: 30),
+        GestureDetector(
+          onTap: () => likeMedia(),
+          child: Icon(Icons.favorite, color: isLiked ? PRIMARY_COLOR_LIGHT : Colors.white, size: 30),
+        ),
         Icon(Icons.edit_square, color: Colors.white, size: 30),
         Icon(Icons.format_list_bulleted, color: Colors.white, size: 30),
         Icon(Icons.send, color: Colors.white, size: 30),
@@ -211,11 +230,15 @@ class _MediaPageState extends State<MediaPage> {
     );
   }
 
-  Widget buildMediaContent(Media media) {
-    if (media is Artist) return ArtistContent(artist: media);
-    if (media is Album) return AlbumContent(album: media);
-    if (media is Track) return TrackContent(track: media);
+  Widget buildMediaContent() {
+    Widget content = category == "artist"
+        ? ArtistContent(artist: media as Artist)
+        : category == "album"
+        ? AlbumContent(album: media as Album)
+        : category == "track"
+        ? TrackContent(track: media as Track)
+        : Container();
 
-    return Container();
+    return content;
   }
 }
