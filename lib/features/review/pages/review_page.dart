@@ -49,7 +49,15 @@ class _ReviewPageState extends State<ReviewPage> {
   }
 
   void onVoteReview(bool isLiked) async {
-    setState(() => isLiked ? review.likes.remove(authUser.value!.uid) : review.likes.add(authUser.value!.uid));
+    setState(() {
+      if (isLiked) {
+        review.likes.remove(authUser.value!.uid);
+        review.likeCount--;
+      } else {
+        review.likes.add(authUser.value!.uid);
+        review.likeCount++;
+      }
+    });
     await voteReview(review.reviewId);
   }
 

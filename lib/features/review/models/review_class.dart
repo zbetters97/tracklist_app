@@ -13,6 +13,7 @@ class Review {
   final String category;
   final double rating;
   final String content;
+  int likeCount;
   final List<String> likes;
   final List<String> dislikes;
   final List<String> comments;
@@ -26,6 +27,7 @@ class Review {
     required this.category,
     required this.rating,
     required this.content,
+    required this.likeCount,
     required this.likes,
     required this.dislikes,
     required this.comments,
@@ -46,6 +48,7 @@ class Review {
       category: json['category'],
       rating: (json['rating'] as num).toDouble(),
       content: json['content'],
+      likeCount: json['likeCount'],
       likes: List<String>.from(json['likes']),
       dislikes: List<String>.from(json['dislikes']),
       comments: List<String>.from(json['comments']),
@@ -101,7 +104,7 @@ class Review {
         spacing: 5.0,
         children: [
           Icon(Icons.favorite, size: 30, color: isLiked ? PRIMARY_COLOR_LIGHT : Colors.white),
-          Text("${likes.length}", style: TextStyle(color: isLiked ? PRIMARY_COLOR_LIGHT : Colors.white, fontSize: 24)),
+          Text("$likeCount", style: TextStyle(color: isLiked ? PRIMARY_COLOR_LIGHT : Colors.white, fontSize: 24)),
         ],
       ),
     );
@@ -109,7 +112,7 @@ class Review {
 
   Widget buildLikeButtonDetailed(Function onVoteReview, Function sendToLikesPage) {
     bool isLiked = likes.contains(authUser.value!.uid);
-    String likesWord = likes.length == 1 ? "like" : "likes";
+    String likesWord = likeCount == 1 ? "like" : "likes";
 
     return Row(
       spacing: 5.0,
@@ -121,7 +124,7 @@ class Review {
         GestureDetector(
           onTap: () => sendToLikesPage(),
           child: Text(
-            "${likes.length} $likesWord",
+            "$likeCount $likesWord",
             style: TextStyle(color: isLiked ? PRIMARY_COLOR_LIGHT : Colors.white, fontSize: 24),
           ),
         ),

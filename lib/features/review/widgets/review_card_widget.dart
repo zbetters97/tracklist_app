@@ -20,11 +20,17 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
   Review get review => widget.review;
   Media get media => widget.review.media;
   AppUser get user => widget.review.user;
-  int get likes => widget.review.likes.length;
+  int get likes => widget.review.likeCount;
 
   void onVoteReview(bool isLiked) async {
     setState(() {
-      isLiked ? review.likes.remove(authUser.value!.uid) : review.likes.add(authUser.value!.uid);
+      if (isLiked) {
+        review.likes.remove(authUser.value!.uid);
+        review.likeCount--;
+      } else {
+        review.likes.add(authUser.value!.uid);
+        review.likeCount++;
+      }
     });
     await voteReview(review.reviewId);
   }

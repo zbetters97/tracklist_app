@@ -42,7 +42,7 @@ Future<List<Review>> getPopularReviews({DocumentSnapshot? lastDoc, int limit = M
     // Get reviews after earliest date, order by likes, then by date
     final reviewsQuery = reviewsRef
         .where("createdAt", isGreaterThanOrEqualTo: earliestDate)
-        .orderBy("likes", descending: true)
+        .orderBy("likeCount", descending: true)
         .orderBy("createdAt", descending: true)
         .limit(limit);
 
@@ -226,18 +226,20 @@ Future<int> voteReview(String reviewId) async {
     if (likes.contains(authUser.value!.uid)) {
       // Remove userId from list of likes
       await reviewDoc.reference.update({
+        "likeCount": FieldValue.increment(-1),
         "likes": FieldValue.arrayRemove([authUser.value!.uid]),
       });
     } else {
       // Add userId to list of likes
       await reviewDoc.reference.update({
+        "likeCount": FieldValue.increment(1),
         "likes": FieldValue.arrayUnion([authUser.value!.uid]),
       });
     }
 
     await likeContent(reviewId, "review");
 
-    int numLikes = reviewDoc["likes"].length;
+    int numLikes = reviewDoc["likeCount"];
 
     return numLikes;
   } catch (error) {
