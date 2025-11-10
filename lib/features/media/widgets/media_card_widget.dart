@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/features/media/models/album_class.dart';
+import 'package:tracklist_app/features/media/models/artist_class.dart';
 import 'package:tracklist_app/features/media/models/media_class.dart';
 
 class MediaCardWidget extends StatefulWidget {
@@ -16,30 +18,28 @@ class _MediaCardWidgetState extends State<MediaCardWidget> {
 
   @override
   Widget build(BuildContext context) {
+    String category = media is Artist
+        ? "artist"
+        : media is Album
+        ? "album"
+        : "track";
+
     return GestureDetector(
       onTap: () => widget.onOpenMedia(media),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         spacing: 5.0,
-        children: [buildMediaImage(media.image), buildMediaName(media.name)],
+        children: [buildMediaImage(), media.buildNameSimple(category, true)],
       ),
     );
   }
 
-  Widget buildMediaImage(String imageUrl) {
+  Widget buildMediaImage() {
     return Container(
       decoration: BoxDecoration(
         boxShadow: [BoxShadow(color: Colors.black.withAlpha(120), blurRadius: 8, offset: Offset(0, 4))],
       ),
       child: media.buildImage(175.0),
-    );
-  }
-
-  Widget buildMediaName(String name) {
-    return Text(
-      name,
-      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20.0),
-      textAlign: TextAlign.center,
     );
   }
 }

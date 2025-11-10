@@ -120,52 +120,31 @@ class _UserLikesContentState extends State<UserLikesContent> {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: currentTab == 0
-            ? buildLikedArtistsList()
+            ? buildLikedMediaList(artists, "artists")
             : currentTab == 1
-            ? buildLikedAlbumsList()
+            ? buildLikedMediaList(albums, "albums")
             : currentTab == 2
-            ? buildLikedTracksList()
+            ? buildLikedMediaList(tracks, "tracks")
             : buildLikedReviewsList(),
       ),
     );
   }
 
-  Widget buildLikedArtistsList() {
-    return artists.isEmpty
-        ? EmptyText(message: "No liked artists yet!")
-        : ListView.separated(
+  Widget buildLikedMediaList(List<Media> media, String category) {
+    return media.isEmpty
+        ? EmptyText(message: "No liked $category yet!")
+        : GridView.builder(
             controller: reviewsController,
             shrinkWrap: true,
             padding: const EdgeInsets.all(0.0),
-            itemCount: artists.length,
-            itemBuilder: (context, index) => MediaCardWidget(media: artists[index], onOpenMedia: onOpenMedia),
-            separatorBuilder: (context, index) => const Divider(color: Colors.grey),
-          );
-  }
-
-  Widget buildLikedAlbumsList() {
-    return albums.isEmpty
-        ? EmptyText(message: "No liked albums yet!")
-        : ListView.separated(
-            controller: reviewsController,
-            shrinkWrap: true,
-            padding: const EdgeInsets.all(0.0),
-            itemCount: albums.length,
-            itemBuilder: (context, index) => MediaCardWidget(media: albums[index], onOpenMedia: onOpenMedia),
-            separatorBuilder: (context, index) => const Divider(color: Colors.grey),
-          );
-  }
-
-  Widget buildLikedTracksList() {
-    return tracks.isEmpty
-        ? EmptyText(message: "No liked tracks yet!")
-        : ListView.separated(
-            controller: reviewsController,
-            shrinkWrap: true,
-            padding: const EdgeInsets.all(0.0),
-            itemCount: tracks.length,
-            itemBuilder: (context, index) => MediaCardWidget(media: tracks[index], onOpenMedia: onOpenMedia),
-            separatorBuilder: (context, index) => const Divider(color: Colors.grey),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 8.0, // Space between rows
+              crossAxisSpacing: 8.0, // Space between columns
+              childAspectRatio: 0.80, // Larger height to fit name and image
+            ),
+            itemCount: media.length,
+            itemBuilder: (context, index) => MediaCardWidget(media: media[index], onOpenMedia: onOpenMedia),
           );
   }
 

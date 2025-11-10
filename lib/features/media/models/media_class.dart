@@ -48,6 +48,28 @@ abstract class Media {
     return mediaIcon;
   }
 
+  Widget buildNameSimple(String category, bool isCentered) {
+    return Column(
+      crossAxisAlignment: isCentered ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: isCentered ? MainAxisAlignment.center : MainAxisAlignment.start,
+          children: [
+            Flexible(
+              child: Text(
+                name,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+            ),
+          ],
+        ),
+        Text(getMediaArtist(category), style: TextStyle(color: Colors.grey, fontSize: 18)),
+      ],
+    );
+  }
+
   String getMediaArtist(String category) {
     return category == "album"
         ? (this as Album).artist
