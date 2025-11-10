@@ -9,6 +9,7 @@ import 'package:tracklist_app/features/media/models/track_class.dart';
 import 'package:tracklist_app/features/media/pages/media_page.dart';
 import 'package:tracklist_app/features/media/widgets/media_card_widget.dart';
 import 'package:tracklist_app/features/review/models/review_class.dart';
+import 'package:tracklist_app/features/review/services/review_service.dart';
 import 'package:tracklist_app/features/review/widgets/review_card_widget.dart';
 import 'package:tracklist_app/features/user/models/app_user_class.dart';
 import 'package:tracklist_app/features/user/services/user_service.dart';
@@ -69,8 +70,26 @@ class _UserLikesContentState extends State<UserLikesContent> {
     NavigationService().openReview(reviewId);
   }
 
-  void onDeleteReview(String reviewId) {
-    // TODO: Add delete review functionality
+  void onDeleteReview(String reviewId) async {
+    bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Delete Review"),
+        content: const Text("Are you sure you want to delete this review?"),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancel")),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text("Delete")),
+        ],
+      ),
+    );
+
+    if (!confirm! || !mounted) return;
+
+    bool isReviewDeleted = await deleteReview(reviewId);
+    
+    if (isReviewDeleted) {
+      fetchLikes();
+    }
   }
 
   @override

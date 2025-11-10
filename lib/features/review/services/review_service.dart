@@ -274,6 +274,8 @@ Future<List<Review>> getReviewsByUserId(String userId) async {
       }),
     );
 
+    reviews.sort((Review.compareByDate));
+
     return reviews;
   } catch (error) {
     throw Exception("Error getting reviews by user id: $error");

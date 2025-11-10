@@ -331,6 +331,8 @@ Future<List<Review>> getLikedReviews(String userId) async {
       }),
     );
 
+    likedReviews.sort((Review.compareByDate));
+
     return likedReviews;
   } catch (error) {
     throw Exception("Error getting liked reviews: $error");
