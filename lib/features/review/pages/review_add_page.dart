@@ -5,6 +5,7 @@ import 'package:tracklist_app/features/media/models/album_class.dart';
 import 'package:tracklist_app/features/media/models/media_class.dart';
 import 'package:tracklist_app/features/media/models/track_class.dart';
 import 'package:tracklist_app/features/media/services/spotify_service.dart';
+import 'package:tracklist_app/features/review/services/review_service.dart';
 
 class ReviewAddPage extends StatefulWidget {
   const ReviewAddPage({super.key});
@@ -40,7 +41,17 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
   }
 
   void submitForm() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate() || media == null || rating < 0.5) return;
+
+    bool success = await addReview(selectedCategory, controllerContent.text, media!.id, rating);
+
+    if (success) {
+      sendToHome();
+    }
+  }
+
+  void sendToHome() {
+    Navigator.pop(context);
   }
 
   @override

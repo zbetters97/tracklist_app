@@ -10,6 +10,32 @@ import 'package:tracklist_app/features/user/services/user_service.dart';
 
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
+Future<bool> addReview(String category, String content, String mediaId, double rating) async {
+  try {
+    if (authUser.value == null) throw Exception("User is not logged in");
+
+    Map<String, dynamic> newReviewData = {
+      "category": category,
+      "comments": [],
+      "content": content,
+      "createdAt": FieldValue.serverTimestamp(),
+      "dislikes": [],
+      "likeCount": 0,
+      "likes": [],
+      "mediaId": mediaId,
+      "rating": rating,
+      "userId": authUser.value!.uid,
+    };
+
+    // Create review document in Firestore
+    await firestore.collection("reviews").add(newReviewData);
+
+    return true;
+  } catch (error) {
+    throw Exception("Error adding review: $error");
+  }
+}
+
 Future<Review> getReviewById(String reviewId) async {
   try {
     final reviewRef = firestore.collection("reviews").doc(reviewId);
