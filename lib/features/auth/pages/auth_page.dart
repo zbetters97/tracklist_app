@@ -242,11 +242,15 @@ class _AuthPageState extends State<AuthPage> {
           value: rememberMe,
           activeColor: PRIMARY_COLOR,
           checkColor: Colors.white,
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
           onChanged: (value) => setState(() => rememberMe = value!),
         ),
-        Text(
-          "Remember me",
-          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+        GestureDetector(
+          onTap: () => setState(() => rememberMe = !rememberMe),
+          child: Text(
+            "Remember me",
+            style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+          ),
         ),
       ],
     );
