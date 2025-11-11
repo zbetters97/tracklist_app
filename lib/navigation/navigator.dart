@@ -28,9 +28,9 @@ class NavigationService {
     navigatorKey?.currentState?.pushNamed("/review", arguments: reviewId);
   }
 
-  void openAddReview() {
+  void openAddReview({Media? media}) {
     final navigatorKey = _getNavigatorKey(selectedPageNotifier.value);
-    navigatorKey?.currentState?.pushNamed("/add");
+    navigatorKey?.currentState?.pushNamed("/add", arguments: media);
   }
 
   void openUser(String userId) {

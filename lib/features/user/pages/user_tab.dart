@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/core/utils/notifiers.dart';
 import 'package:tracklist_app/features/error/pages/error_page.dart';
+import 'package:tracklist_app/features/media/models/media_class.dart';
+import 'package:tracklist_app/features/review/pages/review_add_page.dart';
 import 'package:tracklist_app/features/review/pages/review_page.dart';
 import 'package:tracklist_app/features/user/pages/user_page.dart';
 import 'package:tracklist_app/navigation/navigator.dart';
@@ -27,6 +29,9 @@ class UserTab extends StatelessWidget {
             break;
           case "/review":
             page = ReviewPage(reviewId: settings.arguments as String);
+            break;
+          case "/add":
+            page = ReviewAddPage(media: settings.arguments as Media?);
             break;
           default:
             page = ErrorPage();

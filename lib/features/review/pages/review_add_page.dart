@@ -8,7 +8,8 @@ import 'package:tracklist_app/features/media/services/spotify_service.dart';
 import 'package:tracklist_app/features/review/services/review_service.dart';
 
 class ReviewAddPage extends StatefulWidget {
-  const ReviewAddPage({super.key});
+  final Media? media;
+  const ReviewAddPage({super.key, this.media});
 
   @override
   State<ReviewAddPage> createState() => _ReviewAddPageState();
@@ -17,16 +18,24 @@ class ReviewAddPage extends StatefulWidget {
 class _ReviewAddPageState extends State<ReviewAddPage> {
   final _formKey = GlobalKey<FormState>();
 
-  Media? media;
+  late Media? media = widget.media;
   List<Media> suggestions = [];
   String selectedCategory = "artist";
-  TextEditingController controllerName = TextEditingController();
+  TextEditingController get controllerName => TextEditingController(text: media?.name);
   TextEditingController controllerContent = TextEditingController();
   double rating = 0.0;
 
   @override
   void initState() {
     super.initState();
+
+    if (media != null) {
+      selectedCategory = media is Album
+          ? "album"
+          : media is Track
+          ? "track"
+          : "artist";
+    }
   }
 
   void onSearchPressed() async {

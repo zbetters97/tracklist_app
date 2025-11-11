@@ -17,6 +17,7 @@ import 'package:tracklist_app/core/widgets/default_app_bar.dart';
 import 'package:tracklist_app/features/media/widgets/ratings_bar_widget.dart';
 import 'package:tracklist_app/core/widgets/stars_widget.dart';
 import 'package:tracklist_app/features/user/services/user_service.dart';
+import 'package:tracklist_app/navigation/navigator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MediaPage extends StatefulWidget {
@@ -106,6 +107,10 @@ class _MediaPageState extends State<MediaPage> {
     navigator.push(MaterialPageRoute(builder: (_) => MediaPage(media: artist)));
   }
 
+  void sendToAddReviewPage() {
+    NavigationService().openAddReview(media: media);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -173,13 +178,13 @@ class _MediaPageState extends State<MediaPage> {
             decoration: BoxDecoration(
               boxShadow: [BoxShadow(color: Colors.black.withAlpha(125), blurRadius: 12, offset: Offset(0, 4))],
             ),
-            child: Image.network(media.image, width: 275, height: 275, fit: BoxFit.cover),
+            child: media.buildImage(275),
           ),
         ),
         const SizedBox(height: 8),
         Text(
           media.name,
-          style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+          style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
           textAlign: TextAlign.center,
         ),
         if (media is Album || media is Track)
@@ -187,7 +192,7 @@ class _MediaPageState extends State<MediaPage> {
             onTap: () async => sendToMediaPage(context, (media as dynamic).artistId),
             child: Text(
               (media as dynamic).artist,
-              style: const TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),
+              style: const TextStyle(color: Colors.grey, fontSize: 20, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
           ),
@@ -219,14 +224,25 @@ class _MediaPageState extends State<MediaPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        GestureDetector(
-          onTap: () => likeMedia(),
-          child: Icon(Icons.favorite, color: isLiked ? PRIMARY_COLOR_LIGHT : Colors.white, size: 30),
-        ),
-        Icon(Icons.edit_square, color: Colors.white, size: 30),
+        buildLikeButton(),
+        buildReviewButton(),
         Icon(Icons.format_list_bulleted, color: Colors.white, size: 30),
         Icon(Icons.send, color: Colors.white, size: 30),
       ],
+    );
+  }
+
+  Widget buildLikeButton() {
+    return GestureDetector(
+      onTap: () => likeMedia(),
+      child: Icon(Icons.favorite, color: isLiked ? PRIMARY_COLOR_LIGHT : Colors.white, size: 30),
+    );
+  }
+
+  Widget buildReviewButton() {
+    return GestureDetector(
+      onTap: () => sendToAddReviewPage(),
+      child: Icon(Icons.edit_square, color: Colors.white, size: 30),
     );
   }
 

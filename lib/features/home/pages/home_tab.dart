@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tracklist_app/features/error/pages/error_page.dart';
 import 'package:tracklist_app/features/home/pages/home_page.dart';
+import 'package:tracklist_app/features/media/models/media_class.dart';
 import 'package:tracklist_app/features/review/pages/review_add_page.dart';
 import 'package:tracklist_app/features/review/pages/review_page.dart';
 import 'package:tracklist_app/features/user/pages/user_page.dart';
@@ -15,21 +16,19 @@ class HomeTab extends StatelessWidget {
 
     return Navigator(
       key: navigationService.homeNavigatorKey,
-      initialRoute: "/", // Default route to Home Page
+      initialRoute: "/",
       onGenerateRoute: (settings) {
         Widget page;
 
         switch (settings.name) {
-          // Open Home Page when routed
           case "/":
             page = HomePage();
             break;
-          // Open Review Page when a review is clicked
           case "/review":
             page = ReviewPage(reviewId: settings.arguments as String);
             break;
           case "/add":
-            page = ReviewAddPage();
+            page = ReviewAddPage(media: settings.arguments as Media?);
             break;
           case "/user":
             page = UserPage(uid: settings.arguments as String);
