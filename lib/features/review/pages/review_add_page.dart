@@ -21,7 +21,7 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
   late Media? media = widget.media;
   List<Media> suggestions = [];
   String selectedCategory = "artist";
-  TextEditingController get controllerName => TextEditingController(text: media?.name);
+  TextEditingController controllerName = TextEditingController();
   TextEditingController controllerContent = TextEditingController();
   double rating = 0.0;
 
@@ -30,11 +30,8 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
     super.initState();
 
     if (media != null) {
-      selectedCategory = media is Album
-          ? "album"
-          : media is Track
-          ? "track"
-          : "artist";
+      controllerName.text = media!.name;
+      selectedCategory = media!.getCategory();
     }
   }
 
@@ -52,7 +49,8 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
   void submitForm() async {
     if (!_formKey.currentState!.validate() || media == null || rating < 0.5) return;
 
-    bool success = await addReview(selectedCategory, controllerContent.text, media!.id, rating);
+    String category = media!.getCategory();
+    bool success = await addReview(category, controllerContent.text, media!.id, rating);
 
     if (success) {
       sendToHome();
@@ -81,10 +79,12 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
           key: _formKey,
           child: Stack(
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                spacing: 16.0,
-                children: [buildMediaImage(), buildSearchName(), buildRating(), buildContent(), buildSubmitButton()],
+              SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  spacing: 16.0,
+                  children: [buildMediaImage(), buildSearchName(), buildRating(), buildContent(), buildSubmitButton()],
+                ),
               ),
               buildMediaList(),
             ],
@@ -122,7 +122,7 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
         focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
         hintText: "Search for $word $selectedCategory...",
       ),
-      onChanged: (_) => onSearchPressed(),
+      onChanged: (value) => onSearchPressed(),
       style: const TextStyle(color: Colors.white, fontSize: 20),
       validator: (value) {
         if (value == null || value.isEmpty) {

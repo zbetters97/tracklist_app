@@ -33,7 +33,7 @@ abstract class Media {
             ),
           ],
         ),
-        Text(getMediaArtist(category), style: TextStyle(color: Colors.grey, fontSize: 18)),
+        Text(getMediaArtist(), style: TextStyle(color: Colors.grey, fontSize: 18)),
       ],
     );
   }
@@ -48,7 +48,7 @@ abstract class Media {
     return mediaIcon;
   }
 
-  Widget buildNameSimple(String category, bool isCentered) {
+  Widget buildNameSimple(bool isCentered) {
     return Column(
       crossAxisAlignment: isCentered ? CrossAxisAlignment.center : CrossAxisAlignment.start,
       children: [
@@ -65,16 +65,26 @@ abstract class Media {
             ),
           ],
         ),
-        Text(getMediaArtist(category), style: TextStyle(color: Colors.grey, fontSize: 18)),
+        Text(getMediaArtist(), style: TextStyle(color: Colors.grey, fontSize: 18)),
       ],
     );
   }
 
-  String getMediaArtist(String category) {
+  String getMediaArtist() {
+    String category = getCategory();
+
     return category == "album"
         ? (this as Album).artist
         : category == "track"
         ? (this as Track).artist
         : "";
+  }
+
+  String getCategory() {
+    return this is Album
+        ? "album"
+        : this is Track
+        ? "track"
+        : "artist";
   }
 }

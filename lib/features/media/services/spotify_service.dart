@@ -16,6 +16,10 @@ final SpotifyAuth _auth = SpotifyAuth(clientId: CLIENT_ID, clientSecret: CLIENT_
 /// [limit] The maximum number of entries to return
 /// Returns a list of Media objects
 Future<List<Media>> searchByCategory(String category, String name, {int limit = MAX_LIMIT}) async {
+  if (category.isEmpty || name.isEmpty) {
+    return [];
+  }
+
   final token = await _auth.getAccessToken();
 
   if (token == null) {

@@ -51,12 +51,7 @@ class _MediaPageState extends State<MediaPage> {
   void fetchReviews() async {
     setState(() => isLoading = true);
 
-    category = media is Artist
-        ? "artist"
-        : media is Album
-        ? "album"
-        : "track";
-
+    category = media.getCategory();
     isLiked = await getIsLikedContent(media.id, category);
 
     List<Review> fetchedReviews = await getReviewsByMediaId(media.id);
@@ -187,7 +182,7 @@ class _MediaPageState extends State<MediaPage> {
           style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
           textAlign: TextAlign.center,
         ),
-        if (media is Album || media is Track)
+        if (media.getCategory() != "artist")
           GestureDetector(
             onTap: () async => sendToMediaPage(context, (media as dynamic).artistId),
             child: Text(

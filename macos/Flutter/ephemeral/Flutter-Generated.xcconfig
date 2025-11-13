@@ -1,6 +1,6 @@
 // This is a generated file; do not edit or check into version control.
-FLUTTER_ROOT=C:\Users\zach.betters\Flutter
-FLUTTER_APPLICATION_PATH=C:\Users\zach.betters\Documents\Programming\VS_Code\tracklist_app
+FLUTTER_ROOT=/Users/zbetters/Documents/Development/flutter
+FLUTTER_APPLICATION_PATH=/Users/zbetters/Documents/Development/VS Code Projects/tracklist_app
 COCOAPODS_PARALLEL_CODE_SIGN=true
 FLUTTER_BUILD_DIR=build
 FLUTTER_BUILD_NAME=1.0.0
