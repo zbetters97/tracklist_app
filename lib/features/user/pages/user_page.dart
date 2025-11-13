@@ -6,9 +6,9 @@ import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/core/utils/date.dart';
 import 'package:tracklist_app/core/utils/notifiers.dart';
 import 'package:tracklist_app/core/extensions/string_extensions.dart';
+import 'package:tracklist_app/features/user/pages/user_friends_page.dart';
 import 'package:tracklist_app/features/user/services/user_service.dart';
 import 'package:tracklist_app/features/user/widgets/user_follow_button.dart';
-import 'package:tracklist_app/features/user/content/user_friends_content.dart';
 import 'package:tracklist_app/features/user/content/user_reviews_content.dart';
 import 'package:tracklist_app/features/welcome/pages/welcome_page.dart';
 import 'package:tracklist_app/core/widgets/default_app_bar.dart';
@@ -28,7 +28,7 @@ class _UserPageState extends State<UserPage> {
   late AppUser user;
   bool isLoggedInUser = false;
 
-  final List<String> tabs = ["Reviews", "Lists", "Likes", "Friends"];
+  final List<String> tabs = ["Reviews", "Lists", "Likes"];
   int selectedTab = 0;
 
   @override
@@ -90,6 +90,15 @@ class _UserPageState extends State<UserPage> {
     );
   }
 
+  void sendToFriendsPage(bool isFollowers) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => UserFriendsPage(user: user, isFollowers: isFollowers),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     isLoading = false;
@@ -135,9 +144,7 @@ class _UserPageState extends State<UserPage> {
         ? UserReviewsContent(user: user)
         : selectedTab == 1
         ? Container()
-        : selectedTab == 2
-        ? UserLikesContent(user: user)
-        : UserFriendsContent(user: user);
+        : UserLikesContent(user: user);
 
     return Expanded(
       child: Container(
@@ -192,33 +199,28 @@ class _UserPageState extends State<UserPage> {
   Widget buildFriends() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text.rich(
-          TextSpan(
-            style: TextStyle(color: Colors.grey, fontSize: 16),
-            children: [
-              TextSpan(
-                text: user.followers.length.toString(),
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-              TextSpan(text: " followers"),
-            ],
-          ),
+      spacing: 10.0,
+      children: [buildFriendsTab(true), buildFriendsTab(false)],
+    );
+  }
+
+  Widget buildFriendsTab(bool isFollowers) {
+    String text = isFollowers ? user.followers.length.toString() : user.following.length.toString();
+
+    return GestureDetector(
+      onTap: () => sendToFriendsPage(isFollowers),
+      child: Text.rich(
+        TextSpan(
+          style: TextStyle(color: Colors.grey, fontSize: 16),
+          children: [
+            TextSpan(
+              text: text,
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+            TextSpan(text: isFollowers ? " followers" : " following"),
+          ],
         ),
-        const SizedBox(width: 10),
-        Text.rich(
-          TextSpan(
-            style: TextStyle(color: Colors.grey, fontSize: 16),
-            children: [
-              TextSpan(
-                text: user.following.length.toString(),
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-              TextSpan(text: " following"),
-            ],
-          ),
-        ),
-      ],
+      ),
     );
   }
 

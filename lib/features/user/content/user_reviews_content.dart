@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracklist_app/core/constants/constants.dart';
 import 'package:tracklist_app/core/widgets/empty_text.dart';
 import 'package:tracklist_app/core/widgets/loading_icon.dart';
 import 'package:tracklist_app/features/review/widgets/review_card_widget.dart';
@@ -42,6 +43,10 @@ class _UserReviewsContentState extends State<UserReviewsContent> {
     });
   }
 
+  void sendToAddReviewPage() {
+    NavigationService().openAddReview();
+  }
+
   void onOpenReview(String reviewId) {
     NavigationService().openReview(reviewId);
   }
@@ -76,7 +81,7 @@ class _UserReviewsContentState extends State<UserReviewsContent> {
 
   @override
   Widget build(BuildContext context) {
-    return isLoading ? LoadingIcon() : buildUserReviews();
+    return isLoading ? LoadingIcon() : Stack(children: [buildUserReviews(), buildPostReviewButton()]);
   }
 
   Widget buildUserReviews() {
@@ -96,6 +101,22 @@ class _UserReviewsContentState extends State<UserReviewsContent> {
               ),
               separatorBuilder: (context, index) => const Divider(color: Colors.grey),
             ),
+    );
+  }
+
+  Widget buildPostReviewButton() {
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: RawMaterialButton(
+          onPressed: () => sendToAddReviewPage(),
+          fillColor: PRIMARY_COLOR_DARK,
+          shape: CircleBorder(),
+          constraints: BoxConstraints.tightFor(width: 65, height: 65),
+          child: Icon(Icons.add, size: 40),
+        ),
+      ),
     );
   }
 }

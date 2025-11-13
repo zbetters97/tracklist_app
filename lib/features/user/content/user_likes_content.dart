@@ -86,7 +86,7 @@ class _UserLikesContentState extends State<UserLikesContent> {
     if (!confirm! || !mounted) return;
 
     bool isReviewDeleted = await deleteReview(reviewId);
-    
+
     if (isReviewDeleted) {
       fetchLikes();
     }
@@ -104,18 +104,20 @@ class _UserLikesContentState extends State<UserLikesContent> {
   }
 
   Widget buildTopBar() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        spacing: 16.0,
-        children: [
-          buildLikesTab(0, "Artists"),
-          buildLikesTab(1, "Albums"),
-          buildLikesTab(2, "Tracks"),
-          buildLikesTab(3, "Reviews"),
-        ],
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Container(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 20.0,
+          children: [
+            buildLikesTab(0, "Artists"),
+            buildLikesTab(1, "Albums"),
+            buildLikesTab(2, "Tracks"),
+            buildLikesTab(3, "Reviews"),
+          ],
+        ),
       ),
     );
   }
@@ -127,7 +129,7 @@ class _UserLikesContentState extends State<UserLikesContent> {
         title,
         style: TextStyle(
           color: currentTab == index ? PRIMARY_COLOR : Colors.grey,
-          fontSize: 24.0,
+          fontSize: 20.0,
           fontWeight: FontWeight.bold,
         ),
       ),
