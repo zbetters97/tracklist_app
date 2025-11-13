@@ -82,12 +82,8 @@ class _UserPageState extends State<UserPage> {
 
     Navigator.of(
       context,
-      rootNavigator: true, // Top-level navigator is used
-    ).pushAndRemoveUntil(
-      // Removes all previous pages in the stack
-      MaterialPageRoute(builder: (context) => const WelcomePage()),
-      (route) => false,
-    );
+      rootNavigator: true,
+    ).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const WelcomePage()), (route) => false);
   }
 
   void sendToFriendsPage(bool isFollowers) {
@@ -107,69 +103,56 @@ class _UserPageState extends State<UserPage> {
 
   @override
   Widget build(BuildContext context) {
-    return isLoading
-        ? LoadingIcon()
-        : Scaffold(
-            appBar: isLoggedInUser
-                ? UserAppBar(user: user, onLogoutPressed: onLogoutPressed)
-                : DefaultAppBar(title: ""),
-            backgroundColor: BACKGROUND_COLOR,
-            extendBodyBehindAppBar: true,
-            body: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    spacing: 3.0,
-                    children: [
-                      buildProfile(),
-                      buildBio(),
-                      buildDate(),
-                      buildFriends(),
-                      if (!isLoggedInUser) UserFollowButton(user: user, onFollowChanged: onFollowChanged),
-                    ],
-                  ),
-                ),
-                buildUserTabs(),
-                buildSelectedTab(),
-              ],
-            ),
-          );
+    if (isLoading) {
+      return LoadingIcon();
+    }
+
+    return Scaffold(
+      appBar: isLoggedInUser ? UserAppBar(user: user, onLogoutPressed: onLogoutPressed) : DefaultAppBar(title: ""),
+      backgroundColor: BACKGROUND_COLOR,
+      extendBodyBehindAppBar: true,
+      body: buildUserProfile(),
+    );
   }
 
-  Widget buildSelectedTab() {
-    Widget currentSection = selectedTab == 0
-        ? UserReviewsContent(user: user)
-        : selectedTab == 1
-        ? Container()
-        : UserLikesContent(user: user);
-
-    return Expanded(
-      child: Container(
-        decoration: BoxDecoration(color: TERTIARY_COLOR),
-        width: double.infinity,
-        child: currentSection,
-      ),
+  Widget buildUserProfile() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            spacing: 3.0,
+            children: [
+              buildProfile(),
+              buildBio(),
+              buildDate(),
+              buildFriends(),
+              if (!isLoggedInUser) UserFollowButton(user: user, onFollowChanged: onFollowChanged),
+            ],
+          ),
+        ),
+        buildUserTabs(),
+        buildSelectedTab(),
+      ],
     );
   }
 
   Widget buildProfile() {
+    return Column(children: [user.buildProfileImage(context, 50.0), buildUsername()]);
+  }
+
+  Widget buildUsername() {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      spacing: 5.0,
       children: [
-        user.buildProfileImage(50.0),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              user.displayname.capitalizeEachWord(),
-              style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(width: 5),
-            Text("@${user.username}", style: const TextStyle(color: Colors.grey, fontSize: 16)),
-          ],
+        Text(
+          user.displayname.capitalizeEachWord(),
+          style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
         ),
+        Text("@${user.username}", style: const TextStyle(color: Colors.grey, fontSize: 16)),
       ],
     );
   }
@@ -188,9 +171,9 @@ class _UserPageState extends State<UserPage> {
   Widget buildDate() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
+      spacing: 2.0,
       children: [
         Icon(Icons.calendar_today, color: Colors.grey, size: 18),
-        const SizedBox(width: 2),
         Text("Joined on ${formatDateMDYLong(user.createdAt)}", style: TextStyle(fontSize: 16)),
       ],
     );
@@ -247,6 +230,22 @@ class _UserPageState extends State<UserPage> {
             child: Text(tab, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           );
         }).toList(),
+      ),
+    );
+  }
+
+  Widget buildSelectedTab() {
+    Widget currentSection = selectedTab == 0
+        ? UserReviewsContent(user: user)
+        : selectedTab == 1
+        ? Container()
+        : UserLikesContent(user: user);
+
+    return Expanded(
+      child: Container(
+        decoration: BoxDecoration(color: TERTIARY_COLOR),
+        width: double.infinity,
+        child: currentSection,
       ),
     );
   }

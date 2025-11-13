@@ -73,7 +73,7 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          user.buildProfileAndUsername(16.0, 12.0),
+          user.buildProfileAndUsername(context, 16.0, 12.0),
           review.buildDateShort(16.0),
           review.media.buildName(review.category, false),
           review.buildStarRating(false),

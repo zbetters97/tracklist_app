@@ -47,11 +47,11 @@ class AppUser {
   @override
   int get hashCode => uid.hashCode;
 
-  Widget buildProfileAndUsername(double fontSize, double profileSize) {
+  Widget buildProfileAndUsername(BuildContext context, double fontSize, double profileSize) {
     return Row(
       spacing: 5.0,
       children: [
-        buildProfileImage(profileSize),
+        buildProfileImage(context, profileSize),
         Text(
           "@$username",
           style: TextStyle(color: Colors.grey, fontSize: fontSize),
@@ -60,10 +60,45 @@ class AppUser {
     );
   }
 
-  Widget buildProfileImage(double size) {
-    return CircleAvatar(
-      radius: size,
-      backgroundImage: profileUrl.startsWith("https") ? NetworkImage(profileUrl) : AssetImage(DEFAULT_PROFILE_IMG),
+  Widget buildProfileImage(BuildContext context, double size) {
+    return GestureDetector(
+      onTap: () {
+        showGeneralDialog(
+          context: context,
+          barrierLabel: "Profile Image",
+          barrierDismissible: true,
+          barrierColor: Colors.black54,
+          transitionDuration: Duration(milliseconds: 200),
+          pageBuilder: (context, anim1, anim2) {
+            return Center(
+              child: GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: ClipOval(
+                  child: InteractiveViewer(
+                    child: Image(
+                      image: profileUrl.startsWith("https")
+                          ? NetworkImage(profileUrl)
+                          : AssetImage(DEFAULT_PROFILE_IMG) as ImageProvider,
+                      fit: BoxFit.cover,
+                      width: 300,
+                      height: 300,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+          transitionBuilder: (context, anim1, anim2, child) {
+            return FadeTransition(opacity: anim1, child: child);
+          },
+        );
+      },
+      child: CircleAvatar(
+        radius: size,
+        backgroundImage: profileUrl.startsWith("https")
+            ? NetworkImage(profileUrl)
+            : AssetImage(DEFAULT_PROFILE_IMG) as ImageProvider,
+      ),
     );
   }
 }

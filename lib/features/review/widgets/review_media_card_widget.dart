@@ -12,7 +12,7 @@ class ReviewMediaCardWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 4.0,
       children: [
-        Row(spacing: 8.0, children: [review.user.buildProfileImage(24.0), buildReviewHeader()]),
+        Row(spacing: 8.0, children: [review.user.buildProfileImage(context, 24.0), buildReviewHeader()]),
         review.buildContent(18.0),
       ],
     );

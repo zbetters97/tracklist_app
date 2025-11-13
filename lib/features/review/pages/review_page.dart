@@ -156,7 +156,7 @@ class _ReviewPageState extends State<ReviewPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       spacing: 8.0,
       children: [
-        GestureDetector(onTap: () => sendToUserPage(), child: user.buildProfileImage(30.0)),
+        GestureDetector(onTap: () => sendToUserPage(), child: user.buildProfileImage(context, 30.0)),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
