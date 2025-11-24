@@ -26,24 +26,30 @@ class UserLikesContent extends StatefulWidget {
 
 class _UserLikesContentState extends State<UserLikesContent> {
   AppUser get user => widget.user;
-  bool isLoading = true;
-  int currentTab = 0;
+  bool _isLoading = true;
+  int _currentTab = 0;
 
-  List<Artist> artists = [];
-  List<Album> albums = [];
-  List<Track> tracks = [];
-  List<Review> reviews = [];
+  List<Artist> _artists = [];
+  List<Album> _albums = [];
+  List<Track> _tracks = [];
+  List<Review> _reviews = [];
 
-  final ScrollController reviewsController = ScrollController();
+  final ScrollController _reviewsController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    fetchLikes();
+    _fetchLikes();
   }
 
-  void fetchLikes() async {
-    setState(() => isLoading = true);
+  @override
+  void dispose() {
+    _reviewsController.dispose();
+    super.dispose();
+  }
+
+  void _fetchLikes() async {
+    setState(() => _isLoading = true);
 
     List<Artist> fetchedArtists = await getLikedArtists(user.uid);
     List<Album> fetchedAlbums = await getLikedAlbums(user.uid);
@@ -53,24 +59,24 @@ class _UserLikesContentState extends State<UserLikesContent> {
     if (!mounted) return;
 
     setState(() {
-      artists = fetchedArtists;
-      albums = fetchedAlbums;
-      tracks = fetchedTracks;
-      reviews = fetchedReviews;
+      _artists = fetchedArtists;
+      _albums = fetchedAlbums;
+      _tracks = fetchedTracks;
+      _reviews = fetchedReviews;
 
-      isLoading = false;
+      _isLoading = false;
     });
   }
 
-  void onOpenMedia(Media media) {
+  void _onOpenMedia(Media media) {
     Navigator.push(context, MaterialPageRoute(builder: (context) => MediaPage(media: media)));
   }
 
-  void onOpenReview(String reviewId) {
+  void _onOpenReview(String reviewId) {
     NavigationService().openReview(reviewId);
   }
 
-  void onDeleteReview(String reviewId) async {
+  void _onDeleteReview(String reviewId) async {
     bool? confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -88,22 +94,16 @@ class _UserLikesContentState extends State<UserLikesContent> {
     bool isReviewDeleted = await deleteReview(reviewId);
 
     if (isReviewDeleted) {
-      fetchLikes();
+      _fetchLikes();
     }
   }
 
   @override
-  void dispose() {
-    reviewsController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return isLoading ? LoadingIcon() : Column(children: [buildTopBar(), buildLikesList()]);
+    return _isLoading ? LoadingIcon() : Column(children: [_buildTopBar(), _buildLikesList()]);
   }
 
-  Widget buildTopBar() {
+  Widget _buildTopBar() {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Container(
@@ -112,23 +112,23 @@ class _UserLikesContentState extends State<UserLikesContent> {
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: 20.0,
           children: [
-            buildLikesTab(0, "Artists"),
-            buildLikesTab(1, "Albums"),
-            buildLikesTab(2, "Tracks"),
-            buildLikesTab(3, "Reviews"),
+            _buildLikesTab(0, "Artists"),
+            _buildLikesTab(1, "Albums"),
+            _buildLikesTab(2, "Tracks"),
+            _buildLikesTab(3, "Reviews"),
           ],
         ),
       ),
     );
   }
 
-  Widget buildLikesTab(int index, String title) {
+  Widget _buildLikesTab(int index, String title) {
     return GestureDetector(
-      onTap: () => setState(() => currentTab = index),
+      onTap: () => setState(() => _currentTab = index),
       child: Text(
         title,
         style: TextStyle(
-          color: currentTab == index ? PRIMARY_COLOR : Colors.grey,
+          color: _currentTab == index ? PRIMARY_COLOR : Colors.grey,
           fontSize: 20.0,
           fontWeight: FontWeight.bold,
         ),
@@ -136,26 +136,26 @@ class _UserLikesContentState extends State<UserLikesContent> {
     );
   }
 
-  Widget buildLikesList() {
+  Widget _buildLikesList() {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: currentTab == 0
-            ? buildLikedMediaList(artists, "artists")
-            : currentTab == 1
-            ? buildLikedMediaList(albums, "albums")
-            : currentTab == 2
-            ? buildLikedMediaList(tracks, "tracks")
-            : buildLikedReviewsList(),
+        child: _currentTab == 0
+            ? _buildLikedMediaList(_artists, "artists")
+            : _currentTab == 1
+            ? _buildLikedMediaList(_albums, "albums")
+            : _currentTab == 2
+            ? _buildLikedMediaList(_tracks, "tracks")
+            : _buildLikedReviewsList(),
       ),
     );
   }
 
-  Widget buildLikedMediaList(List<Media> media, String category) {
+  Widget _buildLikedMediaList(List<Media> media, String category) {
     return media.isEmpty
         ? EmptyText(message: "No liked $category yet!")
         : GridView.builder(
-            controller: reviewsController,
+            controller: _reviewsController,
             shrinkWrap: true,
             padding: const EdgeInsets.all(0.0),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -165,22 +165,22 @@ class _UserLikesContentState extends State<UserLikesContent> {
               childAspectRatio: 0.80, // Larger height to fit name and image
             ),
             itemCount: media.length,
-            itemBuilder: (context, index) => MediaCardWidget(media: media[index], onOpenMedia: onOpenMedia),
+            itemBuilder: (context, index) => MediaCardWidget(media: media[index], onOpenMedia: _onOpenMedia),
           );
   }
 
-  Widget buildLikedReviewsList() {
-    return reviews.isEmpty
+  Widget _buildLikedReviewsList() {
+    return _reviews.isEmpty
         ? EmptyText(message: "No liked reviews yet!")
         : ListView.separated(
-            controller: reviewsController,
+            controller: _reviewsController,
             shrinkWrap: true,
             padding: const EdgeInsets.all(0.0),
-            itemCount: reviews.length,
+            itemCount: _reviews.length,
             itemBuilder: (context, index) => ReviewCardWidget(
-              review: reviews[index],
-              onOpenReview: () => onOpenReview(reviews[index].reviewId),
-              onDeleteReview: () => onDeleteReview(reviews[index].reviewId),
+              review: _reviews[index],
+              onOpenReview: () => _onOpenReview(_reviews[index].reviewId),
+              onDeleteReview: () => _onDeleteReview(_reviews[index].reviewId),
             ),
             separatorBuilder: (context, index) => const Divider(color: Colors.grey),
           );

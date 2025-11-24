@@ -25,15 +25,22 @@ class RepliesWidget extends StatefulWidget {
 class _RepliesWidgetState extends State<RepliesWidget> {
   late List<Comment> replies = [];
 
-  bool isRepliesExpanded = false;
+  bool _isRepliesExpanded = false;
 
   @override
   void initState() {
     super.initState();
-    fetchReplies();
+    _fetchReplies();
   }
 
-  void fetchReplies() async {
+  @override
+  void dispose() {
+    replies.clear();
+    _isRepliesExpanded = false;
+    super.dispose();
+  }
+
+  void _fetchReplies() async {
     List<Comment> fetchedReplies = await getRepliesByComment(widget.comment);
 
     if (!mounted) return;
@@ -42,34 +49,24 @@ class _RepliesWidgetState extends State<RepliesWidget> {
   }
 
   @override
-  void dispose() {
-    replies.clear();
-    isRepliesExpanded = false;
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     if (replies.isEmpty) {
       return Container();
     }
 
-    if (!isRepliesExpanded) {
-      return buildExpandRepliesButton();
+    if (!_isRepliesExpanded) {
+      return _buildExpandRepliesButton();
     }
 
-    return Column(spacing: 12.0, children: [buildExpandRepliesButton(), buildReplies()]);
+    return Column(spacing: 12.0, children: [_buildExpandRepliesButton(), _buildReplies()]);
   }
 
-  Widget buildExpandRepliesButton() {
+  Widget _buildExpandRepliesButton() {
     String repliesWord = replies.length == 1 ? "reply" : "replies";
-    IconData arrowIcon = isRepliesExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down;
+    IconData arrowIcon = _isRepliesExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down;
 
     return GestureDetector(
-      onTap: () {
-        if (!mounted) return;
-        setState(() => isRepliesExpanded = !isRepliesExpanded);
-      },
+      onTap: () => setState(() => _isRepliesExpanded = !_isRepliesExpanded),
       child: Row(
         children: [
           Icon(arrowIcon, size: 24, color: PRIMARY_BLUE),
@@ -87,7 +84,7 @@ class _RepliesWidgetState extends State<RepliesWidget> {
     );
   }
 
-  Widget buildReplies() {
+  Widget _buildReplies() {
     return Column(
       children: [
         ...replies.map(

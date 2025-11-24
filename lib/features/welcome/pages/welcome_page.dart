@@ -5,11 +5,11 @@ import 'package:tracklist_app/features/auth/pages/auth_page.dart';
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
 
-  void sendToSignupPage(BuildContext context) {
+  void _sendToSignupPage(BuildContext context) {
     Navigator.push(context, MaterialPageRoute(builder: (context) => const AuthPage(isRegistration: true)));
   }
 
-  void sendToLoginPage(BuildContext context) {
+  void _sendToLoginPage(BuildContext context) {
     Navigator.push(context, MaterialPageRoute(builder: (context) => AuthPage(isRegistration: false)));
   }
 
@@ -23,11 +23,11 @@ class WelcomePage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                buildLogo(),
+                _buildLogo(),
                 const SizedBox(height: 40),
-                buildGetStartedButton(context),
+                _buildGetStartedButton(context),
                 const SizedBox(height: 10),
-                buildLoginButton(context),
+                _buildLoginButton(context),
               ],
             ),
           ),
@@ -36,7 +36,7 @@ class WelcomePage extends StatelessWidget {
     );
   }
 
-  Widget buildLogo() {
+  Widget _buildLogo() {
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -50,9 +50,9 @@ class WelcomePage extends StatelessWidget {
     );
   }
 
-  Widget buildGetStartedButton(BuildContext context) {
+  Widget _buildGetStartedButton(BuildContext context) {
     return FilledButton(
-      onPressed: () => sendToSignupPage(context),
+      onPressed: () => _sendToSignupPage(context),
 
       style: FilledButton.styleFrom(
         minimumSize: const Size(double.infinity, 50),
@@ -65,9 +65,9 @@ class WelcomePage extends StatelessWidget {
     );
   }
 
-  Widget buildLoginButton(BuildContext context) {
+  Widget _buildLoginButton(BuildContext context) {
     return TextButton(
-      onPressed: () => sendToLoginPage(context),
+      onPressed: () => _sendToLoginPage(context),
       style: FilledButton.styleFrom(minimumSize: Size(double.infinity, 40.0)),
       child: Text(
         "Login",

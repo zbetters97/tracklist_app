@@ -19,39 +19,45 @@ class UserReviewsContent extends StatefulWidget {
 
 class _UserReviewsContentState extends State<UserReviewsContent> {
   AppUser get user => widget.user;
-  List<Review> reviews = [];
-  bool isLoading = true;
+  List<Review> _reviews = [];
+  bool _isLoading = true;
 
-  final ScrollController reviewsController = ScrollController();
+  final ScrollController _reviewsController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    fetchReviews();
+    _fetchReviews();
   }
 
-  void fetchReviews() async {
-    setState(() => isLoading = true);
+  @override
+  void dispose() {
+    _reviewsController.dispose();
+    super.dispose();
+  }
+
+  void _fetchReviews() async {
+    setState(() => _isLoading = true);
 
     List<Review> fetchedReviews = await getReviewsByUserId(user.uid);
 
     if (!mounted) return;
 
     setState(() {
-      reviews = fetchedReviews;
-      isLoading = false;
+      _reviews = fetchedReviews;
+      _isLoading = false;
     });
   }
 
-  void sendToAddReviewPage() {
+  void _sendToAddReviewPage() {
     NavigationService().openAddReview();
   }
 
-  void onOpenReview(String reviewId) {
+  void _onOpenReview(String reviewId) {
     NavigationService().openReview(reviewId);
   }
 
-  void onDeleteReview(String reviewId) async {
+  void _onDeleteReview(String reviewId) async {
     bool? confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -69,48 +75,42 @@ class _UserReviewsContentState extends State<UserReviewsContent> {
     bool isReviewDeleted = await deleteReview(reviewId);
 
     if (isReviewDeleted) {
-      fetchReviews();
+      _fetchReviews();
     }
   }
 
   @override
-  void dispose() {
-    reviewsController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return isLoading ? LoadingIcon() : Stack(children: [buildUserReviews(), buildPostReviewButton()]);
+    return _isLoading ? LoadingIcon() : Stack(children: [_buildUserReviews(), _buildPostReviewButton()]);
   }
 
-  Widget buildUserReviews() {
+  Widget _buildUserReviews() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: reviews.isEmpty
+      child: _reviews.isEmpty
           ? EmptyText(message: "No reviews yet!")
           : ListView.separated(
-              controller: reviewsController,
+              controller: _reviewsController,
               shrinkWrap: true,
               padding: const EdgeInsets.all(0.0),
-              itemCount: reviews.length,
+              itemCount: _reviews.length,
               itemBuilder: (context, index) => ReviewCardWidget(
-                review: reviews[index],
-                onOpenReview: () => onOpenReview(reviews[index].reviewId),
-                onDeleteReview: () => onDeleteReview(reviews[index].reviewId),
+                review: _reviews[index],
+                onOpenReview: () => _onOpenReview(_reviews[index].reviewId),
+                onDeleteReview: () => _onDeleteReview(_reviews[index].reviewId),
               ),
               separatorBuilder: (context, index) => const Divider(color: Colors.grey),
             ),
     );
   }
 
-  Widget buildPostReviewButton() {
+  Widget _buildPostReviewButton() {
     return Align(
       alignment: Alignment.bottomRight,
       child: Padding(
         padding: const EdgeInsets.all(15.0),
         child: RawMaterialButton(
-          onPressed: () => sendToAddReviewPage(),
+          onPressed: () => _sendToAddReviewPage(),
           fillColor: PRIMARY_COLOR_DARK,
           shape: CircleBorder(),
           constraints: BoxConstraints.tightFor(width: 65, height: 65),

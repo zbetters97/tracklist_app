@@ -18,7 +18,7 @@ class UserCardWidget extends StatefulWidget {
 class _UserCardWidgetState extends State<UserCardWidget> {
   AppUser get user => widget.user;
 
-  void onFollowChanged(bool isFollowing) {
+  void _onFollowChanged(bool isFollowing) {
     setState(() {
       if (isFollowing) {
         user.followers.remove(authUser.value!.uid);
@@ -36,14 +36,14 @@ class _UserCardWidgetState extends State<UserCardWidget> {
       children: [
         GestureDetector(
           onTap: () => NavigationService().openUser(user.uid),
-          child: Row(spacing: 8.0, children: [buildProfileImage(user.profileUrl), buildUserInfo(user)]),
+          child: Row(spacing: 8.0, children: [_buildProfileImage(user.profileUrl), _buildUserInfo(user)]),
         ),
-        if (authUser.value!.uid != user.uid) UserFollowButton(user: user, onFollowChanged: onFollowChanged),
+        if (authUser.value!.uid != user.uid) UserFollowButton(user: user, onFollowChanged: _onFollowChanged),
       ],
     );
   }
 
-  Widget buildProfileImage(String profileUrl) {
+  Widget _buildProfileImage(String profileUrl) {
     CircleAvatar profileImage = profileUrl.startsWith("https")
         ? CircleAvatar(radius: 24.0, backgroundImage: NetworkImage(profileUrl))
         : CircleAvatar(radius: 24.0, backgroundImage: AssetImage(DEFAULT_PROFILE_IMG));
@@ -51,7 +51,7 @@ class _UserCardWidgetState extends State<UserCardWidget> {
     return profileImage;
   }
 
-  Widget buildUserInfo(AppUser user) {
+  Widget _buildUserInfo(AppUser user) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -60,14 +60,15 @@ class _UserCardWidgetState extends State<UserCardWidget> {
           style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
         ),
         Text("@${user.username}", style: TextStyle(color: Colors.grey, fontSize: 16)),
-        buildUserFriends(user),
+        _buildUserFriends(user),
       ],
     );
   }
 
-  Widget buildUserFriends(AppUser user) {
+  Widget _buildUserFriends(AppUser user) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
+      spacing: 10.0,
       children: [
         Text.rich(
           TextSpan(
@@ -81,7 +82,6 @@ class _UserCardWidgetState extends State<UserCardWidget> {
             ],
           ),
         ),
-        const SizedBox(width: 10),
         Text.rich(
           TextSpan(
             style: TextStyle(color: Colors.grey, fontSize: 16),

@@ -19,53 +19,53 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
   final _formKey = GlobalKey<FormState>();
 
   late Media? media = widget.media;
-  List<Media> suggestions = [];
-  String selectedCategory = "artist";
-  TextEditingController controllerName = TextEditingController();
-  TextEditingController controllerContent = TextEditingController();
-  double rating = 0.0;
+  List<Media> _suggestions = [];
+  String _selectedCategory = "artist";
+  final TextEditingController _controllerName = TextEditingController();
+  final TextEditingController _controllerContent = TextEditingController();
+  double _rating = 0.0;
 
   @override
   void initState() {
     super.initState();
 
     if (media != null) {
-      controllerName.text = media!.name;
-      selectedCategory = media!.getCategory();
+      _controllerName.text = media!.name;
+      _selectedCategory = media!.getCategory();
     }
-  }
-
-  void onSearchPressed() async {
-    List<Media> fetchedMedia = await searchByCategory(selectedCategory, controllerName.text, limit: 5);
-
-    if (controllerName.text.isEmpty) {
-      setState(() => suggestions = []);
-      return;
-    }
-
-    setState(() => suggestions = fetchedMedia);
-  }
-
-  void submitForm() async {
-    if (!_formKey.currentState!.validate() || media == null || rating < 0.5) return;
-
-    String category = media!.getCategory();
-    bool success = await addReview(category, controllerContent.text, media!.id, rating);
-
-    if (success) {
-      sendToHome();
-    }
-  }
-
-  void sendToHome() {
-    Navigator.pop(context);
   }
 
   @override
   void dispose() {
-    controllerName.dispose();
-    controllerContent.dispose();
+    _controllerName.dispose();
+    _controllerContent.dispose();
     super.dispose();
+  }
+
+  void _onSearchPressed() async {
+    List<Media> fetchedMedia = await searchByCategory(_selectedCategory, _controllerName.text, limit: 5);
+
+    if (_controllerName.text.isEmpty) {
+      setState(() => _suggestions = []);
+      return;
+    }
+
+    setState(() => _suggestions = fetchedMedia);
+  }
+
+  void _submitForm() async {
+    if (!_formKey.currentState!.validate() || media == null || _rating < 0.5) return;
+
+    String category = media!.getCategory();
+    bool success = await addReview(category, _controllerContent.text, media!.id, _rating);
+
+    if (success) {
+      _sendToHome();
+    }
+  }
+
+  void _sendToHome() {
+    Navigator.pop(context);
   }
 
   @override
@@ -83,10 +83,16 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   spacing: 16.0,
-                  children: [buildMediaImage(), buildSearchName(), buildRating(), buildContent(), buildSubmitButton()],
+                  children: [
+                    _buildMediaImage(),
+                    _buildSearchName(),
+                    _buildRating(),
+                    _buildContent(),
+                    _buildSubmitButton(),
+                  ],
                 ),
               ),
-              buildMediaList(),
+              _buildMediaList(),
             ],
           ),
         ),
@@ -94,35 +100,35 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
     );
   }
 
-  Widget buildMediaImage() {
+  Widget _buildMediaImage() {
     if (media != null) return media!.buildImage(200);
     return Image.asset(DEFAULT_MEDIA_IMG, width: 200, height: 200, fit: BoxFit.cover);
   }
 
-  Widget buildSearchName() {
+  Widget _buildSearchName() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Expanded(flex: 2, child: buildNameField()),
-        buildCategoryDropdown(),
+        Expanded(flex: 2, child: _buildNameField()),
+        _buildCategoryDropdown(),
       ],
     );
   }
 
-  Widget buildNameField() {
-    String word = selectedCategory == "track" ? "a" : "an";
+  Widget _buildNameField() {
+    String word = _selectedCategory == "track" ? "a" : "an";
 
     return TextFormField(
-      controller: controllerName,
+      controller: _controllerName,
       keyboardType: TextInputType.text,
       decoration: InputDecoration(
         contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
         focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-        hintText: "Search for $word $selectedCategory...",
+        hintText: "Search for $word $_selectedCategory...",
       ),
-      onChanged: (value) => onSearchPressed(),
+      onChanged: (value) => _onSearchPressed(),
       style: const TextStyle(color: Colors.white, fontSize: 20),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -133,7 +139,7 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
     );
   }
 
-  Widget buildCategoryDropdown() {
+  Widget _buildCategoryDropdown() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8.0),
       child: DropdownButton(
@@ -145,15 +151,15 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
         ],
         underline: SizedBox(),
         style: TextStyle(fontSize: 20),
-        value: selectedCategory,
-        onTap: () => setState(() => suggestions = []),
-        onChanged: (value) => setState(() => selectedCategory = value!),
+        value: _selectedCategory,
+        onTap: () => setState(() => _suggestions = []),
+        onChanged: (value) => setState(() => _selectedCategory = value!),
       ),
     );
   }
 
-  Widget buildMediaList() {
-    if (suggestions.isEmpty) {
+  Widget _buildMediaList() {
+    if (_suggestions.isEmpty) {
       return Container();
     }
 
@@ -168,18 +174,18 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
           color: PRIMARY_COLOR,
           child: ListView.builder(
             shrinkWrap: true,
-            itemCount: suggestions.length,
+            itemCount: _suggestions.length,
             itemBuilder: (context, index) {
-              final item = suggestions[index];
+              final item = _suggestions[index];
               return InkWell(
                 onTap: () {
                   setState(() {
                     media = item;
-                    controllerName.text = item.name;
-                    suggestions = [];
+                    _controllerName.text = item.name;
+                    _suggestions = [];
                   });
                 },
-                child: buildMediaItem(item),
+                child: _buildMediaItem(item),
               );
             },
           ),
@@ -188,7 +194,7 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
     );
   }
 
-  Widget buildMediaItem(Media media) {
+  Widget _buildMediaItem(Media media) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -196,42 +202,42 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
           media.name,
           style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        if (selectedCategory == "album")
+        if (_selectedCategory == "album")
           Text((media as Album).artist, style: const TextStyle(color: Colors.white, fontSize: 16)),
-        if (selectedCategory == "track")
+        if (_selectedCategory == "track")
           Text((media as Track).artist, style: const TextStyle(color: Colors.white, fontSize: 16)),
       ],
     );
   }
 
-  Widget buildRating() {
+  Widget _buildRating() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 4.0,
       children: [
-        Text("Your rating", style: TextStyle(color: Colors.grey, fontSize: 20)),
-        buildStars(),
+        Text("Your _rating", style: TextStyle(color: Colors.grey, fontSize: 20)),
+        _buildStars(),
       ],
     );
   }
 
-  Widget buildStars() {
-    double roundedRating = (rating * 2).round() / 2;
+  Widget _buildStars() {
+    double roundedRating = (_rating * 2).round() / 2;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: List.generate(5, (i) {
-        double ratingValue = i + 1;
+        double _ratingValue = i + 1;
 
-        bool isHalf = roundedRating == ratingValue - 0.5;
+        bool isHalf = roundedRating == _ratingValue - 0.5;
 
-        Color starColor = ratingValue - 0.5 <= roundedRating ? Colors.amber : Colors.grey;
+        Color starColor = _ratingValue - 0.5 <= roundedRating ? Colors.amber : Colors.grey;
         IconData starIcon = isHalf ? Icons.star_half : Icons.star;
 
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTapDown: (details) {
-            setState(() => details.localPosition.dx < 20 ? rating = ratingValue - 0.5 : rating = ratingValue);
+            setState(() => details.localPosition.dx < 20 ? _rating = _ratingValue - 0.5 : _rating = _ratingValue);
           },
           child: Container(
             width: 40,
@@ -244,8 +250,8 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
     );
   }
 
-  Widget buildContent() {
-    bool isValid = controllerContent.text.length <= MAX_REVIEW_LENGTH;
+  Widget _buildContent() {
+    bool isValid = _controllerContent.text.length <= MAX_REVIEW_LENGTH;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -256,19 +262,19 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
             Text("Your review", style: TextStyle(color: Colors.grey, fontSize: 20)),
             const Spacer(),
             Text(
-              "${controllerContent.text.length}/$MAX_REVIEW_LENGTH",
+              "${_controllerContent.text.length}/$MAX_REVIEW_LENGTH",
               style: TextStyle(color: isValid ? Colors.grey : Colors.red, fontSize: 20),
             ),
           ],
         ),
-        buildContentField(),
+        _buildContentField(),
       ],
     );
   }
 
-  Widget buildContentField() {
+  Widget _buildContentField() {
     return TextFormField(
-      controller: controllerContent,
+      controller: _controllerContent,
       keyboardType: TextInputType.multiline,
       minLines: 5,
       maxLines: 5,
@@ -291,7 +297,7 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
     );
   }
 
-  Widget buildSubmitButton() {
+  Widget _buildSubmitButton() {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         minimumSize: Size(0.0, 40.0),
@@ -300,7 +306,7 @@ class _ReviewAddPageState extends State<ReviewAddPage> {
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       ),
-      onPressed: () => submitForm(),
+      onPressed: () => _submitForm(),
       child: Text("Post", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
     );
   }

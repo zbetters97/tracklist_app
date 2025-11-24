@@ -22,7 +22,7 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
   AppUser get user => widget.review.user;
   int get likes => widget.review.likeCount;
 
-  void onVoteReview(bool isLiked) async {
+  void _onVoteReview(bool isLiked) async {
     setState(() {
       if (isLiked) {
         review.likes.remove(authUser.value!.uid);
@@ -32,6 +32,7 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
         review.likeCount++;
       }
     });
+
     await voteReview(review.reviewId);
   }
 
@@ -54,20 +55,20 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
                   child: Row(
                     spacing: 10.0,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [review.media.buildImage(125), buildReviewInfo()],
+                    children: [review.media.buildImage(125), _buildReviewInfo()],
                   ),
                 ),
                 review.buildContent(20.0),
               ],
             ),
           ),
-          buildReviewButtons(),
+          _buildReviewButtons(),
         ],
       ),
     );
   }
 
-  Widget buildReviewInfo() {
+  Widget _buildReviewInfo() {
     return Flexible(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,20 +83,20 @@ class _ReviewCardWidgetState extends State<ReviewCardWidget> {
     );
   }
 
-  Widget buildReviewButtons() {
+  Widget _buildReviewButtons() {
     bool isAuthor = review.user.uid == authUser.value!.uid;
 
     return Row(
       spacing: 20.0,
       children: [
-        review.buildLikeButton(onVoteReview),
-        buildCommentButton(),
+        review.buildLikeButton(_onVoteReview),
+        _buildCommentButton(),
         if (isAuthor) review.buildDeleteButton(widget.onDeleteReview),
       ],
     );
   }
 
-  Widget buildCommentButton() {
+  Widget _buildCommentButton() {
     return GestureDetector(
       onTap: () => widget.onOpenReview(),
       child: Row(

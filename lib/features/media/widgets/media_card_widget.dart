@@ -21,12 +21,12 @@ class _MediaCardWidgetState extends State<MediaCardWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         spacing: 5.0,
-        children: [buildMediaImage(), media.buildNameSimple(true)],
+        children: [_buildMediaImage(), media.buildNameSimple(true)],
       ),
     );
   }
 
-  Widget buildMediaImage() {
+  Widget _buildMediaImage() {
     return Container(
       decoration: BoxDecoration(
         boxShadow: [BoxShadow(color: Colors.black.withAlpha(120), blurRadius: 8, offset: Offset(0, 4))],

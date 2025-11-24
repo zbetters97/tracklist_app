@@ -16,36 +16,36 @@ class TrackContent extends StatefulWidget {
 }
 
 class _TrackContentState extends State<TrackContent> {
-  bool isLoading = true;
-  List<Review> reviews = [];
+  bool _isLoading = true;
+  List<Review> _reviews = [];
 
   @override
   void initState() {
     super.initState();
-    fetchReviews();
+    _fetchReviews();
   }
 
-  void fetchReviews() async {
-    setState(() => isLoading = true);
+  void _fetchReviews() async {
+    setState(() => _isLoading = true);
 
     List<Review> fetchedReviews = await getReviewsByMediaId(widget.track.id);
 
     setState(() {
-      reviews = fetchedReviews;
-      isLoading = false;
+      _reviews = fetchedReviews;
+      _isLoading = false;
     });
   }
 
-  void switchTab(int index) {
-    setState(() => fetchReviews());
+  void _switchTab(int index) {
+    setState(() => _fetchReviews());
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [buildTabs()]);
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [__buildTabs()]);
   }
 
-  Widget buildTabs() {
+  Widget __buildTabs() {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(8.0),
@@ -53,24 +53,24 @@ class _TrackContentState extends State<TrackContent> {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [buildTab(0, "Reviews")]),
+            child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [_buildTab(0, "Reviews")]),
           ),
-          isLoading ? LoadingIcon() : MediaReviews(reviews: reviews),
+          _isLoading ? LoadingIcon() : MediaReviews(reviews: _reviews),
         ],
       ),
     );
   }
 
-  Widget buildTab(int index, String title) {
+  Widget _buildTab(int index, String title) {
     return GestureDetector(
-      onTap: () => switchTab(index),
+      onTap: () => _switchTab(index),
       child: Column(
+        spacing: 5.0,
         children: [
           Text(
             title,
             style: TextStyle(color: PRIMARY_COLOR, fontSize: 24, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 5),
           Container(
             height: 5,
             width: 85,

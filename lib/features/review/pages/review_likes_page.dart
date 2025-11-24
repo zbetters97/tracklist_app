@@ -17,38 +17,38 @@ class ReviewLikesPage extends StatefulWidget {
 }
 
 class _ReviewLikesPageState extends State<ReviewLikesPage> {
-  bool isLoading = true;
-  List<AppUser> users = [];
-  List<AppUser> filteredUsers = [];
-  TextEditingController searchController = TextEditingController();
+  bool _isLoading = true;
+  List<AppUser> _users = [];
+  List<AppUser> _filteredUsers = [];
+  final TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    fetchUsers();
+    _fetchUsers();
   }
 
-  void fetchUsers() async {
-    setState(() => isLoading = true);
+  void _fetchUsers() async {
+    setState(() => _isLoading = true);
 
     List<AppUser> fetchedUsers = await getReviewLikeUsers(widget.review.reviewId);
 
     setState(() {
-      users = fetchedUsers;
-      filteredUsers = fetchedUsers;
-      isLoading = false;
+      _users = fetchedUsers;
+      _filteredUsers = fetchedUsers;
+      _isLoading = false;
     });
   }
 
-  void onSearchPressed() {
+  void _onSearchPressed() {
     final query = searchController.text.toLowerCase();
 
     if (query.trim().isEmpty) {
-      setState(() => filteredUsers = users);
+      setState(() => _filteredUsers = _users);
     }
 
     setState(() {
-      filteredUsers = users.where((user) {
+      _filteredUsers = _users.where((user) {
         final String username = user.username.toLowerCase();
         final String displayName = user.displayname.toLowerCase();
 
@@ -64,17 +64,17 @@ class _ReviewLikesPageState extends State<ReviewLikesPage> {
       appBar: DefaultAppBar(title: "Likes"),
       backgroundColor: BACKGROUND_COLOR,
       body: SingleChildScrollView(
-        child: isLoading
+        child: _isLoading
             ? LoadingIcon()
             : Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Column(spacing: 16.0, children: [buildSearchBar(), buildUsersList(users)]),
+                child: Column(spacing: 16.0, children: [_buildSearchBar(), _buildUsersList(_users)]),
               ),
       ),
     );
   }
 
-  Widget buildSearchBar() {
+  Widget _buildSearchBar() {
     return TextFormField(
       controller: searchController,
       style: TextStyle(fontSize: 20),
@@ -83,26 +83,26 @@ class _ReviewLikesPageState extends State<ReviewLikesPage> {
         border: OutlineInputBorder(),
         enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
         prefixIcon: Icon(Icons.search),
-        suffixIcon: IconButton(icon: Icon(Icons.arrow_forward), onPressed: () => onSearchPressed()),
+        suffixIcon: IconButton(icon: Icon(Icons.arrow_forward), onPressed: () => _onSearchPressed()),
       ),
-      onChanged: (_) => onSearchPressed(),
-      onFieldSubmitted: (_) => onSearchPressed(),
+      onChanged: (_) => _onSearchPressed(),
+      onFieldSubmitted: (_) => _onSearchPressed(),
     );
   }
 
-  Widget buildUsersList(List<AppUser> users) {
+  Widget _buildUsersList(List<AppUser> users) {
     if (users.isEmpty) {
       return EmptyText(message: "No likes yet!");
     }
 
-    if (searchController.text.trim().isNotEmpty && filteredUsers.isEmpty) {
+    if (searchController.text.trim().isNotEmpty && _filteredUsers.isEmpty) {
       return EmptyText(message: "No users found!");
     }
 
-    if (filteredUsers.isNotEmpty) {
+    if (_filteredUsers.isNotEmpty) {
       return Column(
         spacing: 12.0,
-        children: filteredUsers.map((user) => UserCardWidget(key: ValueKey(user.uid), user: user)).toList(),
+        children: _filteredUsers.map((user) => UserCardWidget(key: ValueKey(user.uid), user: user)).toList(),
       );
     }
 

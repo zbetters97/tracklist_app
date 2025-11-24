@@ -13,17 +13,17 @@ class RatingsBar extends StatefulWidget {
 
 class _RatingsBarState extends State<RatingsBar> {
   late Map<double, int> ratings;
-  int totalRatings = 0;
+  int _totalRatings = 0;
 
   @override
   void initState() {
     super.initState();
-    setRatings();
+    _setRatings();
   }
 
-  void setRatings() {
+  void _setRatings() {
+    _totalRatings = widget.reviews.size;
     Map<double, int> baseRatings = {0.5: 0, 1: 0, 1.5: 0, 2: 0, 2.5: 0, 3: 0, 3.5: 0, 4: 0, 4.5: 0, 5: 0};
-    totalRatings = widget.reviews.size;
 
     for (DocumentSnapshot doc in widget.reviews.docs) {
       double rating = doc["rating"].toDouble();
@@ -50,7 +50,7 @@ class _RatingsBarState extends State<RatingsBar> {
             final int count = ratings[rating] ?? 0;
 
             // Minimum of 5%, maximum of 100%
-            final double percentage = totalRatings == 0 ? 0.05 : (count / totalRatings).clamp(0.05, 1.0);
+            final double percentage = _totalRatings == 0 ? 0.05 : (count / _totalRatings).clamp(0.05, 1.0);
 
             return GestureDetector(
               onTap: () => ratingNotifier.value = rating,

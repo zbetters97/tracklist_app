@@ -3,7 +3,6 @@ import 'package:tracklist_app/core/widgets/empty_text.dart';
 import 'package:tracklist_app/features/user/models/app_user_class.dart';
 import 'package:tracklist_app/features/media/models/media_class.dart';
 import 'package:tracklist_app/features/media/services/spotify_service.dart';
-import 'package:tracklist_app/features/media/pages/media_page.dart';
 import 'package:tracklist_app/features/media/widgets/rated_media_card_widget.dart';
 import 'package:tracklist_app/features/user/services/user_service.dart';
 import 'package:tracklist_app/features/user/widgets/user_card_widget.dart';
@@ -19,44 +18,48 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   final _formKey = GlobalKey<FormState>();
 
-  String selectedCategory = "artist";
-  TextEditingController searchController = TextEditingController();
+  String _selectedCategory = "artist";
+  final TextEditingController _searchController = TextEditingController();
 
-  List<Media> mediaResults = [];
-  List<AppUser> userResults = [];
-
-  Future<void> onSearchPressed() async {
-    if (searchController.text.isEmpty) return;
-
-    if (selectedCategory == "user") {
-      final List<AppUser> users = await searchUsers(searchController.text);
-      if (users.isEmpty) return;
-
-      userResults.clear();
-      for (final AppUser user in users) {
-        setState(() => userResults.add(user));
-      }
-    } else {
-      final List<Media> media = await searchByCategory(selectedCategory, searchController.text);
-      if (media.isEmpty) return;
-
-      mediaResults.clear();
-      for (final Media item in media) {
-        setState(() => mediaResults.add(item));
-      }
-    }
-  }
-
-  void sendToMediaPage(BuildContext context, Media media) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => MediaPage(media: media)));
-  }
+  final List<Media> _mediaResults = [];
+  final List<AppUser> _userResults = [];
 
   @override
   void dispose() {
-    searchController.dispose();
-    mediaResults.clear();
-    userResults.clear();
+    _searchController.dispose();
+    _mediaResults.clear();
+    _userResults.clear();
     super.dispose();
+  }
+
+  Future<void> _onSearchPressed() async {
+    if (_searchController.text.isEmpty) return;
+
+    if (_selectedCategory == "user") {
+      await _fetchUsers();
+    } else {
+      await _fetchMedia();
+    }
+  }
+
+  Future<void> _fetchUsers() async {
+    final List<AppUser> users = await searchUsers(_searchController.text);
+    if (users.isEmpty) return;
+
+    _userResults.clear();
+    for (final AppUser user in users) {
+      setState(() => _userResults.add(user));
+    }
+  }
+
+  Future<void> _fetchMedia() async {
+    final List<Media> media = await searchByCategory(_selectedCategory, _searchController.text);
+    if (media.isEmpty) return;
+
+    _mediaResults.clear();
+    for (final Media item in media) {
+      setState(() => _mediaResults.add(item));
+    }
   }
 
   @override
@@ -69,10 +72,10 @@ class _SearchPageState extends State<SearchPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: 8.0,
           children: [
-            buildSearchBar(),
-            buildCategoryDropdown(),
+            _buildSearchBar(),
+            _buildCategoryDropdown(),
             Expanded(
-              child: selectedCategory == "user" ? buildUserResults(userResults) : buildMediaResults(mediaResults),
+              child: _selectedCategory == "user" ? _buildUserResults(_userResults) : _buildMediaResults(_mediaResults),
             ),
           ],
         ),
@@ -80,22 +83,22 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  Widget buildSearchBar() {
+  Widget _buildSearchBar() {
     return TextFormField(
-      controller: searchController,
+      controller: _searchController,
       style: TextStyle(fontSize: 20),
       decoration: InputDecoration(
         contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         border: OutlineInputBorder(),
         enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
         prefixIcon: Icon(Icons.search),
-        suffixIcon: IconButton(icon: Icon(Icons.arrow_forward), onPressed: () => onSearchPressed()),
+        suffixIcon: IconButton(icon: Icon(Icons.arrow_forward), onPressed: () => _onSearchPressed()),
       ),
-      onFieldSubmitted: (_) => onSearchPressed(),
+      onFieldSubmitted: (_) => _onSearchPressed(),
     );
   }
 
-  Widget buildCategoryDropdown() {
+  Widget _buildCategoryDropdown() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(border: Border.all(color: Colors.white)),
@@ -108,20 +111,20 @@ class _SearchPageState extends State<SearchPage> {
         ],
         underline: SizedBox(),
         style: TextStyle(fontSize: 20),
-        value: selectedCategory,
+        value: _selectedCategory,
         onChanged: (value) => {
           setState(() {
-            selectedCategory = value!;
-            onSearchPressed();
+            _selectedCategory = value!;
+            _onSearchPressed();
           }),
         },
       ),
     );
   }
 
-  Widget buildMediaResults(List<Media> results) {
+  Widget _buildMediaResults(List<Media> results) {
     if (results.isEmpty) {
-      return searchController.text == "" ? Container() : EmptyText(message: "No media found!");
+      return _searchController.text == "" ? Container() : EmptyText(message: "No media found!");
     }
 
     return ListView.builder(
@@ -138,9 +141,9 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  Widget buildUserResults(List<AppUser> results) {
+  Widget _buildUserResults(List<AppUser> results) {
     if (results.isEmpty) {
-      return searchController.text == "" ? Container() : EmptyText(message: "No users found!");
+      return _searchController.text == "" ? Container() : EmptyText(message: "No users found!");
     }
 
     return ListView.builder(

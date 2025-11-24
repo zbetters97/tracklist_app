@@ -14,20 +14,20 @@ class PostCommentWidget extends StatefulWidget {
 }
 
 class _PostCommentWidgetState extends State<PostCommentWidget> {
-  TextEditingController commentController = TextEditingController();
-
-  void onPostPressed() {
-    if (commentController.text.isEmpty) return;
-    if (commentController.text.trim().isEmpty) return;
-
-    widget.onPostComment(commentController.text, widget.replyingToId);
-    commentController.clear();
-  }
+  final TextEditingController _commentController = TextEditingController();
 
   @override
   void dispose() {
-    commentController.dispose();
+    _commentController.dispose();
     super.dispose();
+  }
+
+  void _onPostPressed() {
+    if (_commentController.text.isEmpty) return;
+    if (_commentController.text.trim().isEmpty) return;
+
+    widget.onPostComment(_commentController.text, widget.replyingToId);
+    _commentController.clear();
   }
 
   @override
@@ -40,16 +40,16 @@ class _PostCommentWidgetState extends State<PostCommentWidget> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       spacing: 8.0,
-      children: [profileImage, buildTextField(), buildPostButton()],
+      children: [profileImage, _buildTextField(), _buildPostButton()],
     );
   }
 
-  Widget buildTextField() {
+  Widget _buildTextField() {
     return Expanded(
       child: ConstrainedBox(
         constraints: BoxConstraints(maxHeight: 40),
         child: TextField(
-          controller: commentController,
+          controller: _commentController,
           style: TextStyle(fontSize: 16),
           decoration: InputDecoration(
             contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
@@ -63,7 +63,7 @@ class _PostCommentWidgetState extends State<PostCommentWidget> {
     );
   }
 
-  Widget buildPostButton() {
+  Widget _buildPostButton() {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         minimumSize: Size(0.0, 40.0),
@@ -72,7 +72,7 @@ class _PostCommentWidgetState extends State<PostCommentWidget> {
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       ),
-      onPressed: () => onPostPressed(),
+      onPressed: () => _onPostPressed(),
       child: Text("Post", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
     );
   }

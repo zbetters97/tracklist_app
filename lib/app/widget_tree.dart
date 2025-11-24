@@ -23,6 +23,7 @@ class WidgetTree extends StatelessWidget {
       valueListenable: selectedPageNotifier,
       builder: (context, selectedPage, child) {
         final currentPage = pages[selectedPage];
+
         return Scaffold(
           backgroundColor: BACKGROUND_COLOR,
           body: SafeArea(child: currentPage.value),

@@ -24,7 +24,13 @@ class _UserFollowButtonState extends State<UserFollowButton> {
     setState(() => isFollowing = user.followers.contains(authUser.value!.uid));
   }
 
-  void onFollowPressed() async {
+  @override
+  void dispose() {
+    isFollowing = false;
+    super.dispose();
+  }
+
+  void _onFollowPressed() async {
     if (isFollowing) {
       await unfollowUser(userId: user.uid);
     } else {
@@ -39,18 +45,12 @@ class _UserFollowButtonState extends State<UserFollowButton> {
   }
 
   @override
-  void dispose() {
-    isFollowing = false;
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         ElevatedButton(
-          onPressed: () => onFollowPressed(),
+          onPressed: () => _onFollowPressed(),
           style: ElevatedButton.styleFrom(
             backgroundColor: PRIMARY_COLOR_DARK,
             shape: RoundedRectangleBorder(),

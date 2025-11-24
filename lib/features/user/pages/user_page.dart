@@ -24,32 +24,38 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
-  bool isLoading = true;
+  bool _isLoading = true;
   late AppUser user;
-  bool isLoggedInUser = false;
+  bool _isLoggedInUser = false;
 
-  final List<String> tabs = ["Reviews", "Lists", "Likes"];
-  int selectedTab = 0;
+  final List<String> _tabs = ["Reviews", "Lists", "Likes"];
+  int _selectedTab = 0;
 
   @override
   void initState() {
     super.initState();
-    fetchUser();
+    _fetchUser();
   }
 
-  void fetchUser() async {
-    setState(() => isLoading = true);
+  @override
+  void dispose() {
+    _isLoading = false;
+    super.dispose();
+  }
+
+  void _fetchUser() async {
+    setState(() => _isLoading = true);
 
     // If no passed uid, get current user's uid
     String uid = widget.uid == "" ? authUser.value!.uid : widget.uid;
 
     if (!mounted) return;
 
-    isLoggedInUser = uid == authUser.value!.uid;
+    _isLoggedInUser = uid == authUser.value!.uid;
 
     // User is on their own profile, highlight Profile tab
-    if (isLoggedInUser) {
-      // Wait for build to finish
+    if (_isLoggedInUser) {
+      // Wait for _build to finish
       WidgetsBinding.instance.addPostFrameCallback((_) {
         selectedPageNotifier.value = 4;
       });
@@ -61,10 +67,10 @@ class _UserPageState extends State<UserPage> {
 
     if (!mounted) return;
 
-    setState(() => isLoading = false);
+    setState(() => _isLoading = false);
   }
 
-  void onFollowChanged(bool isFollowing) {
+  void _onFollowChanged(bool isFollowing) {
     setState(() {
       if (isFollowing) {
         user.followers.remove(authUser.value!.uid);
@@ -74,7 +80,7 @@ class _UserPageState extends State<UserPage> {
     });
   }
 
-  void onLogoutPressed() {
+  void _onLogoutPressed() {
     authService.value.signOut();
 
     // Reset selected page
@@ -86,7 +92,7 @@ class _UserPageState extends State<UserPage> {
     ).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const WelcomePage()), (route) => false);
   }
 
-  void sendToFriendsPage(bool isFollowers) {
+  void _sendToFriendsPage(bool isFollowers) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -96,26 +102,20 @@ class _UserPageState extends State<UserPage> {
   }
 
   @override
-  void dispose() {
-    isLoading = false;
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (isLoading) {
+    if (_isLoading) {
       return LoadingIcon();
     }
 
     return Scaffold(
-      appBar: isLoggedInUser ? UserAppBar(user: user, onLogoutPressed: onLogoutPressed) : DefaultAppBar(title: ""),
+      appBar: _isLoggedInUser ? UserAppBar(onLogoutPressed: _onLogoutPressed) : DefaultAppBar(title: ""),
       backgroundColor: BACKGROUND_COLOR,
       extendBodyBehindAppBar: true,
-      body: buildUserProfile(),
+      body: __buildUserProfile(),
     );
   }
 
-  Widget buildUserProfile() {
+  Widget __buildUserProfile() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -125,25 +125,25 @@ class _UserPageState extends State<UserPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             spacing: 3.0,
             children: [
-              buildProfile(),
-              buildBio(),
-              buildDate(),
-              buildFriends(),
-              if (!isLoggedInUser) UserFollowButton(user: user, onFollowChanged: onFollowChanged),
+              _buildProfile(),
+              _buildBio(),
+              _buildDate(),
+              _buildFriends(),
+              if (!_isLoggedInUser) UserFollowButton(user: user, onFollowChanged: _onFollowChanged),
             ],
           ),
         ),
-        buildUserTabs(),
-        buildSelectedTab(),
+        _buildUserTabs(),
+        _buildSelectedTab(),
       ],
     );
   }
 
-  Widget buildProfile() {
-    return Column(children: [user.buildProfileImage(context, 50.0), buildUsername()]);
+  Widget _buildProfile() {
+    return Column(children: [user.buildProfileImage(context, 50.0), _buildUsername()]);
   }
 
-  Widget buildUsername() {
+  Widget _buildUsername() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       spacing: 5.0,
@@ -157,7 +157,7 @@ class _UserPageState extends State<UserPage> {
     );
   }
 
-  Widget buildBio() {
+  Widget _buildBio() {
     if (user.bio == "") {
       return Container();
     }
@@ -168,7 +168,7 @@ class _UserPageState extends State<UserPage> {
     );
   }
 
-  Widget buildDate() {
+  Widget _buildDate() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       spacing: 2.0,
@@ -179,19 +179,19 @@ class _UserPageState extends State<UserPage> {
     );
   }
 
-  Widget buildFriends() {
+  Widget _buildFriends() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       spacing: 10.0,
-      children: [buildFriendsTab(true), buildFriendsTab(false)],
+      children: [_buildFriendsTab(true), _buildFriendsTab(false)],
     );
   }
 
-  Widget buildFriendsTab(bool isFollowers) {
+  Widget _buildFriendsTab(bool isFollowers) {
     String text = isFollowers ? user.followers.length.toString() : user.following.length.toString();
 
     return GestureDetector(
-      onTap: () => sendToFriendsPage(isFollowers),
+      onTap: () => _sendToFriendsPage(isFollowers),
       child: Text.rich(
         TextSpan(
           style: TextStyle(color: Colors.grey, fontSize: 16),
@@ -207,13 +207,13 @@ class _UserPageState extends State<UserPage> {
     );
   }
 
-  Widget buildUserTabs() {
+  Widget _buildUserTabs() {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: ToggleButtons(
-        isSelected: List.generate(tabs.length, (index) => index == selectedTab),
+        isSelected: List.generate(_tabs.length, (index) => index == _selectedTab),
         onPressed: (index) => setState(() {
-          selectedTab = index;
+          _selectedTab = index;
         }),
         color: Colors.white,
         fillColor: PRIMARY_COLOR,
@@ -222,9 +222,9 @@ class _UserPageState extends State<UserPage> {
         borderColor: PRIMARY_COLOR_DARK,
         borderWidth: 1,
         constraints: BoxConstraints(maxHeight: 40),
-        children: tabs.map((tab) {
+        children: _tabs.map((tab) {
           return Container(
-            color: tabs.indexOf(tab) == selectedTab ? PRIMARY_COLOR : PRIMARY_COLOR_DARK,
+            color: _tabs.indexOf(tab) == _selectedTab ? PRIMARY_COLOR : PRIMARY_COLOR_DARK,
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
             alignment: Alignment.center,
             child: Text(tab, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
@@ -234,10 +234,10 @@ class _UserPageState extends State<UserPage> {
     );
   }
 
-  Widget buildSelectedTab() {
-    Widget currentSection = selectedTab == 0
+  Widget _buildSelectedTab() {
+    Widget currentSection = _selectedTab == 0
         ? UserReviewsContent(user: user)
-        : selectedTab == 1
+        : _selectedTab == 1
         ? Container()
         : UserLikesContent(user: user);
 

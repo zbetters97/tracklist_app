@@ -14,18 +14,18 @@ class RatedMediaCardWidget extends StatefulWidget {
 
 class _RatedMediaCardWidgetState extends State<RatedMediaCardWidget> {
   Media get media => widget.media;
-  double rating = 0.0;
+  double _rating = 0.0;
 
   @override
   void initState() {
     super.initState();
-    fetchRating();
+    _fetchRating();
   }
 
-  void fetchRating() async {
+  void _fetchRating() async {
     double fetchedRating = await getAvgRating(media.id);
 
-    setState(() => rating = fetchedRating);
+    setState(() => _rating = fetchedRating);
   }
 
   @override
@@ -42,9 +42,9 @@ class _RatedMediaCardWidgetState extends State<RatedMediaCardWidget> {
             crossAxisAlignment: CrossAxisAlignment.center,
             spacing: 10.0,
             children: [
-              buildMediaImage(media.image),
-              buildMediaName(media.name),
-              StarRating(rating: rating, isCentered: true),
+              _buildMediaImage(media.image),
+              _buildMediaName(media.name),
+              StarRating(rating: _rating, isCentered: true),
             ],
           ),
         ),
@@ -52,7 +52,7 @@ class _RatedMediaCardWidgetState extends State<RatedMediaCardWidget> {
     );
   }
 
-  Widget buildMediaImage(String imageUrl) {
+  Widget _buildMediaImage(String imageUrl) {
     Image mediaImage = imageUrl.startsWith("http")
         ? Image.network(imageUrl, width: 275, height: 275, fit: BoxFit.cover)
         : Image.asset(imageUrl, width: 275, height: 275, fit: BoxFit.cover);
@@ -65,7 +65,7 @@ class _RatedMediaCardWidgetState extends State<RatedMediaCardWidget> {
     );
   }
 
-  Widget buildMediaName(String name) {
+  Widget _buildMediaName(String name) {
     return Text(
       name,
       style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20.0),

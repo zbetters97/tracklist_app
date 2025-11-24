@@ -10,21 +10,21 @@ class NavitemWidget extends StatelessWidget {
 
   const NavitemWidget({super.key, required this.icon, required this.index, required this.selectedPage});
 
+  void _navigateToPage() {
+    if (index == 0) {
+      NavigationService().homeNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+    } else if (index == 1) {
+      NavigationService().searchNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+    } else if (index == 4) {
+      NavigationService().userNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+    }
+
+    selectedPageNotifier.value = index;
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isCurrentPage = index == selectedPage;
-
-    void navigateToPage() {
-      if (index == 0) {
-        NavigationService().homeNavigatorKey.currentState?.popUntil((route) => route.isFirst);
-      } else if (index == 1) {
-        NavigationService().searchNavigatorKey.currentState?.popUntil((route) => route.isFirst);
-      } else if (index == 4) {
-        NavigationService().userNavigatorKey.currentState?.popUntil((route) => route.isFirst);
-      }
-
-      selectedPageNotifier.value = index;
-    }
 
     return Column(
       children: [
@@ -38,7 +38,7 @@ class NavitemWidget extends StatelessWidget {
         ),
         IconButton(
           icon: Icon(icon, color: isCurrentPage ? PRIMARY_COLOR : Colors.white, size: 35),
-          onPressed: () => navigateToPage(),
+          onPressed: () => _navigateToPage(),
         ),
       ],
     );

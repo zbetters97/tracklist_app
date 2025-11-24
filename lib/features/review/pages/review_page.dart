@@ -27,16 +27,16 @@ class _ReviewPageState extends State<ReviewPage> {
   late Media media;
   late AppUser user;
 
-  bool isLoading = true;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    fetchReview();
+    _fetchReview();
   }
 
-  void fetchReview() async {
-    setState(() => isLoading = true);
+  void _fetchReview() async {
+    setState(() => _isLoading = true);
 
     Review fetchedReview = await getReviewById(widget.reviewId);
 
@@ -44,11 +44,11 @@ class _ReviewPageState extends State<ReviewPage> {
       review = fetchedReview;
       media = fetchedReview.media;
       user = fetchedReview.user;
-      isLoading = false;
+      _isLoading = false;
     });
   }
 
-  void onVoteReview(bool isLiked) async {
+  void _onVoteReview(bool isLiked) async {
     setState(() {
       if (isLiked) {
         review.likes.remove(authUser.value!.uid);
@@ -61,7 +61,7 @@ class _ReviewPageState extends State<ReviewPage> {
     await voteReview(review.reviewId);
   }
 
-  void onDeleteReview() async {
+  void _onDeleteReview() async {
     bool? confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -79,23 +79,23 @@ class _ReviewPageState extends State<ReviewPage> {
     bool isReviewDeleted = await deleteReview(review.reviewId);
 
     if (isReviewDeleted) {
-      popPage();
+      _popPage();
     }
   }
 
-  void popPage() {
+  void _popPage() {
     Navigator.pop(context);
   }
 
-  void sendToMediaPage() {
+  void _sendToMediaPage() {
     Navigator.push(context, MaterialPageRoute(builder: (context) => MediaPage(media: media)));
   }
 
-  void sendToUserPage() {
+  void _sendToUserPage() {
     Navigator.push(context, MaterialPageRoute(builder: (context) => UserPage(uid: user.uid)));
   }
 
-  void sendToLikesPage() {
+  void _sendToLikesPage() {
     Navigator.push(context, MaterialPageRoute(builder: (context) => ReviewLikesPage(review: review)));
   }
 
@@ -105,7 +105,7 @@ class _ReviewPageState extends State<ReviewPage> {
       appBar: DefaultAppBar(title: "Review"),
       backgroundColor: BACKGROUND_COLOR,
       body: SingleChildScrollView(
-        child: isLoading
+        child: _isLoading
             ? LoadingIcon()
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -115,13 +115,13 @@ class _ReviewPageState extends State<ReviewPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        buildMediaBanner(),
+                        _buildMediaBanner(),
                         const SizedBox(height: 24.0),
-                        buildReviewHeader(),
+                        _buildReviewHeader(),
                         const SizedBox(height: 4.0),
                         review.buildContent(20.0),
                         const SizedBox(height: 24.0),
-                        buildReviewButtons(),
+                        _buildReviewButtons(),
                       ],
                     ),
                   ),
@@ -133,9 +133,9 @@ class _ReviewPageState extends State<ReviewPage> {
     );
   }
 
-  Widget buildMediaBanner() {
+  Widget _buildMediaBanner() {
     return GestureDetector(
-      onTap: () => sendToMediaPage(),
+      onTap: () => _sendToMediaPage(),
       child: Column(
         spacing: 8.0,
         children: [
@@ -151,12 +151,12 @@ class _ReviewPageState extends State<ReviewPage> {
     );
   }
 
-  Widget buildReviewHeader() {
+  Widget _buildReviewHeader() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       spacing: 8.0,
       children: [
-        GestureDetector(onTap: () => sendToUserPage(), child: user.buildProfileImage(context, 30.0)),
+        GestureDetector(onTap: () => _sendToUserPage(), child: user.buildProfileImage(context, 30.0)),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,7 +169,7 @@ class _ReviewPageState extends State<ReviewPage> {
                     TextSpan(
                       text: user.username,
                       style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                      recognizer: TapGestureRecognizer()..onTap = () => sendToUserPage(),
+                      recognizer: TapGestureRecognizer()..onTap = () => _sendToUserPage(),
                     ),
                   ],
                 ),
@@ -183,21 +183,21 @@ class _ReviewPageState extends State<ReviewPage> {
     );
   }
 
-  Widget buildReviewButtons() {
+  Widget _buildReviewButtons() {
     bool isPoster = review.user.uid == authUser.value!.uid;
 
     return Row(
       spacing: 20.0,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        review.buildLikeButtonDetailed(onVoteReview, sendToLikesPage),
-        buildShareButton(),
-        if (isPoster) review.buildDeleteButton(onDeleteReview),
+        review.buildLikeButtonDetailed(_onVoteReview, _sendToLikesPage),
+        _buildShareButton(),
+        if (isPoster) review.buildDeleteButton(_onDeleteReview),
       ],
     );
   }
 
-  Widget buildShareButton() {
+  Widget _buildShareButton() {
     // TODO: Add functionality to share button
     return Icon(Icons.send, size: 30);
   }

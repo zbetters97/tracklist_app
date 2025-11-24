@@ -11,14 +11,14 @@ class NavigationService {
   final GlobalKey<NavigatorState> searchNavigatorKey = GlobalKey<NavigatorState>();
   final GlobalKey<NavigatorState> userNavigatorKey = GlobalKey<NavigatorState>();
 
-  static const int homeTabIndex = 0;
-  static const int searchTabIndex = 1;
-  static const int userTabIndex = 4;
+  static const int _homeTabIndex = 0;
+  static const int _searchTabIndex = 1;
+  static const int _userTabIndex = 4;
 
   GlobalKey<NavigatorState>? _getNavigatorKey(int tabIndex) {
-    if (tabIndex == homeTabIndex) return homeNavigatorKey;
-    if (tabIndex == searchTabIndex) return searchNavigatorKey;
-    if (tabIndex == userTabIndex) return userNavigatorKey;
+    if (tabIndex == _homeTabIndex) return homeNavigatorKey;
+    if (tabIndex == _searchTabIndex) return searchNavigatorKey;
+    if (tabIndex == _userTabIndex) return userNavigatorKey;
 
     return null;
   }

@@ -32,17 +32,17 @@ class TrackList extends StatefulWidget {
 }
 
 class _TrackListState extends State<TrackList> {
-  bool isLoading = true;
-  bool isSignedIn = false;
+  bool _isLoading = true;
+  bool _isSignedIn = false;
 
   @override
   void initState() {
     super.initState();
-    fetchAuthUser();
+    _fetchAuthUser();
   }
 
-  void fetchAuthUser() async {
-    setState(() => isLoading = true);
+  void _fetchAuthUser() async {
+    setState(() => _isLoading = true);
 
     // Check if user is already logged in
     User? currentUser = FirebaseAuth.instance.currentUser;
@@ -50,15 +50,15 @@ class _TrackListState extends State<TrackList> {
     if (currentUser != null) {
       // Create logged in user notifier
       bool fetchedSignIn = await authService.value.getAuthUser(currentUser);
-      setState(() => isSignedIn = fetchedSignIn);
+      setState(() => _isSignedIn = fetchedSignIn);
     }
 
-    setState(() => isLoading = false);
+    setState(() => _isLoading = false);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
+    if (_isLoading) {
       return LoadingIcon();
     }
 
@@ -70,7 +70,7 @@ class _TrackListState extends State<TrackList> {
         colorScheme: ColorScheme.fromSeed(seedColor: PRIMARY_COLOR, brightness: Brightness.dark),
       ),
       // If already signed in, send to WidgetTree
-      home: isSignedIn ? WidgetTree() : WelcomePage(),
+      home: _isSignedIn ? WidgetTree() : WelcomePage(),
     );
   }
 }

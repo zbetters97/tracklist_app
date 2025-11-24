@@ -16,123 +16,130 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int currentTab = 0;
-  bool isLoading = true;
+  int _currentTab = 0;
+  bool _isLoading = true;
 
-  bool isLoadingNew = false;
-  bool isLoadingPopular = false;
+  bool _isLoadingNew = false;
+  bool _isLoadingPopular = false;
 
-  DocumentSnapshot? lastNewReviewDoc;
-  DocumentSnapshot? lastPopularReviewDoc;
+  DocumentSnapshot? _lastNewReviewDoc;
+  DocumentSnapshot? _lastPopularReviewDoc;
 
-  final ScrollController newReviewsController = ScrollController();
-  final ScrollController popularReviewsController = ScrollController();
+  final ScrollController __newReviewsController = ScrollController();
+  final ScrollController __popularReviewsController = ScrollController();
 
-  List<Review> newReviews = [];
-  List<Review> popularReviews = [];
+  List<Review> _newReviews = [];
+  List<Review> _popularReviews = [];
 
   @override
   void initState() {
     super.initState();
-    getReviews();
-    attachListeners();
+    _attachListeners();
+    _getReviews();
   }
 
-  void attachListeners() {
-    newReviewsController.addListener(() {
-      if (newReviewsController.position.pixels >= newReviewsController.position.maxScrollExtent - 200 &&
-          !isLoadingNew) {
-        loadMoreNewReviews();
+  @override
+  void dispose() {
+    __newReviewsController.dispose();
+    __popularReviewsController.dispose();
+    super.dispose();
+  }
+
+  void _attachListeners() {
+    __newReviewsController.addListener(() {
+      if (__newReviewsController.position.pixels >= __newReviewsController.position.maxScrollExtent - 200 &&
+          !_isLoadingNew) {
+        _loadMoreNewReviews();
       }
     });
 
-    popularReviewsController.addListener(() {
-      if (popularReviewsController.position.pixels >= popularReviewsController.position.maxScrollExtent - 200 &&
-          !isLoadingPopular) {
-        loadMorePopularReviews();
+    __popularReviewsController.addListener(() {
+      if (__popularReviewsController.position.pixels >= __popularReviewsController.position.maxScrollExtent - 200 &&
+          !_isLoadingPopular) {
+        _loadMorePopularReviews();
       }
     });
   }
 
-  void getReviews() async {
-    if (newReviews.isNotEmpty && popularReviews.isNotEmpty) return;
+  void _getReviews() async {
+    if (_newReviews.isNotEmpty && _popularReviews.isNotEmpty) return;
 
-    setState(() => isLoading = true);
+    setState(() => _isLoading = true);
 
     final List<List<Review>> fetchedReviews = await Future.wait([getFollowingReviews(), getPopularReviews()]);
 
     // Avoids memory leaks
     if (!mounted) return;
 
-    newReviews = fetchedReviews[0];
-    popularReviews = fetchedReviews[1];
+    _newReviews = fetchedReviews[0];
+    _popularReviews = fetchedReviews[1];
 
-    lastNewReviewDoc = newReviews.isNotEmpty ? newReviews.last.doc : null;
-    lastPopularReviewDoc = popularReviews.isNotEmpty ? popularReviews.last.doc : null;
+    _lastNewReviewDoc = _newReviews.isNotEmpty ? _newReviews.last.doc : null;
+    _lastPopularReviewDoc = _popularReviews.isNotEmpty ? _popularReviews.last.doc : null;
 
-    setState(() => isLoading = false);
+    setState(() => _isLoading = false);
   }
 
-  void setReviews(int tabIndex) {
-    if (currentTab == tabIndex) return;
+  void _setReviews(int tabIndex) {
+    if (_currentTab == tabIndex) return;
 
-    setState(() => currentTab = tabIndex);
+    setState(() => _currentTab = tabIndex);
   }
 
-  Future<void> loadMoreNewReviews() async {
-    if (newReviews.isEmpty || isLoadingNew) return;
+  Future<void> _loadMoreNewReviews() async {
+    if (_newReviews.isEmpty || _isLoadingNew) return;
 
-    setState(() => isLoadingNew = true);
+    setState(() => _isLoadingNew = true);
 
-    final List<Review> moreNewReviews = await getFollowingReviews(lastDoc: lastNewReviewDoc);
+    final List<Review> moreNewReviews = await getFollowingReviews(lastDoc: _lastNewReviewDoc);
 
     if (moreNewReviews.isNotEmpty) {
       setState(() {
-        lastNewReviewDoc = moreNewReviews.last.doc;
-        newReviews.addAll(moreNewReviews);
+        _lastNewReviewDoc = moreNewReviews.last.doc;
+        _newReviews.addAll(moreNewReviews);
       });
     }
 
-    setState(() => isLoadingNew = false);
+    setState(() => _isLoadingNew = false);
   }
 
-  Future<void> loadMorePopularReviews() async {
-    if (popularReviews.isEmpty || isLoadingPopular) return;
+  Future<void> _loadMorePopularReviews() async {
+    if (_popularReviews.isEmpty || _isLoadingPopular) return;
 
-    setState(() => isLoadingPopular = true);
+    setState(() => _isLoadingPopular = true);
 
-    final List<Review> morePopularReviews = await getPopularReviews(lastDoc: lastPopularReviewDoc);
+    final List<Review> morePopularReviews = await getPopularReviews(lastDoc: _lastPopularReviewDoc);
 
     if (morePopularReviews.isNotEmpty) {
       setState(() {
-        lastPopularReviewDoc = morePopularReviews.last.doc;
-        popularReviews.addAll(morePopularReviews);
+        _lastPopularReviewDoc = morePopularReviews.last.doc;
+        _popularReviews.addAll(morePopularReviews);
       });
     }
 
-    setState(() => isLoadingPopular = false);
+    setState(() => _isLoadingPopular = false);
   }
 
-  Future<void> refreshReviews() async {
-    newReviews.clear();
-    popularReviews.clear();
+  Future<void> _refreshReviews() async {
+    _newReviews.clear();
+    _popularReviews.clear();
 
     setState(() {
-      isLoadingNew = false;
-      isLoadingPopular = false;
+      _isLoadingNew = false;
+      _isLoadingPopular = false;
 
-      lastNewReviewDoc = null;
-      lastPopularReviewDoc = null;
+      _lastNewReviewDoc = null;
+      _lastPopularReviewDoc = null;
     });
 
-    getReviews();
+    _getReviews();
   }
 
-  void onOpenReview(String reviewId) {
+  void _onOpenReview(String reviewId) {
     NavigationService().openReview(reviewId);
   }
 
-  void onDeleteReview(String reviewId) async {
+  void _onDeleteReview(String reviewId) async {
     bool? confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -150,32 +157,25 @@ class _HomePageState extends State<HomePage> {
     bool isReviewDeleted = await deleteReview(reviewId);
 
     if (isReviewDeleted) {
-      refreshReviews();
+      _refreshReviews();
     }
   }
 
-  void sendToAddReviewPage() {
+  void _sendToAddReviewPage() {
     NavigationService().openAddReview();
-  }
-
-  @override
-  void dispose() {
-    newReviewsController.dispose();
-    popularReviewsController.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Column(children: [buildHero(), buildTopBar(), buildReviews()]),
-        buildPostReviewButton(),
+        Column(children: [_buildHero(), _buildTopBar(), _buildReviews()]),
+        _buildPostReviewButton(),
       ],
     );
   }
 
-  Widget buildHero() {
+  Widget _buildHero() {
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -189,7 +189,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget buildTopBar() {
+  Widget _buildTopBar() {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.only(top: 12),
@@ -201,20 +201,20 @@ class _HomePageState extends State<HomePage> {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [buildHomeTab(0, "Newest"), SizedBox(width: 30), buildHomeTab(1, "For You")],
+        children: [_buildHomeTab(0, "Newest"), SizedBox(width: 30), _buildHomeTab(1, "For You")],
       ),
     );
   }
 
-  Widget buildHomeTab(int index, String title) {
+  Widget _buildHomeTab(int index, String title) {
     return GestureDetector(
-      onTap: () => setReviews(index),
+      onTap: () => _setReviews(index),
       child: Column(
         children: [
           Text(
             title,
             style: TextStyle(
-              color: currentTab == index ? PRIMARY_COLOR : Colors.grey,
+              color: _currentTab == index ? PRIMARY_COLOR : Colors.grey,
               fontSize: 28,
               fontWeight: FontWeight.bold,
             ),
@@ -224,7 +224,7 @@ class _HomePageState extends State<HomePage> {
             height: 5,
             width: 100,
             decoration: BoxDecoration(
-              color: currentTab == index ? PRIMARY_COLOR : Colors.transparent,
+              color: _currentTab == index ? PRIMARY_COLOR : Colors.transparent,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -233,31 +233,31 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget buildReviews() {
-    if (isLoading) {
+  Widget _buildReviews() {
+    if (_isLoading) {
       return const Expanded(child: LoadingIcon());
     }
 
     return Expanded(
       child: IndexedStack(
-        index: currentTab,
+        index: _currentTab,
         children: [
-          newReviews.isEmpty
+          _newReviews.isEmpty
               ? EmptyText(message: "No reviews found!")
-              : buildReviewsList(newReviews, isLoadingNew, newReviewsController),
-          popularReviews.isEmpty
+              : _buildReviewsList(_newReviews, _isLoadingNew, __newReviewsController),
+          _popularReviews.isEmpty
               ? EmptyText(message: "No reviews found!")
-              : buildReviewsList(popularReviews, isLoadingPopular, popularReviewsController),
+              : _buildReviewsList(_popularReviews, _isLoadingPopular, __popularReviewsController),
         ],
       ),
     );
   }
 
-  Widget buildReviewsList(List<Review> reviews, bool isLoadingMore, ScrollController controller) {
+  Widget _buildReviewsList(List<Review> reviews, bool isLoadingMore, ScrollController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: RefreshIndicator.adaptive(
-        onRefresh: () async => refreshReviews(),
+        onRefresh: () async => _refreshReviews(),
         color: PRIMARY_COLOR,
         backgroundColor: SECONDARY_COLOR,
         child: ListView.separated(
@@ -276,8 +276,8 @@ class _HomePageState extends State<HomePage> {
             // Route to Review Page on tap using callback
             return ReviewCardWidget(
               review: reviews[index],
-              onOpenReview: () => onOpenReview(reviews[index].reviewId),
-              onDeleteReview: () => onDeleteReview(reviews[index].reviewId),
+              onOpenReview: () => _onOpenReview(reviews[index].reviewId),
+              onDeleteReview: () => _onDeleteReview(reviews[index].reviewId),
             );
           },
           separatorBuilder: (context, index) => const Divider(color: Colors.grey),
@@ -286,13 +286,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget buildPostReviewButton() {
+  Widget _buildPostReviewButton() {
     return Align(
       alignment: Alignment.bottomRight,
       child: Padding(
         padding: const EdgeInsets.all(15.0),
         child: RawMaterialButton(
-          onPressed: () => sendToAddReviewPage(),
+          onPressed: () => _sendToAddReviewPage(),
           fillColor: PRIMARY_COLOR_DARK,
           shape: CircleBorder(),
           constraints: BoxConstraints.tightFor(width: 65, height: 65),

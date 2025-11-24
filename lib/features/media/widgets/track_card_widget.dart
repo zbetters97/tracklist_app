@@ -14,18 +14,18 @@ class TrackCardWidget extends StatefulWidget {
 
 class _TrackCardWidgetState extends State<TrackCardWidget> {
   Track get media => widget.track;
-  double rating = 0.0;
+  double _rating = 0.0;
 
   @override
   void initState() {
     super.initState();
-    fetchRating();
+    _fetchRating();
   }
 
-  void fetchRating() async {
+  void _fetchRating() async {
     double fetchedRating = await getAvgRating(media.id);
 
-    setState(() => rating = fetchedRating);
+    setState(() => _rating = fetchedRating);
   }
 
   @override
@@ -41,7 +41,7 @@ class _TrackCardWidgetState extends State<TrackCardWidget> {
             "${widget.track.trackNumber}. ${widget.track.name}",
             style: TextStyle(color: Colors.white, fontSize: 18.0, fontWeight: FontWeight.bold),
           ),
-          StarRating(rating: rating, isCentered: true),
+          StarRating(rating: _rating, isCentered: true),
         ],
       ),
     );

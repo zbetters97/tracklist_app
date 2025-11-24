@@ -21,76 +21,76 @@ class ArtistContent extends StatefulWidget {
 }
 
 class _ArtistContentState extends State<ArtistContent> {
-  bool isLoading = true;
-  int currentTab = 0;
+  bool _isLoading = true;
+  int _currentTab = 0;
 
-  List<Album> albums = [];
-  List<Album> singles = [];
-  List<Review> reviews = [];
+  List<Album> _albums = [];
+  List<Album> _singles = [];
+  List<Review> _reviews = [];
 
   @override
   void initState() {
     super.initState();
-    fetchAlbums();
+    _fetchAlbums();
   }
 
-  void fetchAlbums() async {
-    setState(() => isLoading = true);
+  void _fetchAlbums() async {
+    setState(() => _isLoading = true);
 
     List<Album> fetchedAlbums = await getArtistAlbums(widget.artist.id);
 
     setState(() {
-      albums = fetchedAlbums;
-      isLoading = false;
+      _albums = fetchedAlbums;
+      _isLoading = false;
     });
   }
 
-  void fetchSingles() async {
-    setState(() => isLoading = true);
+  void _fetchSingles() async {
+    setState(() => _isLoading = true);
 
     List<Album> fetchedSingles = await getArtistSingles(widget.artist.id);
 
     setState(() {
-      singles = fetchedSingles;
-      isLoading = false;
+      _singles = fetchedSingles;
+      _isLoading = false;
     });
   }
 
-  void fetchReviews() async {
-    setState(() => isLoading = true);
+  void _fetchReviews() async {
+    setState(() => _isLoading = true);
 
     List<Review> fetchedReviews = await getReviewsByMediaId(widget.artist.id);
 
     setState(() {
-      reviews = fetchedReviews;
-      isLoading = false;
+      _reviews = fetchedReviews;
+      _isLoading = false;
     });
   }
 
-  void switchTab(int index) {
-    if (currentTab == index) return;
+  void _switchTab(int index) {
+    if (_currentTab == index) return;
 
     setState(() {
-      currentTab = index;
+      _currentTab = index;
 
-      currentTab == 0
-          ? fetchAlbums()
-          : currentTab == 1
-          ? fetchSingles()
-          : fetchReviews();
+      _currentTab == 0
+          ? _fetchAlbums()
+          : _currentTab == 1
+          ? _fetchSingles()
+          : _fetchReviews();
     });
   }
 
-  void sendToMediaPage(Album album) {
+  void _sendToMediaPage(Album album) {
     Navigator.push(context, MaterialPageRoute(builder: (context) => MediaPage(media: album)));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [buildTabs()]);
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [__buildTabs()]);
   }
 
-  Widget buildTabs() {
+  Widget __buildTabs() {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(8.0),
@@ -100,30 +100,30 @@ class _ArtistContentState extends State<ArtistContent> {
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [buildTab(0, "Albums"), buildTab(1, "Singles"), buildTab(2, "Reviews")],
+              children: [_buildTab(0, "Albums"), _buildTab(1, "Singles"), _buildTab(2, "Reviews")],
             ),
           ),
-          isLoading
+          _isLoading
               ? LoadingIcon()
-              : currentTab == 0
-              ? buildAlbumsList()
-              : currentTab == 1
-              ? buildSinglesList()
-              : MediaReviews(reviews: reviews),
+              : _currentTab == 0
+              ? _buildAlbumsList()
+              : _currentTab == 1
+              ? _buildSinglesList()
+              : MediaReviews(reviews: _reviews),
         ],
       ),
     );
   }
 
-  Widget buildTab(int index, String title) {
+  Widget _buildTab(int index, String title) {
     return GestureDetector(
-      onTap: () => switchTab(index),
+      onTap: () => _switchTab(index),
       child: Column(
         children: [
           Text(
             title,
             style: TextStyle(
-              color: currentTab == index ? PRIMARY_COLOR : Colors.grey,
+              color: _currentTab == index ? PRIMARY_COLOR : Colors.grey,
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
@@ -133,7 +133,7 @@ class _ArtistContentState extends State<ArtistContent> {
             height: 5,
             width: 85,
             decoration: BoxDecoration(
-              color: currentTab == index ? PRIMARY_COLOR : Colors.transparent,
+              color: _currentTab == index ? PRIMARY_COLOR : Colors.transparent,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -142,11 +142,11 @@ class _ArtistContentState extends State<ArtistContent> {
     );
   }
 
-  Widget buildAlbumsList() {
-    if (isLoading) {
+  Widget _buildAlbumsList() {
+    if (_isLoading) {
       return Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK));
     }
-    if (albums.isEmpty) {
+    if (_albums.isEmpty) {
       return EmptyText(message: "No albums found!");
     }
 
@@ -155,9 +155,9 @@ class _ArtistContentState extends State<ArtistContent> {
       child: Column(
         spacing: 12.0,
         children: [
-          ...albums.map(
+          ..._albums.map(
             (album) => GestureDetector(
-              onTap: () => sendToMediaPage(album),
+              onTap: () => _sendToMediaPage(album),
               child: RatedMediaCardWidget(media: album),
             ),
           ),
@@ -166,11 +166,11 @@ class _ArtistContentState extends State<ArtistContent> {
     );
   }
 
-  Widget buildSinglesList() {
-    if (isLoading) {
+  Widget _buildSinglesList() {
+    if (_isLoading) {
       return Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK));
     }
-    if (singles.isEmpty) {
+    if (_singles.isEmpty) {
       return EmptyText(message: "No singles found!");
     }
 
@@ -179,9 +179,9 @@ class _ArtistContentState extends State<ArtistContent> {
       child: Column(
         spacing: 12.0,
         children: [
-          ...singles.map(
+          ..._singles.map(
             (single) => GestureDetector(
-              onTap: () => sendToMediaPage(single),
+              onTap: () => _sendToMediaPage(single),
               child: RatedMediaCardWidget(media: single),
             ),
           ),

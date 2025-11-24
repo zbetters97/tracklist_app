@@ -22,14 +22,14 @@ class _ResetPasswordWidgetState extends State<ResetPasswordWidget> {
           TextSpan(
             text: "Click here",
             style: TextStyle(color: PRIMARY_COLOR_LIGHT, fontWeight: FontWeight.bold),
-            recognizer: TapGestureRecognizer()..onTap = buildForgotPasswordDialog,
+            recognizer: TapGestureRecognizer()..onTap = _buildForgotPasswordDialog,
           ),
         ],
       ),
     );
   }
 
-  Future buildForgotPasswordDialog() {
+  Future _buildForgotPasswordDialog() {
     return showDialog(
       context: context,
       builder: (context) {

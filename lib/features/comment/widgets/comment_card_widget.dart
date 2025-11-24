@@ -29,7 +29,7 @@ class CommentCardWidget extends StatefulWidget {
 class _CommentCardWidgetState extends State<CommentCardWidget> {
   late Comment comment;
 
-  bool isReplying = false;
+  bool _isReplying = false;
 
   @override
   void initState() {
@@ -37,14 +37,14 @@ class _CommentCardWidgetState extends State<CommentCardWidget> {
     comment = widget.comment;
   }
 
-  void sendToUserPage(BuildContext context, String userId) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => UserPage(uid: userId)));
-  }
-
   @override
   void dispose() {
-    isReplying = false;
+    _isReplying = false;
     super.dispose();
+  }
+
+  void _sendToUserPage(BuildContext context, String userId) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => UserPage(uid: userId)));
   }
 
   @override
@@ -57,14 +57,14 @@ class _CommentCardWidgetState extends State<CommentCardWidget> {
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            buildUserProfile(),
+            _buildUserProfile(),
             const SizedBox(width: 8.0),
             Text(getTimeSinceShort(comment.createdAt), style: TextStyle(color: Colors.grey)),
           ],
         ),
         Text(comment.content, style: TextStyle(color: Colors.white, fontSize: 16.0)),
-        buildCommentButtons(),
-        if (isReplying)
+        __buildCommentButtons(),
+        if (_isReplying)
           PostCommentWidget(
             reviewId: widget.reviewId,
             replyingToId: comment.commentId,
@@ -80,13 +80,13 @@ class _CommentCardWidgetState extends State<CommentCardWidget> {
     );
   }
 
-  Widget buildUserProfile() {
+  Widget _buildUserProfile() {
     CircleAvatar profileImage = comment.user.profileUrl.startsWith("https")
         ? CircleAvatar(radius: 20.0, backgroundImage: NetworkImage(comment.user.profileUrl))
         : CircleAvatar(radius: 20.0, backgroundImage: AssetImage(DEFAULT_PROFILE_IMG));
 
     return GestureDetector(
-      onTap: () => sendToUserPage(context, comment.user.uid),
+      onTap: () => _sendToUserPage(context, comment.user.uid),
       child: Row(
         children: [
           profileImage,
@@ -100,15 +100,15 @@ class _CommentCardWidgetState extends State<CommentCardWidget> {
     );
   }
 
-  Widget buildCommentButtons() {
+  Widget __buildCommentButtons() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       spacing: 12.0,
-      children: [buildLikeButton(), buildDislikeButton(), buildReplyButton(), buildDeleteButton()],
+      children: [_buildLikeButton(), _buildDislikeButton(), _buildReplyButton(), _buildDeleteButton()],
     );
   }
 
-  Widget buildLikeButton() {
+  Widget _buildLikeButton() {
     bool isLiked = comment.likes.contains(authUser.value!.uid);
 
     return GestureDetector(
@@ -133,7 +133,7 @@ class _CommentCardWidgetState extends State<CommentCardWidget> {
     );
   }
 
-  Widget buildDislikeButton() {
+  Widget _buildDislikeButton() {
     bool isDisliked = comment.dislikes.contains(authUser.value!.uid);
 
     return GestureDetector(
@@ -156,14 +156,14 @@ class _CommentCardWidgetState extends State<CommentCardWidget> {
     );
   }
 
-  Widget buildReplyButton() {
+  Widget _buildReplyButton() {
     return GestureDetector(
-      onTap: () => setState(() => isReplying = !isReplying),
+      onTap: () => setState(() => _isReplying = !_isReplying),
       child: Text("Reply", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
     );
   }
 
-  Widget buildDeleteButton() {
+  Widget _buildDeleteButton() {
     if (authUser.value?.uid != comment.user.uid) {
       return Container();
     }

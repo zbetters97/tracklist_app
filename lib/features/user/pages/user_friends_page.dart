@@ -17,41 +17,41 @@ class UserFriendsPage extends StatefulWidget {
 }
 
 class _UserFriendsPageState extends State<UserFriendsPage> {
-  bool isLoading = true;
+  bool _isLoading = true;
   AppUser get user => widget.user;
-  List<AppUser> users = [];
-  List<AppUser> filteredUsers = [];
-  TextEditingController searchController = TextEditingController();
+  List<AppUser> _users = [];
+  List<AppUser> _filteredUsers = [];
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    fetchFriends();
+    _fetchFriends();
   }
 
-  void fetchFriends() async {
-    setState(() => isLoading = true);
+  void _fetchFriends() async {
+    setState(() => _isLoading = true);
 
     List<AppUser> fetchedUsers = widget.isFollowers
         ? await getFollowersByUserId(user.uid)
         : await getFollowingByUserId(user.uid);
 
     setState(() {
-      users = fetchedUsers;
-      filteredUsers = fetchedUsers;
-      isLoading = false;
+      _users = fetchedUsers;
+      _filteredUsers = fetchedUsers;
+      _isLoading = false;
     });
   }
 
-  void onSearchPressed() {
-    final query = searchController.text.toLowerCase();
+  void _onSearchPressed() {
+    final query = _searchController.text.toLowerCase();
 
     if (query.trim().isEmpty) {
-      setState(() => filteredUsers = users);
+      setState(() => _filteredUsers = _users);
     }
 
     setState(() {
-      filteredUsers = users.where((user) {
+      _filteredUsers = _users.where((user) {
         final String username = user.username.toLowerCase();
         final String displayName = user.displayname.toLowerCase();
 
@@ -69,46 +69,46 @@ class _UserFriendsPageState extends State<UserFriendsPage> {
       appBar: DefaultAppBar(title: title),
       backgroundColor: BACKGROUND_COLOR,
       body: SingleChildScrollView(
-        child: isLoading
+        child: _isLoading
             ? LoadingIcon()
             : Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Column(spacing: 16.0, children: [buildSearchBar(), buildUsersList(users)]),
+                child: Column(spacing: 16.0, children: [_buildSearchBar(), _buildUsersList(_users)]),
               ),
       ),
     );
   }
 
-  Widget buildSearchBar() {
+  Widget _buildSearchBar() {
     return TextFormField(
-      controller: searchController,
+      controller: _searchController,
       style: TextStyle(fontSize: 20),
       decoration: InputDecoration(
         contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         border: OutlineInputBorder(),
         enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
         prefixIcon: Icon(Icons.search),
-        suffixIcon: IconButton(icon: Icon(Icons.arrow_forward), onPressed: () => onSearchPressed()),
+        suffixIcon: IconButton(icon: Icon(Icons.arrow_forward), onPressed: () => _onSearchPressed()),
       ),
-      onChanged: (_) => onSearchPressed(),
-      onFieldSubmitted: (_) => onSearchPressed(),
+      onChanged: (_) => _onSearchPressed(),
+      onFieldSubmitted: (_) => _onSearchPressed(),
     );
   }
 
-  Widget buildUsersList(List<AppUser> users) {
+  Widget _buildUsersList(List<AppUser> users) {
     String message = widget.isFollowers ? "No followers yet!" : "No one followed yet!";
     if (users.isEmpty) {
       return EmptyText(message: message);
     }
 
-    if (searchController.text.trim().isNotEmpty && filteredUsers.isEmpty) {
+    if (_searchController.text.trim().isNotEmpty && _filteredUsers.isEmpty) {
       return EmptyText(message: "No users found!");
     }
 
-    if (filteredUsers.isNotEmpty) {
+    if (_filteredUsers.isNotEmpty) {
       return Column(
         spacing: 12.0,
-        children: filteredUsers.map((user) => UserCardWidget(key: ValueKey(user.uid), user: user)).toList(),
+        children: _filteredUsers.map((user) => UserCardWidget(key: ValueKey(user.uid), user: user)).toList(),
       );
     }
 

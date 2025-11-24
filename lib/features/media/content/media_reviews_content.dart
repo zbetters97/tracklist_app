@@ -15,41 +15,41 @@ class MediaReviews extends StatefulWidget {
 }
 
 class _MediaReviewsState extends State<MediaReviews> {
-  List<Review> reviews = [];
+  List<Review> _reviews = [];
 
   @override
   void initState() {
     super.initState();
-    ratingNotifier.addListener(onRatingsChanged);
-    reviews = widget.reviews;
-  }
-
-  void onRatingsChanged() {
-    if (!mounted) return;
-
-    filterByStars(ratingNotifier.value);
-  }
-
-  void sendToReviewPage(BuildContext context, Review review) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => ReviewPage(reviewId: review.reviewId)));
-  }
-
-  void filterByStars(double stars) {
-    if (!mounted) return;
-
-    if (stars == 0.0) {
-      setState(() => reviews = widget.reviews);
-    } else {
-      setState(() => reviews = widget.reviews.where((review) => review.rating == stars).toList());
-    }
+    ratingNotifier.addListener(_onRatingsChanged);
+    _reviews = widget.reviews;
   }
 
   @override
   void dispose() {
-    ratingNotifier.removeListener(onRatingsChanged);
+    ratingNotifier.removeListener(_onRatingsChanged);
     ratingNotifier.value = 0.0;
-    reviews.clear();
+    _reviews.clear();
     super.dispose();
+  }
+
+  void _onRatingsChanged() {
+    if (!mounted) return;
+
+    _filterByStars(ratingNotifier.value);
+  }
+
+  void _sendToReviewPage(Review review) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ReviewPage(reviewId: review.reviewId)));
+  }
+
+  void _filterByStars(double stars) {
+    if (!mounted) return;
+
+    if (stars == 0.0) {
+      setState(() => _reviews = widget.reviews);
+    } else {
+      setState(() => _reviews = widget.reviews.where((review) => review.rating == stars).toList());
+    }
   }
 
   @override
@@ -67,17 +67,17 @@ class _MediaReviewsState extends State<MediaReviews> {
                 style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
               ),
               const SizedBox(width: 12),
-              buildStarsDropdown(),
+              _buildStarsDropdown(),
             ],
           ),
           const Divider(color: Colors.grey),
-          buildReviews(reviews),
+          _buildReviews(_reviews),
         ],
       ),
     );
   }
 
-  Widget buildStarsDropdown() {
+  Widget _buildStarsDropdown() {
     return ValueListenableBuilder(
       valueListenable: ratingNotifier,
       builder: (context, value, child) {
@@ -97,7 +97,7 @@ class _MediaReviewsState extends State<MediaReviews> {
             onChanged: (value) => {
               setState(() {
                 ratingNotifier.value = value!.toDouble();
-                filterByStars(ratingNotifier.value);
+                _filterByStars(ratingNotifier.value);
               }),
             },
           ),
@@ -106,7 +106,7 @@ class _MediaReviewsState extends State<MediaReviews> {
     );
   }
 
-  Widget buildReviews(List<Review> reviews) {
+  Widget _buildReviews(List<Review> reviews) {
     if (reviews.isEmpty) {
       return EmptyText(message: "No reviews found!");
     }
@@ -115,7 +115,7 @@ class _MediaReviewsState extends State<MediaReviews> {
       children: [
         ...reviews.map((review) {
           return GestureDetector(
-            onTap: () => sendToReviewPage(context, review),
+            onTap: () => _sendToReviewPage(review),
             child: ReviewMediaCardWidget(review: review),
           );
         }),

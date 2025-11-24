@@ -31,58 +31,57 @@ class MediaPage extends StatefulWidget {
 
 class _MediaPageState extends State<MediaPage> {
   Media get media => widget.media;
-  Color bgColorA = BACKGROUND_COLOR;
-  Color bgColorB = BACKGROUND_COLOR;
+  Color _bgColorA = BACKGROUND_COLOR;
+  Color _bgColorB = BACKGROUND_COLOR;
 
-  bool isLoading = true;
-  String category = "";
-  List<Review> reviews = [];
-  double avgRating = 0.0;
+  bool _isLoading = true;
+  String _category = "";
+  List<Review> _reviews = [];
+  double _avgRating = 0.0;
   late QuerySnapshot reviewDocs;
-  int totalReviews = 0;
-  bool isLiked = false;
+  bool _isLiked = false;
 
   @override
   void initState() {
     super.initState();
-    fetchReviews();
+    _fetchReviews();
   }
 
-  void fetchReviews() async {
-    setState(() => isLoading = true);
+  void _fetchReviews() async {
+    setState(() => _isLoading = true);
 
-    category = media.getCategory();
-    isLiked = await getIsLikedContent(media.id, category);
+    _category = media.getCategory();
+    _isLiked = await getIsLikedContent(media.id, _category);
 
     List<Review> fetchedReviews = await getReviewsByMediaId(media.id);
     double fetchedAvgRating = await getAvgRating(media.id);
     QuerySnapshot fetchedReviewDocs = await getReviewDocsByMediaId(media.id);
 
-    await getMediaColor(media.image);
+    await _getMediaColor(media.image);
 
     setState(() {
-      reviews = fetchedReviews;
-      avgRating = fetchedAvgRating;
+      _reviews = fetchedReviews;
+      _avgRating = fetchedAvgRating;
       reviewDocs = fetchedReviewDocs;
-      isLoading = false;
+      _isLoading = false;
     });
   }
 
-  Future<void> getMediaColor(String imageUrl) async {
+  Future<void> _getMediaColor(String imageUrl) async {
     final palette = await getColors(imageUrl);
 
     setState(() {
-      bgColorA = palette.light;
-      bgColorB = palette.dark;
+      _bgColorA = palette.light;
+      _bgColorB = palette.dark;
     });
   }
 
-  void likeMedia() async {
-    await likeContent(media.id, category);
-    setState(() => isLiked = !isLiked);
+  void _likeMedia() async {
+    await likeContent(media.id, _category);
+    setState(() => _isLiked = !_isLiked);
   }
 
-  void launchSpotify(String spotifyUrl) async {
+  void _launchSpotify(String spotifyUrl) async {
     final Uri spotifyUri = Uri.parse(spotifyUrl);
 
     // Check if URL can be launched
@@ -95,14 +94,14 @@ class _MediaPageState extends State<MediaPage> {
     }
   }
 
-  void sendToMediaPage(BuildContext content, String artistId) async {
-    final navigator = Navigator.of(content);
+  void _sendToMediaPage(String artistId) async {
+    final navigator = Navigator.of(context);
     final Artist artist = await getArtistById(artistId);
 
     navigator.push(MaterialPageRoute(builder: (_) => MediaPage(media: artist)));
   }
 
-  void sendToAddReviewPage() {
+  void _sendToAddReviewPage() {
     NavigationService().openAddReview(media: media);
   }
 
@@ -111,47 +110,47 @@ class _MediaPageState extends State<MediaPage> {
     return Scaffold(
       appBar: DefaultAppBar(title: media.name),
       backgroundColor: BACKGROUND_COLOR,
-      body: isLoading
+      body: _isLoading
           ? LoadingIcon()
           : SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    decoration: buildMediaGradient(),
+                    decoration: _buildMediaGradient(),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
                         children: [
-                          buildMediaHeader(),
+                          _buildMediaHeader(),
                           const SizedBox(height: 12),
-                          buildMediaReviews(),
+                          _buildMediaReviews(),
                           const SizedBox(height: 20),
-                          buildMediaButtons(),
+                          _buildMediaButtons(),
                         ],
                       ),
                     ),
                   ),
-                  buildMediaContent(),
+                  _buildMediaContent(),
                 ],
               ),
             ),
     );
   }
 
-  BoxDecoration buildMediaGradient() {
+  BoxDecoration _buildMediaGradient() {
     return BoxDecoration(
-      gradient: LinearGradient(colors: [bgColorA, bgColorB], begin: Alignment.topLeft, end: Alignment.bottomRight),
+      gradient: LinearGradient(colors: [_bgColorA, _bgColorB], begin: Alignment.topLeft, end: Alignment.bottomRight),
     );
   }
 
-  Widget buildMediaHeader() {
+  Widget _buildMediaHeader() {
     return SizedBox(
       height: 275 + 75 + 75, // Image height + Ratings Bar height + gap height
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          buildMediaImage(),
+          _buildMediaImage(),
           Positioned(
             top: 275 + 75, // Image height + Ratings Bar height
             left: 0,
@@ -164,11 +163,11 @@ class _MediaPageState extends State<MediaPage> {
     );
   }
 
-  Widget buildMediaImage() {
+  Widget _buildMediaImage() {
     return Column(
       children: [
         GestureDetector(
-          onTap: () async => launchSpotify(media.spotify),
+          onTap: () async => _launchSpotify(media.spotify),
           child: Container(
             decoration: BoxDecoration(
               boxShadow: [BoxShadow(color: Colors.black.withAlpha(125), blurRadius: 12, offset: Offset(0, 4))],
@@ -184,7 +183,7 @@ class _MediaPageState extends State<MediaPage> {
         ),
         if (media.getCategory() != "artist")
           GestureDetector(
-            onTap: () async => sendToMediaPage(context, (media as dynamic).artistId),
+            onTap: () async => _sendToMediaPage((media as dynamic).artistId),
             child: Text(
               (media as dynamic).artist,
               style: const TextStyle(color: Colors.grey, fontSize: 20, fontWeight: FontWeight.bold),
@@ -195,58 +194,58 @@ class _MediaPageState extends State<MediaPage> {
     );
   }
 
-  Widget buildMediaReviews() {
+  Widget _buildMediaReviews() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       spacing: 5.0,
       children: [
         Text(
-          avgRating.toString(),
+          _avgRating.toString(),
           style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
         ),
-        StarRating(rating: avgRating),
+        StarRating(rating: _avgRating),
         Text(
-          "(${reviews.length.toString()})",
+          "(${_reviews.length.toString()})",
           style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ],
     );
   }
 
-  Widget buildMediaButtons() {
+  Widget _buildMediaButtons() {
     // TODO: Add functionality to media buttons
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        buildLikeButton(),
-        buildReviewButton(),
+        _buildLikeButton(),
+        _buildReviewButton(),
         Icon(Icons.format_list_bulleted, color: Colors.white, size: 30),
         Icon(Icons.send, color: Colors.white, size: 30),
       ],
     );
   }
 
-  Widget buildLikeButton() {
+  Widget _buildLikeButton() {
     return GestureDetector(
-      onTap: () => likeMedia(),
-      child: Icon(Icons.favorite, color: isLiked ? PRIMARY_COLOR_LIGHT : Colors.white, size: 30),
+      onTap: () => _likeMedia(),
+      child: Icon(Icons.favorite, color: _isLiked ? PRIMARY_COLOR_LIGHT : Colors.white, size: 30),
     );
   }
 
-  Widget buildReviewButton() {
+  Widget _buildReviewButton() {
     return GestureDetector(
-      onTap: () => sendToAddReviewPage(),
+      onTap: () => _sendToAddReviewPage(),
       child: Icon(Icons.edit_square, color: Colors.white, size: 30),
     );
   }
 
-  Widget buildMediaContent() {
-    Widget content = category == "artist"
+  Widget _buildMediaContent() {
+    Widget content = _category == "artist"
         ? ArtistContent(artist: media as Artist)
-        : category == "album"
+        : _category == "album"
         ? AlbumContent(album: media as Album)
-        : category == "track"
+        : _category == "track"
         ? TrackContent(track: media as Track)
         : Container();
 

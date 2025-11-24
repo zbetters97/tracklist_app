@@ -21,59 +21,59 @@ class AlbumContent extends StatefulWidget {
 }
 
 class _AlbumContentState extends State<AlbumContent> {
-  bool isLoading = true;
-  int currentTab = 0;
+  bool _isLoading = true;
+  int _currentTab = 0;
 
-  List<Track> tracks = [];
-  List<Review> reviews = [];
+  List<Track> _tracks = [];
+  List<Review> _reviews = [];
 
   @override
   void initState() {
     super.initState();
-    fetchTracks();
+    _fetchTracks();
   }
 
-  void fetchTracks() async {
-    setState(() => isLoading = true);
+  void _fetchTracks() async {
+    setState(() => _isLoading = true);
 
     List<Track> fetchedTracks = await getAlbumTracks(widget.album.id, widget.album);
 
     setState(() {
-      tracks = fetchedTracks;
-      isLoading = false;
+      _tracks = fetchedTracks;
+      _isLoading = false;
     });
   }
 
-  void fetchReviews() async {
-    setState(() => isLoading = true);
+  void _fetchReviews() async {
+    setState(() => _isLoading = true);
 
     List<Review> fetchedReviews = await getReviewsByMediaId(widget.album.id);
 
     setState(() {
-      reviews = fetchedReviews;
-      isLoading = false;
+      _reviews = fetchedReviews;
+      _isLoading = false;
     });
   }
 
-  void switchTab(int index) {
-    if (currentTab == index) return;
+  void _switchTab(int index) {
+    if (_currentTab == index) return;
 
     setState(() {
-      currentTab = index;
-      currentTab == 0 ? fetchTracks() : fetchReviews();
+      _currentTab = index;
+      _currentTab == 0 ? _fetchTracks() : _fetchReviews();
     });
   }
 
-  void sendToMediaPage(Track track) {
+  void _sendToMediaPage(Track track) {
     Navigator.push(context, MaterialPageRoute(builder: (context) => MediaPage(media: track)));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [buildTabs()]);
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [__buildTabs()]);
   }
 
-  Widget buildTabs() {
+  Widget __buildTabs() {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(8.0),
@@ -83,38 +83,38 @@ class _AlbumContentState extends State<AlbumContent> {
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [buildTab(0, "Tracks"), buildTab(1, "Reviews")],
+              children: [_buildTab(0, "Tracks"), _buildTab(1, "Reviews")],
             ),
           ),
-          isLoading
+          _isLoading
               ? LoadingIcon()
-              : currentTab == 0
-              ? buildTracksList()
-              : MediaReviews(reviews: reviews),
+              : _currentTab == 0
+              ? _buildTracksList()
+              : MediaReviews(reviews: _reviews),
         ],
       ),
     );
   }
 
-  Widget buildTab(int index, String title) {
+  Widget _buildTab(int index, String title) {
     return GestureDetector(
-      onTap: () => switchTab(index),
+      onTap: () => _switchTab(index),
       child: Column(
+        spacing: 5.0,
         children: [
           Text(
             title,
             style: TextStyle(
-              color: currentTab == index ? PRIMARY_COLOR : Colors.grey,
+              color: _currentTab == index ? PRIMARY_COLOR : Colors.grey,
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 5),
           Container(
             height: 5,
             width: 85,
             decoration: BoxDecoration(
-              color: currentTab == index ? PRIMARY_COLOR : Colors.transparent,
+              color: _currentTab == index ? PRIMARY_COLOR : Colors.transparent,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -123,11 +123,11 @@ class _AlbumContentState extends State<AlbumContent> {
     );
   }
 
-  Widget buildTracksList() {
-    if (isLoading) {
+  Widget _buildTracksList() {
+    if (_isLoading) {
       return Center(child: CircularProgressIndicator(color: PRIMARY_COLOR_DARK));
     }
-    if (tracks.isEmpty) {
+    if (_tracks.isEmpty) {
       return EmptyText(message: "No tracks found!");
     }
 
@@ -136,9 +136,9 @@ class _AlbumContentState extends State<AlbumContent> {
       child: Column(
         spacing: 16.0,
         children: [
-          ...tracks.map(
+          ..._tracks.map(
             (track) => GestureDetector(
-              onTap: () => sendToMediaPage(track),
+              onTap: () => _sendToMediaPage(track),
               child: TrackCardWidget(track: track),
             ),
           ),

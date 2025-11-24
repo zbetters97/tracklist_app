@@ -7,9 +7,9 @@ import 'package:tracklist_app/features/auth/widgets/auth_text_field.dart';
 import 'package:tracklist_app/features/auth/widgets/reset_password_widget.dart';
 
 class AuthPage extends StatefulWidget {
-  const AuthPage({super.key, required this.isRegistration});
-
   final bool isRegistration;
+
+  const AuthPage({super.key, required this.isRegistration});
 
   @override
   State<AuthPage> createState() => _AuthPageState();
@@ -17,84 +17,159 @@ class AuthPage extends StatefulWidget {
 
 class _AuthPageState extends State<AuthPage> {
   // Register (true) or Login (false)
-  late bool isRegistration;
+  late bool _isRegistration;
 
   final _formKey = GlobalKey<FormState>();
 
   // Spacing constants
-  final double kFieldSpacing = 10.0;
-  final double kSectionSpacing = 25.0;
+  final double _kFieldSpacing = 10.0;
+  final double _kSectionSpacing = 25.0;
 
-  // Default values for debugging purposes
-  TextEditingController controllerDisplayName = TextEditingController();
-  TextEditingController controllerUsername = TextEditingController();
-  TextEditingController controllerEmail = TextEditingController();
-  TextEditingController controllerPw = TextEditingController();
-  TextEditingController controllerRePw = TextEditingController();
+  final TextEditingController _controllerDisplayName = TextEditingController();
+  final TextEditingController _controllerUsername = TextEditingController();
+  final TextEditingController _controllerEmail = TextEditingController();
+  final TextEditingController _controllerPw = TextEditingController();
+  final TextEditingController _controllerRePw = TextEditingController();
 
-  bool rememberMe = false;
+  bool _rememberMe = false;
 
-  String? emailError;
-  String? loginError;
+  String? _emailError;
+  String? _loginError;
 
   @override
   void initState() {
     super.initState();
-    isRegistration = widget.isRegistration;
-    initHive();
-  }
-
-  Future<void> initHive() async {
-    // Initialize Hive to store values
-    await Hive.initFlutter();
-
-    if (isRegistration) return;
-
-    final box = await Hive.openBox('user_settings');
-
-    setState(() {
-      rememberMe = box.get('remember_me', defaultValue: false) as bool;
-      controllerEmail.text = box.get('email', defaultValue: '') as String;
-    });
+    _isRegistration = widget.isRegistration;
+    _initHive();
   }
 
   @override
   void dispose() {
-    disposeForm();
+    _disposeForm();
     super.dispose();
   }
 
-  void disposeForm() {
-    controllerDisplayName.dispose();
-    controllerUsername.dispose();
-    controllerEmail.dispose();
-    controllerPw.dispose();
-    controllerRePw.dispose();
+  Future<void> _initHive() async {
+    // Initialize Hive to store values
+    await Hive.initFlutter();
+
+    if (_isRegistration) return;
+
+    final box = await Hive.openBox('user_settings');
+
+    setState(() {
+      _rememberMe = box.get('remember_me', defaultValue: false) as bool;
+      _controllerEmail.text = box.get('email', defaultValue: '') as String;
+    });
+  }
+
+  void _changeAuthMode() {
+    _clearForm();
+    setState(() => _isRegistration = !_isRegistration);
+  }
+
+  void _onSubmitPressed() async {
+    if (!_formKey.currentState!.validate()) return;
+    _isRegistration ? _submitRegister() : _submitLogin();
+  }
+
+  void _submitRegister() async {
+    bool emailExists = await authService.value.checkIfEmailExists(email: _controllerEmail.text);
+
+    if (emailExists) {
+      setState(() => _emailError = "This email already exists.");
+      return;
+    }
+
+    bool isValid = await authService.value.signUp(
+      email: _controllerEmail.text,
+      password: _controllerPw.text,
+      displayname: _controllerDisplayName.text,
+      username: _controllerUsername.text,
+    );
+
+    if (!isValid) {
+      return;
+    }
+
+    _clearForm();
+    _redirectToWelcomePage();
+  }
+
+  void _submitLogin() async {
+    String errorCode = await authService.value.signIn(email: _controllerEmail.text, password: _controllerPw.text);
+
+    if (errorCode != "Success!") {
+      setState(() => _loginError = errorCode);
+      return;
+    }
+
+    final box = Hive.box('user_settings');
+
+    // Remember me box checked
+    if (_rememberMe) {
+      // Store login details
+      await box.put('remember_me', _rememberMe);
+      await box.put('email', _controllerEmail.text);
+    } else {
+      // Clear stored values
+      await box.clear();
+    }
+
+    _redirectToWelcomePage();
+  }
+
+  void _redirectToWelcomePage() {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => WidgetTree()),
+      // Removes all previous pages in the stack
+      (route) => false,
+    );
+  }
+
+  void _clearForm() {
+    _controllerDisplayName.clear();
+    _controllerUsername.clear();
+    _controllerEmail.clear();
+    _controllerPw.clear();
+    _controllerRePw.clear();
+    _rememberMe = false;
+    _emailError = null;
+    _loginError = null;
+  }
+
+  void _disposeForm() {
+    _controllerDisplayName.dispose();
+    _controllerUsername.dispose();
+    _controllerEmail.dispose();
+    _controllerPw.dispose();
+    _controllerRePw.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    String switchAuthText = isRegistration ? "Already have an account with us?" : "Don't have an account with us?";
+    String switchAuthText = _isRegistration ? "Already have an account with us?" : "Don't have an account with us?";
 
     return Scaffold(
       appBar: AppBar(),
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.all(kSectionSpacing),
+            padding: EdgeInsets.all(_kSectionSpacing),
             child: Form(
               key: _formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  buildHeader(),
-                  SizedBox(height: kSectionSpacing),
-                  isRegistration ? buildRegisterFields() : buildLoginFields(),
-                  SizedBox(height: kSectionSpacing),
-                  buildSubmitButton(),
-                  SizedBox(height: kSectionSpacing),
+                  _buildHeader(),
+                  SizedBox(height: _kSectionSpacing),
+                  _isRegistration ? _buildRegisterFields() : _buildLoginFields(),
+                  SizedBox(height: _kSectionSpacing),
+                  _buildSubmitButton(),
+                  SizedBox(height: _kSectionSpacing),
                   Text(switchAuthText),
-                  buildChangeAuthButton(),
+                  _buildChangeAuthButton(),
                 ],
               ),
             ),
@@ -104,12 +179,12 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-  Widget buildHeader() {
+  Widget _buildHeader() {
     return Text.rich(
       TextSpan(
         style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
         children: [
-          TextSpan(text: isRegistration ? "Sign up for " : "Log into "),
+          TextSpan(text: _isRegistration ? "Sign up for " : "Log into "),
           TextSpan(
             text: "TrackList",
             style: TextStyle(color: PRIMARY_COLOR),
@@ -119,38 +194,38 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-  Widget buildRegisterFields() {
+  Widget _buildRegisterFields() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
-      spacing: kFieldSpacing,
+      spacing: _kFieldSpacing,
       children: [
-        buildDisplayNameField(),
-        buildUsernameField(),
-        buildEmailField(),
-        buildPasswordField(),
-        buildRePasswordField(),
+        _buildDisplayNameField(),
+        _buildUsernameField(),
+        _buildEmailField(),
+        _buildPasswordField(),
+        _buildRePasswordField(),
       ],
     );
   }
 
-  Widget buildLoginFields() {
+  Widget _buildLoginFields() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
-      spacing: kFieldSpacing,
+      spacing: _kFieldSpacing,
       children: [
-        buildEmailField(),
-        buildPasswordField(),
-        buildRememberCheckBox(),
-        if (loginError != null) Text(loginError ?? "", style: TextStyle(color: Colors.red)),
+        _buildEmailField(),
+        _buildPasswordField(),
+        _buildRememberCheckBox(),
+        if (_loginError != null) Text(_loginError ?? "", style: TextStyle(color: Colors.red)),
         ResetPasswordWidget(),
       ],
     );
   }
 
-  Widget buildDisplayNameField() {
+  Widget _buildDisplayNameField() {
     return AuthTextField(
       label: "Display Name",
-      controller: controllerDisplayName,
+      controller: _controllerDisplayName,
       keyboardType: TextInputType.text,
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -164,10 +239,10 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-  Widget buildUsernameField() {
+  Widget _buildUsernameField() {
     return AuthTextField(
       label: "Username",
-      controller: controllerUsername,
+      controller: _controllerUsername,
       keyboardType: TextInputType.text,
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -181,10 +256,10 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-  Widget buildEmailField() {
+  Widget _buildEmailField() {
     return AuthTextField(
       label: "Email",
-      controller: controllerEmail,
+      controller: _controllerEmail,
       keyboardType: TextInputType.emailAddress,
       validator: (value) {
         if (value!.isEmpty) {
@@ -195,14 +270,14 @@ class _AuthPageState extends State<AuthPage> {
         }
         return null;
       },
-      error: emailError,
+      error: _emailError,
     );
   }
 
-  Widget buildPasswordField() {
+  Widget _buildPasswordField() {
     return AuthTextField(
       label: "Password",
-      controller: controllerPw,
+      controller: _controllerPw,
       keyboardType: TextInputType.visiblePassword,
       isHidden: true,
       validator: (value) {
@@ -217,17 +292,17 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-  Widget buildRePasswordField() {
+  Widget _buildRePasswordField() {
     return AuthTextField(
       label: "Re-enter Password",
-      controller: controllerRePw,
+      controller: _controllerRePw,
       keyboardType: TextInputType.visiblePassword,
       isHidden: true,
       validator: (value) {
         if (value!.isEmpty) {
           return ("Please re-enter the password");
         }
-        if (value != controllerPw.text) {
+        if (value != _controllerPw.text) {
           return ("Passwords do not match");
         }
         return null;
@@ -235,18 +310,18 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-  Widget buildRememberCheckBox() {
+  Widget _buildRememberCheckBox() {
     return Row(
       children: [
         Checkbox(
-          value: rememberMe,
+          value: _rememberMe,
           activeColor: PRIMARY_COLOR,
           checkColor: Colors.white,
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          onChanged: (value) => setState(() => rememberMe = value!),
+          onChanged: (value) => setState(() => _rememberMe = value!),
         ),
         GestureDetector(
-          onTap: () => setState(() => rememberMe = !rememberMe),
+          onTap: () => setState(() => _rememberMe = !_rememberMe),
           child: Text(
             "Remember me",
             style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
@@ -256,10 +331,10 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-  Widget buildSubmitButton() {
+  Widget _buildSubmitButton() {
     return IntrinsicWidth(
       child: FilledButton(
-        onPressed: () => onSubmitPressed(),
+        onPressed: () => _onSubmitPressed(),
         style: ElevatedButton.styleFrom(
           minimumSize: Size(0.0, 40.0),
           shape: LinearBorder(),
@@ -273,7 +348,7 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-  Widget buildChangeAuthButton() {
+  Widget _buildChangeAuthButton() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextButton(
@@ -285,85 +360,9 @@ class _AuthPageState extends State<AuthPage> {
           textStyle: TextStyle(fontSize: 16),
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         ),
-        onPressed: () => changeAuthMode(),
-        child: Text(isRegistration ? "Log in" : "Sign up"),
+        onPressed: () => _changeAuthMode(),
+        child: Text(_isRegistration ? "Log in" : "Sign up"),
       ),
-    );
-  }
-
-  void changeAuthMode() {
-    clearForm();
-    setState(() => isRegistration = !isRegistration);
-  }
-
-  void clearForm() {
-    controllerDisplayName.clear();
-    controllerUsername.clear();
-    controllerEmail.clear();
-    controllerPw.clear();
-    controllerRePw.clear();
-    rememberMe = false;
-    emailError = null;
-    loginError = null;
-  }
-
-  void onSubmitPressed() async {
-    if (!_formKey.currentState!.validate()) return;
-    isRegistration ? submitRegister() : submitLogin();
-  }
-
-  void submitRegister() async {
-    bool emailExists = await authService.value.checkIfEmailExists(email: controllerEmail.text);
-
-    if (emailExists) {
-      setState(() => emailError = "This email already exists.");
-      return;
-    }
-
-    bool isValid = await authService.value.signUp(
-      email: controllerEmail.text,
-      password: controllerPw.text,
-      displayname: controllerDisplayName.text,
-      username: controllerUsername.text,
-    );
-
-    if (!isValid) {
-      return;
-    }
-
-    clearForm();
-    redirectToWelcomePage();
-  }
-
-  void submitLogin() async {
-    String errorCode = await authService.value.signIn(email: controllerEmail.text, password: controllerPw.text);
-
-    if (errorCode != "Success!") {
-      setState(() => loginError = errorCode);
-      return;
-    }
-
-    final box = Hive.box('user_settings');
-
-    // Remember me box checked
-    if (rememberMe) {
-      // Store login details
-      await box.put('remember_me', rememberMe);
-      await box.put('email', controllerEmail.text);
-    } else {
-      // Clear stored values
-      await box.clear();
-    }
-
-    redirectToWelcomePage();
-  }
-
-  void redirectToWelcomePage() {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => WidgetTree()),
-      // Removes all previous pages in the stack
-      (route) => false,
     );
   }
 }
